@@ -51,8 +51,8 @@ export function Navbar() {
         <ul style={{ display: 'flex', gap: '2rem', listStyle: 'none', margin: 0, padding: 0 }}>
           {[
             { href: '#platform', label: 'הפלטפורמה' },
-            { href: '#recruiters', label: 'למגייסים' },
-            { href: '#candidates', label: 'למועמדים' },
+            { href: '/recruiters', label: 'למגייסים' },
+            { href: '/candidates', label: 'למועמדים' },
             { href: '#how', label: 'איך זה עובד' },
           ].map(({ href, label }) => (
             <li key={href}>

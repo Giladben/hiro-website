@@ -84,7 +84,7 @@ export function Platform() {
               ))}
             </ul>
             <a
-              href="#recruiters"
+              href="/recruiters"
               style={{
                 background: 'var(--purple-600)', color: '#fff', border: 'none',
                 padding: '0.75rem 1.5rem', borderRadius: 10,
@@ -129,7 +129,7 @@ export function Platform() {
               ))}
             </ul>
             <a
-              href="#candidates"
+              href="/candidates"
               style={{
                 background: 'var(--purple-900)', color: '#fff', border: 'none',
                 padding: '0.75rem 1.5rem', borderRadius: 10,
