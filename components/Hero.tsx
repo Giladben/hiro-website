@@ -1,40 +1,8 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
-
-const candidates = [
-  { id: '0908', name: 'שק\' צוקרמנד', title: 'מנהלת לוגיסטיקה', score: 65, status: 'חדש', statusColor: '#22c55e' },
-  { id: '1',    name: 'שרית חליבה',   title: 'מנהלת קטגוריות',  score: 57, status: 'חסר נתונים', statusColor: '#f59e0b' },
-  { id: '2',    name: 'אמיר קי',      title: 'מנהל לוגיסטיקה', score: 53, status: 'חסר נתונים', statusColor: '#f59e0b' },
-  { id: '3',    name: 'אירית אוזרט',  title: 'מנהלת שרשרת',    score: 51, status: 'חדש',        statusColor: '#22c55e' },
-]
-
-function ScoreRing({ score, size = 36 }: { score: number; size?: number }) {
-  const r = (size - 6) / 2
-  const circ = 2 * Math.PI * r
-  const fill = circ - (score / 100) * circ
-  const color = score >= 60 ? '#22c55e' : score >= 50 ? '#f59e0b' : '#ef4444'
-  return (
-    <svg width={size} height={size} aria-hidden="true" style={{ flexShrink: 0 }}>
-      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="3"/>
-      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth="3"
-        strokeDasharray={circ} strokeDashoffset={fill} strokeLinecap="round"
-        style={{ transform: 'rotate(-90deg)', transformOrigin: `${size/2}px ${size/2}px` }}/>
-      <text x={size/2} y={size/2+4} textAnchor="middle" fill="#fff" fontSize="9" fontWeight="700">{score}%</text>
-    </svg>
-  )
-}
+import Image from 'next/image'
 
 export function Hero() {
-  const rowsRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const rows = rowsRef.current?.querySelectorAll('.cand-row')
-    rows?.forEach((row, i) => {
-      setTimeout(() => row.classList.add('slide-in'), 200 + i * 150)
-    })
-  }, [])
-
   return (
     <section
       aria-labelledby="hero-heading"
@@ -104,7 +72,7 @@ export function Hero() {
           </div>
         </div>
 
-        {/* ── Left: Dashboard Mockup ── */}
+        {/* ── Left: Real product screenshot ── */}
         <div style={{ position:'relative' }}>
           {/* Glow behind card */}
           <div aria-hidden="true" style={{ position:'absolute', inset:-40, borderRadius:32, background:'radial-gradient(ellipse, rgba(83,74,183,0.25) 0%, transparent 70%)', filter:'blur(20px)' }}/>
@@ -121,64 +89,15 @@ export function Hero() {
               <span style={{ fontSize:'0.75rem', fontWeight:700, color:'#fff' }}>HIRO</span>
             </div>
 
-            {/* Sidebar + content */}
-            <div style={{ display:'flex', background:'rgba(10,8,30,0.9)' }}>
-              {/* Mini sidebar */}
-              <div style={{ width:44, borderLeft:'1px solid rgba(255,255,255,0.05)', padding:'12px 0', display:'flex', flexDirection:'column', alignItems:'center', gap:12 }}>
-                {['👥','📋','🏢','💰','📊'].map((icon,i)=>(
-                  <div key={i} style={{ width:28, height:28, borderRadius:8, background: i===0?'var(--p600)':'transparent', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'0.85rem', cursor:'pointer' }} aria-hidden="true">{icon}</div>
-                ))}
-              </div>
-
-              {/* Main content */}
-              <div style={{ flex:1, padding:'14px' }}>
-                {/* Header row */}
-                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:10 }}>
-                  <span style={{ color:'#fff', fontWeight:700, fontSize:'0.9rem' }}>רשימת מועמדים</span>
-                  <div style={{ background:'var(--p600)', borderRadius:8, padding:'4px 10px', fontSize:'0.72rem', fontWeight:700, color:'#fff', cursor:'pointer' }}>+ מועמד חדש</div>
-                </div>
-
-                {/* Search bar */}
-                <div style={{ background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:8, padding:'6px 10px', fontSize:'0.75rem', color:'rgba(240,238,255,0.3)', marginBottom:10 }}>🔍 חיפוש מועמד...</div>
-
-                {/* Column headers */}
-                <div style={{ display:'grid', gridTemplateColumns:'36px 1fr 80px 70px', gap:6, padding:'0 6px 6px', borderBottom:'1px solid rgba(255,255,255,0.05)', fontSize:'0.65rem', color:'rgba(240,238,255,0.3)', marginBottom:4 }}>
-                  <span>התאמה</span><span>שם</span><span>תפקיד</span><span>סטטוס</span>
-                </div>
-
-                {/* Candidate rows */}
-                <div ref={rowsRef} style={{ display:'flex', flexDirection:'column', gap:3 }}>
-                  {candidates.map((c, i) => (
-                    <div
-                      key={c.id}
-                      className="cand-row"
-                      style={{ display:'grid', gridTemplateColumns:'36px 1fr 80px 70px', gap:6, padding:'6px', borderRadius:8, background:'rgba(255,255,255,0.03)', alignItems:'center', opacity:0, cursor:'pointer', transition:'background 0.15s' }}
-                      onMouseEnter={e=>(e.currentTarget.style.background='rgba(127,119,221,0.1)')}
-                      onMouseLeave={e=>(e.currentTarget.style.background='rgba(255,255,255,0.03)')}
-                    >
-                      <ScoreRing score={c.score} size={32}/>
-                      <span style={{ fontSize:'0.75rem', color:'rgba(240,238,255,0.85)', fontWeight:600, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{c.name}</span>
-                      <span style={{ fontSize:'0.65rem', color:'rgba(240,238,255,0.45)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{c.title}</span>
-                      <span style={{ fontSize:'0.62rem', fontWeight:700, color:c.statusColor, background:`${c.statusColor}18`, padding:'2px 6px', borderRadius:6, textAlign:'center' }}>{c.status}</span>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Sonar bar */}
-                <div style={{ marginTop:10, background:'rgba(83,74,183,0.15)', border:'1px solid rgba(83,74,183,0.3)', borderRadius:10, padding:'8px 10px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-                  <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-                    <div style={{ position:'relative', width:18, height:18, flexShrink:0 }}>
-                      <div style={{ position:'absolute', inset:0, borderRadius:'50%', border:'1.5px solid var(--p400)', animation:'sonar 1.5s ease-out infinite' }}/>
-                      <div style={{ position:'absolute', inset:3, borderRadius:'50%', border:'1.5px solid var(--p400)', animation:'sonar 1.5s ease-out 0.5s infinite' }}/>
-                      <div style={{ position:'absolute', inset:6, borderRadius:'50%', background:'var(--p400)' }}/>
-                    </div>
-                    <span style={{ fontSize:'0.7rem', color:'var(--p200)', fontWeight:600 }}>Job Sonar פעיל — נמצאו 20 מועמדים</span>
-                  </div>
-                  <div style={{ fontSize:'0.65rem', fontWeight:700, color:'var(--p400)', cursor:'pointer' }}>צפה</div>
-                </div>
-                <style>{`@keyframes sonar{0%{transform:scale(1);opacity:0.8}100%{transform:scale(2.5);opacity:0}}`}</style>
-              </div>
-            </div>
+            {/* Real screenshot from app.hiro.co.il */}
+            <Image
+              src="/images/hero-dashboard.png"
+              alt="לוח הבקרה האישי של מגייס ב-Hiro — מועמדים בתהליך, משרות פתוחות וראיונות היום"
+              width={1568}
+              height={734}
+              style={{ width: '100%', height: 'auto', display: 'block' }}
+              priority
+            />
           </div>
 
           {/* Floating badge */}

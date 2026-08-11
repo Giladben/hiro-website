@@ -15,8 +15,8 @@ export function HowItWorks() {
       <div style={{ maxWidth: 1100, margin: '0 auto', textAlign: 'center' }}>
         <span style={{
           display: 'inline-block',
-          background: 'var(--purple-50)',
-          color: 'var(--purple-600)',
+          background: 'var(--p50)',
+          color: 'var(--p600)',
           fontSize: '0.8rem',
           fontWeight: 700,
           letterSpacing: '0.08em',
@@ -57,7 +57,7 @@ export function HowItWorks() {
                     left: '-50%',
                     width: '50%',
                     height: 2,
-                    background: 'linear-gradient(90deg, var(--purple-100), var(--purple-600))',
+                    background: 'linear-gradient(90deg, var(--p100), var(--p600))',
                     display: 'none',
                   }}
                 />
@@ -67,13 +67,13 @@ export function HowItWorks() {
                 style={{
                   width: 56, height: 56,
                   borderRadius: '50%',
-                  background: 'var(--purple-600)',
+                  background: 'var(--p600)',
                   color: '#fff',
                   fontSize: '1.1rem',
                   fontWeight: 800,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   margin: '0 auto 1.25rem',
-                  boxShadow: '0 0 0 6px #f8f7ff, 0 0 0 7px var(--purple-100)',
+                  boxShadow: '0 0 0 6px #f8f7ff, 0 0 0 7px var(--p100)',
                 }}
               >
                 {s.num}

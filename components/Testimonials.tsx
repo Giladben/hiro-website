@@ -28,8 +28,8 @@ export function Testimonials() {
       <div style={{ maxWidth: 1100, margin: '0 auto', textAlign: 'center' }}>
         <span style={{
           display: 'inline-block',
-          background: 'var(--purple-50)',
-          color: 'var(--purple-600)',
+          background: 'var(--p50)',
+          color: 'var(--p600)',
           fontSize: '0.8rem',
           fontWeight: 700,
           letterSpacing: '0.08em',
@@ -79,9 +79,9 @@ export function Testimonials() {
                   aria-hidden="true"
                   style={{
                     width: 40, height: 40, borderRadius: '50%',
-                    background: 'var(--purple-100)',
+                    background: 'var(--p100)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '0.85rem', fontWeight: 700, color: 'var(--purple-700)', flexShrink: 0,
+                    fontSize: '0.85rem', fontWeight: 700, color: 'var(--p700)', flexShrink: 0,
                   }}
                 >
                   {t.initials}

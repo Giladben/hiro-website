@@ -5,7 +5,7 @@ const features = [
     title: 'התאמה סמנטית AI',
     desc: 'השוואה בין מועמד למשרה על בסיס עשרות פרמטרים — ניסיון, כישורים, תרבות ארגונית — עם ציון התאמה ויזואלי.',
     icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--purple-600)" strokeWidth="1.8" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--p600)" strokeWidth="1.8" aria-hidden="true">
         <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
         <path d="M11 8v6M8 11h6"/>
       </svg>
@@ -15,7 +15,7 @@ const features = [
     title: 'Job Sonar',
     desc: 'כלי אקטיבי בתוך דף המשרה שסורק את המאגר הקיים ומציף מועמדים מתאימים אוטומטית — חוסך שעות חיפוש.',
     icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--purple-600)" strokeWidth="1.8" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--p600)" strokeWidth="1.8" aria-hidden="true">
         <circle cx="12" cy="12" r="3"/><path d="M6.343 6.343a8 8 0 1 0 11.314 11.314 8 8 0 0 0-11.314-11.314z"/>
         <path d="M3.515 3.515a13 13 0 1 0 16.97 16.97"/>
       </svg>
@@ -25,7 +25,7 @@ const features = [
     title: 'מרכז תקשורת רב-ערוצי',
     desc: 'שליחת SMS ומיילים בתפוצה רחבה ישירות מהמערכת — עם תבניות, תזמון ואנליטיקת פתיחות.',
     icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--purple-600)" strokeWidth="1.8" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--p600)" strokeWidth="1.8" aria-hidden="true">
         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
         <polyline points="22,6 12,13 2,6"/>
       </svg>
@@ -35,7 +35,7 @@ const features = [
     title: 'CRM לניהול לקוחות',
     desc: 'מעקב "בריאות לקוח", הגדרת Workflows מותאמים לכל לקוח, מדדי KPI ודיוור — הכל ממקום אחד.',
     icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--purple-600)" strokeWidth="1.8" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--p600)" strokeWidth="1.8" aria-hidden="true">
         <rect x="2" y="3" width="20" height="14" rx="2"/>
         <path d="M8 21h8M12 17v4"/>
       </svg>
@@ -45,7 +45,7 @@ const features = [
     title: 'עריכת קורות חיים מובנית',
     desc: 'עריכה ועיצוב קו"ח ישירות במערכת — ללא כלים חיצוניים, עם שמירה אוטומטית ותיעוד גרסאות.',
     icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--purple-600)" strokeWidth="1.8" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--p600)" strokeWidth="1.8" aria-hidden="true">
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
         <polyline points="14,2 14,8 20,8"/>
         <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
@@ -56,7 +56,7 @@ const features = [
     title: 'חיפוש וסינון סמנטי',
     desc: 'חיתוך מהיר של מאגר המועמדים עם פילטרים מתקדמים — ניסיון, תחום, מיקום, זמינות ועוד.',
     icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--purple-600)" strokeWidth="1.8" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--p600)" strokeWidth="1.8" aria-hidden="true">
         <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/>
         <line x1="8" y1="18" x2="21" y2="18"/>
         <circle cx="3" cy="6" r="1"/><circle cx="3" cy="12" r="1"/><circle cx="3" cy="18" r="1"/>
@@ -75,8 +75,8 @@ export function RecruiterFeatures() {
       <div style={{ maxWidth: 1100, margin: '0 auto' }}>
         <span style={{
           display: 'inline-block',
-          background: 'var(--purple-50)',
-          color: 'var(--purple-600)',
+          background: 'var(--p50)',
+          color: 'var(--p600)',
           fontSize: '0.8rem',
           fontWeight: 700,
           letterSpacing: '0.08em',
@@ -112,7 +112,7 @@ export function RecruiterFeatures() {
               }}
               onMouseEnter={e => {
                 const el = e.currentTarget
-                el.style.borderColor = 'var(--purple-200)'
+                el.style.borderColor = 'var(--p200)'
                 el.style.transform = 'translateY(-3px)'
                 el.style.boxShadow = '0 12px 32px rgba(83,74,183,0.1)'
               }}
@@ -125,7 +125,7 @@ export function RecruiterFeatures() {
             >
               <div style={{
                 width: 44, height: 44,
-                background: 'var(--purple-50)',
+                background: 'var(--p50)',
                 borderRadius: 12,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 marginBottom: '1rem',
@@ -175,7 +175,7 @@ export function RecruiterFeatures() {
               {['5 שנות ניסיון ✓', 'גיוס טכנולוגי ✓', 'ניהול צוות ✓', 'אנגלית ✓'].map(t => (
                 <span key={t} style={{
                   background: 'rgba(127,119,221,0.15)',
-                  color: 'var(--purple-200)',
+                  color: 'var(--p200)',
                   fontSize: '0.72rem',
                   padding: '0.15rem 0.55rem',
                   borderRadius: 6,

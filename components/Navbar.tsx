@@ -1,22 +1,23 @@
 'use client'
 
-import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
 
 export function Navbar() {
-  const { theme, setTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const pathname = usePathname()
+  const onHome = pathname === '/'
 
   useEffect(() => {
-    setMounted(true)
     const onScroll = () => setScrolled(window.scrollY > 20)
     window.addEventListener('scroll', onScroll)
+    onScroll()
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  const isDark = theme === 'dark'
-
+  // Always the light, theme-consistent surface used across the rest of the
+  // site (matches the real product's UI) — a fixed dark bar looked
+  // disconnected from the light sections it sits above once scrolled.
   return (
     <header
       role="banner"
@@ -29,44 +30,43 @@ export function Navbar() {
         justifyContent: 'space-between',
         padding: '0 2.5rem',
         height: '68px',
-        background: scrolled
-          ? isDark ? 'rgba(7,5,26,0.95)' : 'rgba(14,11,43,0.95)'
-          : 'rgba(14,11,43,0.85)',
+        background: scrolled ? 'rgba(255,255,255,0.92)' : 'rgba(255,255,255,0.7)',
         backdropFilter: 'blur(12px)',
-        borderBottom: '1px solid rgba(255,255,255,0.07)',
-        transition: 'background 0.3s',
+        borderBottom: scrolled ? '1px solid var(--cb)' : '1px solid transparent',
+        boxShadow: scrolled ? '0 1px 0 rgba(14,11,43,0.03)' : 'none',
+        transition: 'background 0.3s, border-color 0.3s',
       }}
     >
       {/* Logo */}
       <a
-        href="#"
+        href="/"
         aria-label="Hiro — עמוד הבית"
-        style={{ fontSize: '1.6rem', fontWeight: 800, color: '#fff', textDecoration: 'none' }}
+        style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--text)', textDecoration: 'none' }}
       >
-        Hir<span style={{ color: 'var(--purple-400)' }}>o</span>
+        Hir<span style={{ color: 'var(--p600)' }}>o</span>
       </a>
 
       {/* Nav links */}
       <nav aria-label="ניווט ראשי">
         <ul style={{ display: 'flex', gap: '2rem', listStyle: 'none', margin: 0, padding: 0 }}>
           {[
-            { href: '#platform', label: 'הפלטפורמה' },
+            { href: onHome ? '#platform' : '/#platform', label: 'הפלטפורמה' },
             { href: '/recruiters', label: 'למגייסים' },
             { href: '/candidates', label: 'למועמדים' },
-            { href: '#how', label: 'איך זה עובד' },
+            { href: onHome ? '#how' : '/#how', label: 'איך זה עובד' },
           ].map(({ href, label }) => (
             <li key={href}>
               <a
                 href={href}
                 style={{
-                  color: 'rgba(240,238,255,0.65)',
+                  color: 'var(--text2)',
                   textDecoration: 'none',
                   fontSize: '0.95rem',
                   fontWeight: 500,
                   transition: 'color 0.2s',
                 }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(240,238,255,0.65)')}
+                onMouseEnter={e => (e.currentTarget.style.color = 'var(--text)')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'var(--text2)')}
               >
                 {label}
               </a>
@@ -77,35 +77,12 @@ export function Navbar() {
 
       {/* Actions */}
       <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-        {/* Dark mode toggle */}
-        {mounted && (
-          <button
-            onClick={() => setTheme(isDark ? 'light' : 'dark')}
-            aria-label={isDark ? 'עבור למצב בהיר' : 'עבור למצב כהה'}
-            title={isDark ? 'מצב בהיר' : 'מצב כהה'}
-            style={{
-              background: 'rgba(255,255,255,0.08)',
-              border: '1px solid rgba(255,255,255,0.12)',
-              color: '#fff',
-              width: '36px',
-              height: '36px',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '1rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            {isDark ? '☀️' : '🌙'}
-          </button>
-        )}
         <a
           href="#contact"
           style={{
-            color: 'rgba(240,238,255,0.7)',
+            color: 'var(--text2)',
             background: 'transparent',
-            border: '1px solid rgba(255,255,255,0.12)',
+            border: '1px solid var(--cb)',
             padding: '0.45rem 1.1rem',
             borderRadius: '8px',
             fontSize: '0.9rem',
@@ -113,12 +90,12 @@ export function Navbar() {
             transition: 'all 0.2s',
           }}
           onMouseEnter={e => {
-            e.currentTarget.style.borderColor = 'var(--purple-400)'
-            e.currentTarget.style.color = '#fff'
+            e.currentTarget.style.borderColor = 'var(--p400)'
+            e.currentTarget.style.color = 'var(--text)'
           }}
           onMouseLeave={e => {
-            e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'
-            e.currentTarget.style.color = 'rgba(240,238,255,0.7)'
+            e.currentTarget.style.borderColor = 'var(--cb)'
+            e.currentTarget.style.color = 'var(--text2)'
           }}
         >
           התחברות
@@ -126,7 +103,7 @@ export function Navbar() {
         <a
           href="#contact"
           style={{
-            background: 'var(--purple-600)',
+            background: 'var(--p600)',
             color: '#fff',
             border: 'none',
             padding: '0.45rem 1.25rem',
@@ -136,8 +113,8 @@ export function Navbar() {
             textDecoration: 'none',
             transition: 'background 0.2s',
           }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'var(--purple-400)')}
-          onMouseLeave={e => (e.currentTarget.style.background = 'var(--purple-600)')}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--p400)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'var(--p600)')}
         >
           התחל בחינם
         </a>

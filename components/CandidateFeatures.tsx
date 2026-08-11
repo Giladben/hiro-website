@@ -12,13 +12,13 @@ export function CandidateFeatures() {
     <section
       id="candidates"
       aria-labelledby="candidates-heading"
-      style={{ background: 'var(--dark-bg)', padding: '6rem 2rem', overflow: 'hidden' }}
+      style={{ background: 'var(--dark)', padding: '6rem 2rem', overflow: 'hidden' }}
     >
       <div style={{ maxWidth: 1100, margin: '0 auto' }}>
         <span style={{
           display: 'inline-block',
           background: 'rgba(127,119,221,0.15)',
-          color: 'var(--purple-200)',
+          color: 'var(--p200)',
           fontSize: '0.8rem',
           fontWeight: 700,
           letterSpacing: '0.08em',
@@ -58,7 +58,7 @@ export function CandidateFeatures() {
               <span style={{
                 display: 'inline-block',
                 background: 'rgba(127,119,221,0.15)',
-                color: 'var(--purple-200)',
+                color: 'var(--p200)',
                 fontSize: '0.72rem',
                 fontWeight: 700,
                 padding: '0.2rem 0.65rem',

@@ -48,8 +48,8 @@ export function Screenshots() {
           <span
             style={{
               display: 'inline-block',
-              background: 'var(--purple-50)',
-              color: 'var(--purple-600)',
+              background: 'var(--p50)',
+              color: 'var(--p600)',
               fontSize: '0.8rem',
               fontWeight: 700,
               letterSpacing: '0.08em',
@@ -89,8 +89,8 @@ export function Screenshots() {
               id={`tab-${s.id}`}
               onClick={() => setActive(i)}
               style={{
-                background: active === i ? 'var(--purple-600)' : '#f3f2fc',
-                border: `1px solid ${active === i ? 'var(--purple-600)' : '#e0ddf5'}`,
+                background: active === i ? 'var(--p600)' : '#f3f2fc',
+                border: `1px solid ${active === i ? 'var(--p600)' : '#e0ddf5'}`,
                 color: active === i ? '#fff' : '#6b6490',
                 padding: '0.55rem 1.25rem',
                 borderRadius: '100px',

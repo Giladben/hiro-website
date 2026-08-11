@@ -20,8 +20,8 @@ export function Platform() {
         <div style={{ textAlign: 'center' }}>
           <span style={{
             display: 'inline-block',
-            background: 'var(--purple-50)',
-            color: 'var(--purple-600)',
+            background: 'var(--p50)',
+            color: 'var(--p600)',
             fontSize: '0.8rem',
             fontWeight: 700,
             letterSpacing: '0.08em',
@@ -46,7 +46,7 @@ export function Platform() {
           <article
             aria-labelledby="recruiter-card-heading"
             style={{
-              background: 'var(--dark-bg)',
+              background: 'var(--dark)',
               borderRadius: 20,
               padding: '2.5rem',
               position: 'relative',
@@ -56,7 +56,7 @@ export function Platform() {
               position: 'absolute', top: '1.5rem', left: '1.5rem',
               background: 'rgba(127,119,221,0.2)',
               border: '1px solid rgba(127,119,221,0.3)',
-              color: 'var(--purple-200)',
+              color: 'var(--p200)',
               fontSize: '0.7rem',
               fontWeight: 700,
               padding: '0.2rem 0.6rem',
@@ -64,7 +64,7 @@ export function Platform() {
             }}>
               AI Powered
             </span>
-            <p style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--purple-400)', marginBottom: '1rem' }}>
+            <p style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--p400)', marginBottom: '1rem' }}>
               למגייסים ורכזי גיוס
             </p>
             <h3 id="recruiter-card-heading" style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fff', marginBottom: '0.75rem' }}>
@@ -76,7 +76,7 @@ export function Platform() {
             <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
               {recruiterFeatures.map(f => (
                 <li key={f} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.9rem', color: 'rgba(240,238,255,0.65)' }}>
-                  <span style={{ width: 18, height: 18, borderRadius: '50%', background: 'rgba(127,119,221,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--purple-400)', flexShrink: 0 }}>
+                  <span style={{ width: 18, height: 18, borderRadius: '50%', background: 'rgba(127,119,221,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--p400)', flexShrink: 0 }}>
                     <CheckIcon />
                   </span>
                   {f}
@@ -86,14 +86,14 @@ export function Platform() {
             <a
               href="/recruiters"
               style={{
-                background: 'var(--purple-600)', color: '#fff', border: 'none',
+                background: 'var(--p600)', color: '#fff', border: 'none',
                 padding: '0.75rem 1.5rem', borderRadius: 10,
                 fontSize: '0.9rem', fontWeight: 700, cursor: 'pointer',
                 display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
                 textDecoration: 'none', transition: 'background 0.2s',
               }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--purple-400)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'var(--purple-600)')}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--p400)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'var(--p600)')}
             >
               ← לפיצ'רים המגייסים
             </a>
@@ -103,16 +103,16 @@ export function Platform() {
           <article
             aria-labelledby="candidate-card-heading"
             style={{
-              background: 'var(--purple-50)',
+              background: 'var(--p50)',
               border: '1px solid rgba(83,74,183,0.18)',
               borderRadius: 20,
               padding: '2.5rem',
             }}
           >
-            <p style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--purple-600)', marginBottom: '1rem' }}>
+            <p style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--p600)', marginBottom: '1rem' }}>
               למועמדים
             </p>
-            <h3 id="candidate-card-heading" style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--purple-900)', marginBottom: '0.75rem' }}>
+            <h3 id="candidate-card-heading" style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--p900)', marginBottom: '0.75rem' }}>
               Personal Career Suite
             </h3>
             <p style={{ fontSize: '0.95rem', color: '#4a4270', lineHeight: 1.7, marginBottom: '1.5rem' }}>
@@ -121,7 +121,7 @@ export function Platform() {
             <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
               {candidateFeatures.map(f => (
                 <li key={f} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.9rem', color: '#4a4270' }}>
-                  <span style={{ width: 18, height: 18, borderRadius: '50%', background: 'rgba(83,74,183,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--purple-600)', flexShrink: 0 }}>
+                  <span style={{ width: 18, height: 18, borderRadius: '50%', background: 'rgba(83,74,183,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--p600)', flexShrink: 0 }}>
                     <CheckIcon />
                   </span>
                   {f}
@@ -131,14 +131,14 @@ export function Platform() {
             <a
               href="/candidates"
               style={{
-                background: 'var(--purple-900)', color: '#fff', border: 'none',
+                background: 'var(--p900)', color: '#fff', border: 'none',
                 padding: '0.75rem 1.5rem', borderRadius: 10,
                 fontSize: '0.9rem', fontWeight: 700,
                 display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
                 textDecoration: 'none', transition: 'background 0.2s',
               }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--purple-700)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'var(--purple-900)')}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--p700)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'var(--p900)')}
             >
               ← לפיצ'רים המועמדים
             </a>

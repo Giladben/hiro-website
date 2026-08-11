@@ -6,7 +6,7 @@ export function CTA() {
       id="contact"
       aria-labelledby="cta-heading"
       style={{
-        background: 'var(--dark-bg)',
+        background: 'var(--dark)',
         textAlign: 'center',
         padding: '7rem 2rem',
         position: 'relative',
@@ -38,18 +38,18 @@ export function CTA() {
           <a
             href="#"
             style={{
-              background: 'var(--purple-600)', color: '#fff',
+              background: 'var(--p600)', color: '#fff',
               padding: '1rem 2.25rem', borderRadius: 10,
               fontSize: '1.05rem', fontWeight: 700, textDecoration: 'none',
               display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
               transition: 'background 0.2s, transform 0.2s',
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.background = 'var(--purple-400)'
+              e.currentTarget.style.background = 'var(--p400)'
               e.currentTarget.style.transform = 'translateY(-2px)'
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.background = 'var(--purple-600)'
+              e.currentTarget.style.background = 'var(--p600)'
               e.currentTarget.style.transform = 'translateY(0)'
             }}
           >
@@ -65,8 +65,8 @@ export function CTA() {
               transition: 'border-color 0.2s, color 0.2s',
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.borderColor = 'var(--purple-400)'
-              e.currentTarget.style.color = 'var(--purple-200)'
+              e.currentTarget.style.borderColor = 'var(--p400)'
+              e.currentTarget.style.color = 'var(--p200)'
             }}
             onMouseLeave={e => {
               e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'

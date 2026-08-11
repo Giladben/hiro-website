@@ -47,7 +47,7 @@ export function BentoFeatures() {
           >
             <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', gap:'1rem', flexWrap:'wrap' }}>
               <div style={{ flex:1, minWidth:200 }}>
-                <div style={{ fontSize:'0.72rem', fontWeight:700, color:'var(--p400)', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:'0.75rem' }}>AI Semantic Matching</div>
+                <div style={{ fontSize:'0.72rem', fontWeight:700, color:'var(--p400)', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:'0.75rem' }}>התאמה סמנטית מבוססת AI</div>
                 <h3 style={{ fontSize:'1.4rem', fontWeight:800, color:'#fff', marginBottom:'0.75rem', lineHeight:1.2 }}>
                   94% דיוק — לא מקרי
                 </h3>
@@ -90,7 +90,7 @@ export function BentoFeatures() {
 
           {/* 3. Communication (col 1, row 2) */}
           <article className="bento-card" aria-label="מרכז תקשורת">
-            <div style={{ fontSize:'0.72rem', fontWeight:700, color:'var(--p600)', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:'0.75rem' }}>Bulk Communication</div>
+            <div style={{ fontSize:'0.72rem', fontWeight:700, color:'var(--p600)', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:'0.75rem' }}>תקשורת המונית</div>
             <h3 style={{ fontSize:'1.1rem', fontWeight:800, color:'var(--text)', marginBottom:'0.5rem' }}>תקשורת מסיבית<br/>מתוך המערכת</h3>
             <p style={{ fontSize:'0.82rem', color:'var(--text2)', lineHeight:1.6, marginBottom:'1.25rem' }}>SMS ומיילים בתפוצה, תזמון ואנליטיקה — ללא שיחוק.</p>
             {/* Mock messages */}
@@ -106,7 +106,7 @@ export function BentoFeatures() {
 
           {/* 4. CRM (col 2, row 2) */}
           <article className="bento-card" aria-label="CRM לקוחות">
-            <div style={{ fontSize:'0.72rem', fontWeight:700, color:'var(--p600)', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:'0.75rem' }}>Client CRM</div>
+            <div style={{ fontSize:'0.72rem', fontWeight:700, color:'var(--p600)', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:'0.75rem' }}>ניהול קשרי לקוחות</div>
             <h3 style={{ fontSize:'1.1rem', fontWeight:800, color:'var(--text)', marginBottom:'0.5rem' }}>בריאות לקוח<br/>בזמן אמת</h3>
             <p style={{ fontSize:'0.82rem', color:'var(--text2)', lineHeight:1.6, marginBottom:'1.25rem' }}>Workflows, KPI ודיוור — כל לקוח בשליטה מלאה.</p>
             {/* Client health bars */}
@@ -127,7 +127,7 @@ export function BentoFeatures() {
 
           {/* 5. Multi-Persona (col 3, row 2) */}
           <article className="bento-card" aria-label="ריבוי פרופילים">
-            <div style={{ fontSize:'0.72rem', fontWeight:700, color:'var(--p600)', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:'0.75rem' }}>Multi-Persona</div>
+            <div style={{ fontSize:'0.72rem', fontWeight:700, color:'var(--p600)', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:'0.75rem' }}>ריבוי פרופילים</div>
             <h3 style={{ fontSize:'1.1rem', fontWeight:800, color:'var(--text)', marginBottom:'0.5rem' }}>פרופיל אחד<br/>לא מספיק</h3>
             <p style={{ fontSize:'0.82rem', color:'var(--text2)', lineHeight:1.6, marginBottom:'1.25rem' }}>זהויות מקצועיות שונות תחת חשבון אחד — כל אחת עם קו"ח נפרד.</p>
             {/* Profile stacks */}
@@ -149,7 +149,7 @@ export function BentoFeatures() {
           >
             <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:'2rem' }}>
               <div style={{ flex:1, minWidth:280 }}>
-                <div style={{ fontSize:'0.72rem', fontWeight:700, color:'var(--p400)', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:'0.75rem' }}>Personal Career Suite</div>
+                <div style={{ fontSize:'0.72rem', fontWeight:700, color:'var(--p400)', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:'0.75rem' }}>מרכז הקריירה האישי</div>
                 <h3 style={{ fontSize:'1.4rem', fontWeight:800, color:'#fff', marginBottom:'0.75rem' }}>
                   סוכן קריירה AI שעובד<br/>בשבילך, 24/7
                 </h3>
@@ -159,9 +159,9 @@ export function BentoFeatures() {
               </div>
               <div style={{ display:'flex', gap:'1rem', flexWrap:'wrap' }}>
                 {[
-                  { icon:'🎯', title:'Application Tracker', desc:'כל הגשה, בכל מקום' },
-                  { icon:'⚡', title:'Live Profile Sync', desc:'עדכון בזמן אמת למגייסים' },
-                  { icon:'🪄', title:'AI CV Enhancement', desc:'קו"ח שמדברים לניקודים' },
+                  { icon:'🎯', title:'מעקב הגשות', desc:'כל הגשה, בכל מקום' },
+                  { icon:'⚡', title:'סנכרון פרופיל בזמן אמת', desc:'עדכון בזמן אמת למגייסים' },
+                  { icon:'🪄', title:'שיפור קו״ח מבוסס AI', desc:'קו"ח שמדברים לניקודים' },
                 ].map(f=>(
                   <div key={f.title} style={{ background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:'1rem', minWidth:150 }}>
                     <div style={{ fontSize:'1.5rem', marginBottom:'0.5rem' }} aria-hidden="true">{f.icon}</div>

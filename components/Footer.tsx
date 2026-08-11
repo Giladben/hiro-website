@@ -27,7 +27,7 @@ export function Footer() {
           {/* Brand */}
           <div>
             <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fff', marginBottom: '0.75rem' }}>
-              Hir<span style={{ color: 'var(--purple-400)' }}>o</span>
+              Hir<span style={{ color: 'var(--p400)' }}>o</span>
             </div>
             <p style={{ fontSize: '0.85rem', lineHeight: 1.7, marginBottom: '1.5rem' }}>
               פלטפורמת הגיוס החכמה שמחברת בין מגייסים למועמדים — באמצעות AI סמנטי, אוטומציה מלאה וחוויית משתמש מהמם.
