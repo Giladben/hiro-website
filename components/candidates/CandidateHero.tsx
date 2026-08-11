@@ -24,7 +24,7 @@ export function CandidateHero() {
       aria-labelledby="cand-hero-heading"
       style={{
         minHeight: '100vh',
-        background: 'linear-gradient(160deg, #07051a 0%, #0f0b2e 50%, #1a0d35 100%)',
+        background: 'var(--cand-hero-bg)',
         display: 'flex',
         alignItems: 'center',
         padding: '5rem 2rem 4rem',
@@ -50,7 +50,7 @@ export function CandidateHero() {
 
           <h1
             id="cand-hero-heading"
-            style={{ fontSize:'clamp(2.4rem, 4.2vw, 3.8rem)', fontWeight:800, color:'#fff', lineHeight:1.12, marginBottom:'1.5rem', letterSpacing:'-1px' }}
+            style={{ fontSize:'clamp(2.4rem, 4.2vw, 3.8rem)', fontWeight:800, color:'var(--text)', lineHeight:1.12, marginBottom:'1.5rem', letterSpacing:'-1px' }}
           >
             תפסיק לחפש עבודה —{' '}
             <br/>
@@ -59,7 +59,7 @@ export function CandidateHero() {
             </span>
           </h1>
 
-          <p style={{ fontSize:'1.1rem', color:'rgba(240,238,255,0.6)', lineHeight:1.75, maxWidth:460, marginBottom:'1rem' }}>
+          <p style={{ fontSize:'1.1rem', color:'var(--text2)', lineHeight:1.75, maxWidth:460, marginBottom:'1rem' }}>
             Hiro היא הסוויטה האישית לניהול הקריירה שלך — סוכן AI שמגיש קורות חיים, עוקב אחרי הגשות, ומסנכרן עם המגייסים הנכונים.
           </p>
           <p style={{ fontSize:'0.9rem', color:'rgba(167,139,250,0.7)', marginBottom:'2.5rem', fontWeight:600 }}>
@@ -77,20 +77,20 @@ export function CandidateHero() {
             </a>
             <a
               href="#features"
-              style={{ background:'rgba(255,255,255,0.06)', color:'rgba(240,238,255,0.85)', padding:'0.9rem 2rem', borderRadius:12, fontSize:'1rem', fontWeight:600, textDecoration:'none', border:'1px solid rgba(255,255,255,0.1)', transition:'border-color 0.2s' }}
+              style={{ background:'var(--card)', color:'var(--text)', padding:'0.9rem 2rem', borderRadius:12, fontSize:'1rem', fontWeight:600, textDecoration:'none', border:'1px solid var(--cb)', transition:'border-color 0.2s' }}
               onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(167,139,250,0.5)'}}
-              onMouseLeave={e=>{e.currentTarget.style.borderColor='rgba(255,255,255,0.1)'}}
+              onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--cb)'}}
             >
               איך זה עובד?
             </a>
           </div>
 
           {/* Mini stats */}
-          <div role="list" style={{ display:'flex', gap:'2rem', paddingTop:'2rem', borderTop:'1px solid rgba(255,255,255,0.06)', flexWrap:'wrap' }}>
+          <div role="list" style={{ display:'flex', gap:'2rem', paddingTop:'2rem', borderTop:'1px solid var(--cb)', flexWrap:'wrap' }}>
             {[{n:'847+',l:'מועמדים פעילים'},{n:'3×',l:'יותר ראיונות'},{n:'72%',l:'הצלחה בשנה הראשונה'}].map(s=>(
               <div key={s.l} role="listitem">
-                <div style={{ fontSize:'1.7rem', fontWeight:800, color:'#fff' }}>{s.n}</div>
-                <div style={{ fontSize:'0.78rem', color:'rgba(240,238,255,0.4)', marginTop:2 }}>{s.l}</div>
+                <div style={{ fontSize:'1.7rem', fontWeight:800, color:'var(--text)' }}>{s.n}</div>
+                <div style={{ fontSize:'0.78rem', color:'var(--text2)', marginTop:2 }}>{s.l}</div>
               </div>
             ))}
           </div>
@@ -100,30 +100,30 @@ export function CandidateHero() {
         <div style={{ position:'relative' }}>
           <div aria-hidden="true" style={{ position:'absolute', inset:-40, borderRadius:32, background:'radial-gradient(ellipse, rgba(127,119,221,0.2) 0%, transparent 70%)', filter:'blur(24px)' }}/>
 
-          <div style={{ background:'rgba(15,11,40,0.9)', backdropFilter:'blur(16px)', borderRadius:20, overflow:'hidden', border:'1px solid rgba(167,139,250,0.15)', boxShadow:'0 32px 80px rgba(0,0,0,0.5)', position:'relative' }}>
+          <div style={{ background:'var(--card)', backdropFilter:'blur(16px)', borderRadius:20, overflow:'hidden', border:'1px solid rgba(167,139,250,0.15)', boxShadow:'var(--hero-shadow)', position:'relative' }}>
             {/* Top bar */}
-            <div style={{ background:'rgba(7,5,26,0.9)', padding:'10px 14px', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:'1px solid rgba(255,255,255,0.05)' }}>
+            <div style={{ background:'var(--topbar-bg)', padding:'10px 14px', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:'1px solid var(--cb)' }}>
               <div style={{ display:'flex', gap:6 }} aria-hidden="true">
                 {['#fc625d','#fdbc40','#35cd4b'].map(c=><span key={c} style={{ width:10, height:10, borderRadius:'50%', background:c, display:'block' }}/>)}
               </div>
-              <span style={{ color:'rgba(240,238,255,0.3)', fontSize:'0.72rem' }}>app.hiro.co.il · Application Tracker</span>
+              <span style={{ color:'var(--text2)', fontSize:'0.72rem' }}>app.hiro.co.il · Application Tracker</span>
               <div style={{ background:'rgba(167,139,250,0.2)', borderRadius:6, padding:'2px 8px', fontSize:'0.65rem', fontWeight:700, color:'#c4b5fd' }}>מועמד</div>
             </div>
 
             {/* Profile header */}
-            <div style={{ padding:'14px 16px', borderBottom:'1px solid rgba(255,255,255,0.05)', display:'flex', alignItems:'center', gap:12 }}>
+            <div style={{ padding:'14px 16px', borderBottom:'1px solid var(--cb)', display:'flex', alignItems:'center', gap:12 }}>
               <div style={{ width:40, height:40, borderRadius:'50%', background:'linear-gradient(135deg, #7F77DD, #a78bfa)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'1rem', fontWeight:700, color:'#fff', flexShrink:0 }}>מ</div>
               <div>
-                <div style={{ color:'#fff', fontWeight:700, fontSize:'0.88rem' }}>מירי לוי — מנהלת גיוס</div>
+                <div style={{ color:'var(--text)', fontWeight:700, fontSize:'0.88rem' }}>מירי לוי — מנהלת גיוס</div>
                 <div style={{ color:'rgba(167,139,250,0.7)', fontSize:'0.7rem' }}>פרופיל מעודכן לפני 2 דקות · AI Agent פעיל ✦</div>
               </div>
               <div style={{ marginRight:'auto', background:'rgba(34,197,94,0.15)', border:'1px solid rgba(34,197,94,0.25)', borderRadius:8, padding:'3px 8px', fontSize:'0.65rem', fontWeight:700, color:'#22c55e' }}>פעיל</div>
             </div>
 
             {/* Tabs */}
-            <div style={{ padding:'0 16px', display:'flex', gap:16, borderBottom:'1px solid rgba(255,255,255,0.05)' }}>
+            <div style={{ padding:'0 16px', display:'flex', gap:16, borderBottom:'1px solid var(--cb)' }}>
               {['הגשות (4)','פרופילים (2)','קו"ח'].map((t,i)=>(
-                <div key={t} style={{ padding:'8px 0', fontSize:'0.72rem', fontWeight:700, color: i===0?'#a78bfa':'rgba(240,238,255,0.3)', borderBottom: i===0?'2px solid #a78bfa':'2px solid transparent', cursor:'pointer' }}>{t}</div>
+                <div key={t} style={{ padding:'8px 0', fontSize:'0.72rem', fontWeight:700, color: i===0?'#a78bfa':'var(--text2)', borderBottom: i===0?'2px solid #a78bfa':'2px solid transparent', cursor:'pointer' }}>{t}</div>
               ))}
             </div>
 
@@ -133,15 +133,15 @@ export function CandidateHero() {
                 <div
                   key={a.company}
                   className="app-card"
-                  style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.05)', borderRadius:12, padding:'10px 12px', display:'flex', alignItems:'center', gap:10, opacity:0, transition:'opacity 0.4s ease' }}
+                  style={{ background:'var(--bg-alt)', border:'1px solid var(--cb)', borderRadius:12, padding:'10px 12px', display:'flex', alignItems:'center', gap:10, opacity:0, transition:'opacity 0.4s ease' }}
                 >
                   {/* Company avatar */}
                   <div style={{ width:32, height:32, borderRadius:8, background:`${a.color}20`, border:`1px solid ${a.color}40`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:'0.72rem', fontWeight:800, color:a.color, flexShrink:0 }}>
                     {a.company.slice(0,2)}
                   </div>
                   <div style={{ flex:1, minWidth:0 }}>
-                    <div style={{ fontSize:'0.78rem', fontWeight:700, color:'rgba(240,238,255,0.9)' }}>{a.company}</div>
-                    <div style={{ fontSize:'0.65rem', color:'rgba(240,238,255,0.4)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{a.role}</div>
+                    <div style={{ fontSize:'0.78rem', fontWeight:700, color:'var(--text)' }}>{a.company}</div>
+                    <div style={{ fontSize:'0.65rem', color:'var(--text2)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{a.role}</div>
                   </div>
                   {/* Match */}
                   <div style={{ fontSize:'0.7rem', fontWeight:800, color:a.color }}>{a.score}%</div>

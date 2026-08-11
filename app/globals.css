@@ -13,6 +13,21 @@
   --text2: #5a5478;
   --card: #faf9ff;
   --cb: #e8e5f8;
+
+  /* Theme-reactive tokens for sections that were previously hardcoded dark
+     (hero areas, glass mockup frames) so the light/dark toggle genuinely
+     reaches them instead of leaving them permanently dark. */
+  --accent-chip-text: var(--p600);
+  --glass-bg: rgba(14,11,43,0.03);
+  --glass-border: rgba(14,11,43,0.08);
+  --topbar-bg: rgba(255,255,255,0.85);
+  --dot-color: rgba(83,74,183,0.16);
+  --hero-shadow: 0 32px 80px rgba(83,74,183,0.14);
+  --hero-bg: var(--bg-alt);
+  --rec-hero-bg: var(--bg-alt);
+  --cand-hero-bg: var(--bg-alt);
+  --navbar-bg: rgba(255,255,255,0.7);
+  --navbar-bg-scrolled: rgba(255,255,255,0.92);
 }
 
 .dark {
@@ -22,6 +37,18 @@
   --text2: rgba(240,238,255,0.6);
   --card: #16123a;
   --cb: rgba(255,255,255,0.07);
+
+  --accent-chip-text: var(--p200);
+  --glass-bg: rgba(255,255,255,0.04);
+  --glass-border: rgba(255,255,255,0.1);
+  --topbar-bg: rgba(7,5,26,0.95);
+  --dot-color: rgba(127,119,221,0.3);
+  --hero-shadow: 0 32px 80px rgba(0,0,0,0.5);
+  --hero-bg: var(--dark);
+  --rec-hero-bg: linear-gradient(160deg, #07051a 0%, #0f0b2e 55%, #12062a 100%);
+  --cand-hero-bg: linear-gradient(160deg, #07051a 0%, #0f0b2e 50%, #1a0d35 100%);
+  --navbar-bg: rgba(13,11,36,0.7);
+  --navbar-bg-scrolled: rgba(13,11,36,0.92);
 }
 
 html { scroll-behavior: smooth; }
@@ -52,7 +79,7 @@ body {
 
 /* ── Dot grid hero bg ── */
 .dot-grid {
-  background-image: radial-gradient(rgba(127,119,221,0.3) 1px, transparent 1px);
+  background-image: radial-gradient(var(--dot-color) 1px, transparent 1px);
   background-size: 28px 28px;
 }
 
@@ -66,8 +93,8 @@ body {
 
 /* ── Glass card ── */
 .glass {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
   backdrop-filter: blur(12px);
 }
 

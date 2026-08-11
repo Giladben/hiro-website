@@ -2,11 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
+import { useTheme } from 'next-themes'
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const pathname = usePathname()
   const onHome = pathname === '/'
+  const { resolvedTheme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
@@ -15,8 +18,14 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Always the light, theme-consistent surface used across the rest of the
-  // site (matches the real product's UI) — a fixed dark bar looked
+  // Avoid a hydration mismatch: next-themes only knows the real theme after
+  // mount (it reads localStorage/system preference client-side).
+  useEffect(() => setMounted(true), [])
+
+  const isDark = mounted && resolvedTheme === 'dark'
+
+  // Uses the shared theme tokens (--text/--text2/--cb) so it responds to the
+  // light/dark toggle like the rest of the site — a fixed dark bar looked
   // disconnected from the light sections it sits above once scrolled.
   return (
     <header
@@ -30,10 +39,10 @@ export function Navbar() {
         justifyContent: 'space-between',
         padding: '0 2.5rem',
         height: '68px',
-        background: scrolled ? 'rgba(255,255,255,0.92)' : 'rgba(255,255,255,0.7)',
+        background: scrolled ? 'var(--navbar-bg-scrolled)' : 'var(--navbar-bg)',
         backdropFilter: 'blur(12px)',
         borderBottom: scrolled ? '1px solid var(--cb)' : '1px solid transparent',
-        boxShadow: scrolled ? '0 1px 0 rgba(14,11,43,0.03)' : 'none',
+        boxShadow: scrolled ? '0 1px 0 rgba(0,0,0,0.1)' : 'none',
         transition: 'background 0.3s, border-color 0.3s',
       }}
     >
@@ -77,6 +86,37 @@ export function Navbar() {
 
       {/* Actions */}
       <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+        <button
+          type="button"
+          onClick={() => setTheme(isDark ? 'light' : 'dark')}
+          aria-label={isDark ? 'החלף למצב בהיר' : 'החלף למצב כהה'}
+          title={isDark ? 'מצב בהיר' : 'מצב כהה'}
+          style={{
+            width: 38,
+            height: 38,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'transparent',
+            border: '1px solid var(--cb)',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontSize: '1.05rem',
+            lineHeight: 1,
+            color: 'var(--text2)',
+            transition: 'all 0.2s',
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.borderColor = 'var(--p400)'
+            e.currentTarget.style.color = 'var(--text)'
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.borderColor = 'var(--cb)'
+            e.currentTarget.style.color = 'var(--text2)'
+          }}
+        >
+          {mounted ? (isDark ? '☀️' : '🌙') : <span style={{ width: 16, height: 16, display: 'inline-block' }} />}
+        </button>
         <a
           href="#contact"
           style={{

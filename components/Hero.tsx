@@ -9,7 +9,7 @@ export function Hero() {
       className="dot-grid"
       style={{
         minHeight: '100vh',
-        background: 'var(--dark)',
+        background: 'var(--hero-bg)',
         display: 'flex',
         alignItems: 'center',
         padding: '5rem 2rem 4rem',
@@ -26,7 +26,7 @@ export function Hero() {
         {/* ── Right: Content ── */}
         <div>
           {/* Badge */}
-          <div style={{ display:'inline-flex', alignItems:'center', gap:'0.5rem', background:'rgba(127,119,221,0.12)', border:'1px solid rgba(127,119,221,0.3)', color:'var(--p200)', fontSize:'0.82rem', fontWeight:700, padding:'0.35rem 1rem', borderRadius:100, marginBottom:'1.75rem' }}>
+          <div style={{ display:'inline-flex', alignItems:'center', gap:'0.5rem', background:'rgba(127,119,221,0.12)', border:'1px solid rgba(127,119,221,0.3)', color:'var(--accent-chip-text)', fontSize:'0.82rem', fontWeight:700, padding:'0.35rem 1rem', borderRadius:100, marginBottom:'1.75rem' }}>
             <span style={{ width:6, height:6, borderRadius:'50%', background:'var(--p400)', display:'inline-block', animation:'sonar-pulse 2s infinite' }}/>
             #1 פלטפורמת גיוס AI בישראל
           </div>
@@ -35,15 +35,15 @@ export function Hero() {
           {/* H1 */}
           <h1
             id="hero-heading"
-            style={{ fontSize:'clamp(2.6rem, 4.5vw, 4.2rem)', fontWeight:800, color:'#fff', lineHeight:1.12, marginBottom:'1.5rem', letterSpacing:'-1px' }}
+            style={{ fontSize:'clamp(2.6rem, 4.5vw, 4.2rem)', fontWeight:800, color:'var(--text)', lineHeight:1.12, marginBottom:'1.5rem', letterSpacing:'-1px' }}
           >
             גיוס שעובד{' '}
             <span className="grad-text">לבד</span>
             <br/>— למגייסים{' '}
-            <span style={{ color:'rgba(240,238,255,0.5)', fontWeight:400 }}>ולמועמדים</span>
+            <span style={{ color:'var(--text2)', fontWeight:400 }}>ולמועמדים</span>
           </h1>
 
-          <p style={{ fontSize:'1.1rem', color:'rgba(240,238,255,0.6)', lineHeight:1.75, maxWidth:480, marginBottom:'2.5rem' }}>
+          <p style={{ fontSize:'1.1rem', color:'var(--text2)', lineHeight:1.75, maxWidth:480, marginBottom:'2.5rem' }}>
             מ-Job Sonar שמציף מועמדים אוטומטית, ועד סוכן קריירה AI שעובד בשבילך — Hiro מבטלת את העבודה הידנית.
           </p>
 
@@ -54,19 +54,19 @@ export function Hero() {
               onMouseLeave={e=>{e.currentTarget.style.background='var(--p600)';e.currentTarget.style.transform='translateY(0)'}}>
               התחילו בחינם <span aria-hidden>←</span>
             </a>
-            <a href="#product" style={{ background:'rgba(255,255,255,0.06)', color:'#fff', padding:'0.85rem 2rem', borderRadius:12, fontSize:'1rem', fontWeight:600, textDecoration:'none', border:'1px solid rgba(255,255,255,0.1)', transition:'all 0.2s' }}
+            <a href="#product" style={{ background:'var(--card)', color:'var(--text)', padding:'0.85rem 2rem', borderRadius:12, fontSize:'1rem', fontWeight:600, textDecoration:'none', border:'1px solid var(--cb)', transition:'all 0.2s' }}
               onMouseEnter={e=>{e.currentTarget.style.borderColor='var(--p400)'}}
-              onMouseLeave={e=>{e.currentTarget.style.borderColor='rgba(255,255,255,0.1)'}}>
+              onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--cb)'}}>
               ראו את המוצר
             </a>
           </div>
 
           {/* Stats */}
-          <div role="list" aria-label="נתוני הפלטפורמה" style={{ display:'flex', gap:'2rem', paddingTop:'2rem', borderTop:'1px solid rgba(255,255,255,0.06)', flexWrap:'wrap' }}>
+          <div role="list" aria-label="נתוני הפלטפורמה" style={{ display:'flex', gap:'2rem', paddingTop:'2rem', borderTop:'1px solid var(--cb)', flexWrap:'wrap' }}>
             {[{n:'847+',l:'מועמדים פעילים'},{n:'3.2×',l:'מהירות גיוס'},{n:'94%',l:'דיוק התאמה'}].map(s=>(
               <div key={s.l} role="listitem">
-                <div style={{ fontSize:'1.8rem', fontWeight:800, color:'#fff' }}>{s.n}</div>
-                <div style={{ fontSize:'0.8rem', color:'rgba(240,238,255,0.45)', marginTop:2 }}>{s.l}</div>
+                <div style={{ fontSize:'1.8rem', fontWeight:800, color:'var(--text)' }}>{s.n}</div>
+                <div style={{ fontSize:'0.8rem', color:'var(--text2)', marginTop:2 }}>{s.l}</div>
               </div>
             ))}
           </div>
@@ -77,16 +77,16 @@ export function Hero() {
           {/* Glow behind card */}
           <div aria-hidden="true" style={{ position:'absolute', inset:-40, borderRadius:32, background:'radial-gradient(ellipse, rgba(83,74,183,0.25) 0%, transparent 70%)', filter:'blur(20px)' }}/>
 
-          <div className="glass" style={{ borderRadius:20, overflow:'hidden', position:'relative', boxShadow:'0 32px 80px rgba(0,0,0,0.5)' }}>
+          <div className="glass" style={{ borderRadius:20, overflow:'hidden', position:'relative', boxShadow:'var(--hero-shadow)' }}>
             {/* App top bar */}
-            <div style={{ background:'rgba(7,5,26,0.95)', padding:'10px 14px', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
+            <div style={{ background:'var(--topbar-bg)', padding:'10px 14px', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:'1px solid var(--cb)' }}>
               <div style={{ display:'flex', alignItems:'center', gap:8 }}>
                 <div style={{ width:8, height:8, borderRadius:'50%', background:'#fc625d' }}/>
                 <div style={{ width:8, height:8, borderRadius:'50%', background:'#fdbc40' }}/>
                 <div style={{ width:8, height:8, borderRadius:'50%', background:'#35cd4b' }}/>
               </div>
-              <span style={{ color:'rgba(240,238,255,0.4)', fontSize:'0.75rem' }}>app.hiro.co.il</span>
-              <span style={{ fontSize:'0.75rem', fontWeight:700, color:'#fff' }}>HIRO</span>
+              <span style={{ color:'var(--text2)', fontSize:'0.75rem' }}>app.hiro.co.il</span>
+              <span style={{ fontSize:'0.75rem', fontWeight:700, color:'var(--text)' }}>HIRO</span>
             </div>
 
             {/* Real screenshot from app.hiro.co.il */}

@@ -10,7 +10,7 @@ export function HowItWorks() {
     <section
       id="how"
       aria-labelledby="how-heading"
-      style={{ background: '#f8f7ff', padding: '6rem 2rem' }}
+      style={{ background: 'var(--bg-alt)', padding: '6rem 2rem' }}
     >
       <div style={{ maxWidth: 1100, margin: '0 auto', textAlign: 'center' }}>
         <span style={{
@@ -27,10 +27,10 @@ export function HowItWorks() {
         }}>
           איך זה עובד
         </span>
-        <h2 id="how-heading" style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.6rem)', fontWeight: 800, color: '#0e0b2b', marginBottom: '0.75rem' }}>
+        <h2 id="how-heading" style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.6rem)', fontWeight: 800, color: 'var(--text)', marginBottom: '0.75rem' }}>
           מ-0 לגיוס בארבעה צעדים
         </h2>
-        <p style={{ fontSize: '1.05rem', color: '#5a5478', maxWidth: 560, margin: '0 auto 3.5rem', lineHeight: 1.7 }}>
+        <p style={{ fontSize: '1.05rem', color: 'var(--text2)', maxWidth: 560, margin: '0 auto 3.5rem', lineHeight: 1.7 }}>
           תהליך פשוט, תוצאות מהירות — בין אם אתה מגייס או מועמד.
         </p>
 
@@ -73,13 +73,13 @@ export function HowItWorks() {
                   fontWeight: 800,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   margin: '0 auto 1.25rem',
-                  boxShadow: '0 0 0 6px #f8f7ff, 0 0 0 7px var(--p100)',
+                  boxShadow: '0 0 0 6px var(--bg-alt), 0 0 0 7px var(--p100)',
                 }}
               >
                 {s.num}
               </div>
-              <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0e0b2b', marginBottom: '0.4rem' }}>{s.title}</h3>
-              <p style={{ fontSize: '0.82rem', color: '#7a72a0', lineHeight: 1.55 }}>{s.desc}</p>
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text)', marginBottom: '0.4rem' }}>{s.title}</h3>
+              <p style={{ fontSize: '0.82rem', color: 'var(--text2)', lineHeight: 1.55 }}>{s.desc}</p>
             </li>
           ))}
         </ol>

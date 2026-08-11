@@ -23,7 +23,7 @@ export function Testimonials() {
   return (
     <section
       aria-labelledby="testimonials-heading"
-      style={{ background: '#fff', padding: '6rem 2rem' }}
+      style={{ background: 'var(--bg)', padding: '6rem 2rem' }}
     >
       <div style={{ maxWidth: 1100, margin: '0 auto', textAlign: 'center' }}>
         <span style={{
@@ -40,10 +40,10 @@ export function Testimonials() {
         }}>
           לקוחות מרוצים
         </span>
-        <h2 id="testimonials-heading" style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.6rem)', fontWeight: 800, color: '#0e0b2b', marginBottom: '0.75rem' }}>
+        <h2 id="testimonials-heading" style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.6rem)', fontWeight: 800, color: 'var(--text)', marginBottom: '0.75rem' }}>
           חוויות אמיתיות מאנשים אמיתיים
         </h2>
-        <p style={{ fontSize: '1.05rem', color: '#5a5478', maxWidth: 560, margin: '0 auto 3.5rem', lineHeight: 1.7 }}>
+        <p style={{ fontSize: '1.05rem', color: 'var(--text2)', maxWidth: 560, margin: '0 auto 3.5rem', lineHeight: 1.7 }}>
           מגייסים ומועמדים שמצאו את הדרך שלהם עם Hiro — בביטחון ובדיוק.
         </p>
 
@@ -57,8 +57,8 @@ export function Testimonials() {
               key={t.name}
               aria-label={`ביקורת של ${t.name}`}
               style={{
-                background: '#faf9ff',
-                border: '1px solid #ebe9f8',
+                background: 'var(--card)',
+                border: '1px solid var(--cb)',
                 borderRadius: 16,
                 padding: '1.75rem',
                 textAlign: 'right',
@@ -71,7 +71,7 @@ export function Testimonials() {
               >
                 ★★★★★
               </div>
-              <blockquote style={{ fontSize: '0.9rem', color: '#3d3560', lineHeight: 1.7, marginBottom: '1.25rem', fontStyle: 'italic' }}>
+              <blockquote style={{ fontSize: '0.9rem', color: 'var(--text)', lineHeight: 1.7, marginBottom: '1.25rem', fontStyle: 'italic' }}>
                 {t.text}
               </blockquote>
               <footer style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -87,8 +87,8 @@ export function Testimonials() {
                   {t.initials}
                 </div>
                 <div>
-                  <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#0e0b2b' }}>{t.name}</div>
-                  <div style={{ fontSize: '0.78rem', color: '#8880b0' }}>{t.role}</div>
+                  <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text)' }}>{t.name}</div>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--text2)' }}>{t.role}</div>
                 </div>
               </footer>
             </article>

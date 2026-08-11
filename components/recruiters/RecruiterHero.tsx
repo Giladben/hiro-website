@@ -6,7 +6,7 @@ function ScoreRing({ score, color }: { score: number; color: string }) {
   const dash = (score / 100) * circ
   return (
     <svg width="54" height="54" viewBox="0 0 54 54" aria-hidden="true">
-      <circle cx="27" cy="27" r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="4" />
+      <circle cx="27" cy="27" r={r} fill="none" style={{ stroke: 'var(--cb)' }} strokeWidth="4" />
       <circle
         cx="27" cy="27" r={r} fill="none"
         stroke={color} strokeWidth="4"
@@ -14,7 +14,7 @@ function ScoreRing({ score, color }: { score: number; color: string }) {
         strokeLinecap="round"
         transform="rotate(-90 27 27)"
       />
-      <text x="27" y="32" textAnchor="middle" fill="#fff" fontSize="11" fontWeight="800">{score}</text>
+      <text x="27" y="32" textAnchor="middle" style={{ fill: 'var(--text)' }} fontSize="11" fontWeight="800">{score}</text>
     </svg>
   )
 }
@@ -31,7 +31,7 @@ export function RecruiterHero() {
     <section
       aria-labelledby="rec-hero-heading"
       style={{
-        background: 'linear-gradient(160deg, #07051a 0%, #0f0b2e 55%, #12062a 100%)',
+        background: 'var(--rec-hero-bg)',
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
@@ -54,7 +54,7 @@ export function RecruiterHero() {
 
           <h1
             id="rec-hero-heading"
-            style={{ fontSize: 'clamp(2.2rem, 4.5vw, 3.4rem)', fontWeight: 800, color: '#fff', lineHeight: 1.15, marginBottom: '1.25rem' }}
+            style={{ fontSize: 'clamp(2.2rem, 4.5vw, 3.4rem)', fontWeight: 800, color: 'var(--text)', lineHeight: 1.15, marginBottom: '1.25rem' }}
           >
             גייסו מהר יותר.
             <br />
@@ -63,7 +63,7 @@ export function RecruiterHero() {
             </span>
           </h1>
 
-          <p style={{ fontSize: '1.1rem', color: 'rgba(240,238,255,0.65)', lineHeight: 1.75, marginBottom: '2rem', maxWidth: 480 }}>
+          <p style={{ fontSize: '1.1rem', color: 'var(--text2)', lineHeight: 1.75, marginBottom: '2rem', maxWidth: 480 }}>
             Hiro מוצאת את המועמד הנכון לפני שהוא בכלל פרסם שהוא זמין — עם מנוע התאמה סמנטי, Job Sonar ו-CRM מקיף.
           </p>
 
@@ -76,7 +76,7 @@ export function RecruiterHero() {
             </a>
             <a
               href="#features"
-              style={{ color: 'rgba(240,238,255,0.7)', padding: '0.85rem 1.5rem', borderRadius: 12, fontSize: '0.95rem', fontWeight: 600, textDecoration: 'none', border: '1px solid rgba(255,255,255,0.12)' }}
+              style={{ color: 'var(--text2)', padding: '0.85rem 1.5rem', borderRadius: 12, fontSize: '0.95rem', fontWeight: 600, textDecoration: 'none', border: '1px solid var(--cb)' }}
             >
               ראו את הפיצ'רים
             </a>
@@ -90,26 +90,26 @@ export function RecruiterHero() {
             ].map(s => (
               <div key={s.label}>
                 <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#7F77DD', lineHeight: 1 }}>{s.num}</div>
-                <div style={{ fontSize: '0.75rem', color: 'rgba(240,238,255,0.45)', fontWeight: 600, marginTop: 2 }}>{s.label}</div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text2)', fontWeight: 600, marginTop: 2 }}>{s.label}</div>
               </div>
             ))}
           </div>
         </div>
 
         {/* Right: candidate list mockup */}
-        <div style={{ background: 'rgba(15,11,46,0.8)', border: '1px solid rgba(127,119,221,0.2)', borderRadius: 20, overflow: 'hidden', boxShadow: '0 24px 80px rgba(0,0,0,0.5)' }}>
+        <div style={{ background: 'var(--card)', border: '1px solid rgba(127,119,221,0.2)', borderRadius: 20, overflow: 'hidden', boxShadow: 'var(--hero-shadow)' }}>
           {/* Header */}
-          <div style={{ padding: '14px 18px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ padding: '14px 18px', borderBottom: '1px solid var(--cb)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', gap: 6 }}>
               {['#ff5f57','#febc2e','#28c840'].map(c => <div key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />)}
             </div>
-            <span style={{ fontSize: '0.72rem', color: 'rgba(240,238,255,0.4)', fontWeight: 600 }}>Hiro Recruiter — מועמדים מתאימים</span>
+            <span style={{ fontSize: '0.72rem', color: 'var(--text2)', fontWeight: 600 }}>Hiro Recruiter — מועמדים מתאימים</span>
             <div style={{ width: 24 }} />
           </div>
 
           {/* Search bar */}
-          <div style={{ padding: '10px 18px', borderBottom: '1px solid rgba(255,255,255,0.04)', display: 'flex', gap: 8, alignItems: 'center' }}>
-            <div style={{ flex: 1, background: 'rgba(255,255,255,0.04)', borderRadius: 8, padding: '6px 12px', fontSize: '0.72rem', color: 'rgba(240,238,255,0.25)' }}>
+          <div style={{ padding: '10px 18px', borderBottom: '1px solid var(--cb)', display: 'flex', gap: 8, alignItems: 'center' }}>
+            <div style={{ flex: 1, background: 'var(--bg-alt)', borderRadius: 8, padding: '6px 12px', fontSize: '0.72rem', color: 'var(--text2)' }}>
               🔍 חיפוש סמנטי: "מפתח Full Stack עם ניסיון ב-React ו-Node, תל אביב"
             </div>
             <div style={{ background: 'var(--p600)', borderRadius: 8, padding: '6px 12px', fontSize: '0.68rem', color: '#fff', fontWeight: 700, whiteSpace: 'nowrap' }}>Job Sonar ✦</div>
@@ -123,14 +123,14 @@ export function RecruiterHero() {
                 style={{
                   display: 'flex', alignItems: 'center', gap: 12,
                   padding: '10px 18px',
-                  borderBottom: i < candidates.length - 1 ? '1px solid rgba(255,255,255,0.03)' : 'none',
+                  borderBottom: i < candidates.length - 1 ? '1px solid var(--cb)' : 'none',
                   background: i === 0 ? 'rgba(127,119,221,0.07)' : 'transparent',
                 }}
               >
                 <ScoreRing score={c.score} color={c.color} />
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#fff' }}>{c.name}</div>
-                  <div style={{ fontSize: '0.68rem', color: 'rgba(240,238,255,0.4)' }}>{c.role}</div>
+                  <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text)' }}>{c.name}</div>
+                  <div style={{ fontSize: '0.68rem', color: 'var(--text2)' }}>{c.role}</div>
                 </div>
                 <span style={{ fontSize: '0.65rem', fontWeight: 700, padding: '3px 8px', borderRadius: 100, background: `${c.statusColor}18`, color: c.statusColor, border: `1px solid ${c.statusColor}30`, whiteSpace: 'nowrap' }}>
                   {c.status}
@@ -140,7 +140,7 @@ export function RecruiterHero() {
           </div>
 
           {/* Footer bar */}
-          <div style={{ padding: '10px 18px', borderTop: '1px solid rgba(255,255,255,0.04)', display: 'flex', gap: '1rem' }}>
+          <div style={{ padding: '10px 18px', borderTop: '1px solid var(--cb)', display: 'flex', gap: '1rem' }}>
             {['SMS בתפוצה', 'תזמן ראיון', 'ייצא לדוח'].map(a => (
               <div key={a} style={{ fontSize: '0.65rem', fontWeight: 700, color: 'rgba(167,139,250,0.7)', cursor: 'pointer', padding: '4px 8px', background: 'rgba(127,119,221,0.08)', borderRadius: 6 }}>{a}</div>
             ))}

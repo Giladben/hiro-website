@@ -14,7 +14,7 @@ export function Platform() {
     <section
       id="platform"
       aria-labelledby="platform-heading"
-      style={{ background: '#f8f7ff', padding: '6rem 2rem' }}
+      style={{ background: 'var(--bg-alt)', padding: '6rem 2rem' }}
     >
       <div style={{ maxWidth: 1100, margin: '0 auto' }}>
         <div style={{ textAlign: 'center' }}>
@@ -32,10 +32,10 @@ export function Platform() {
           }}>
             Two-Sided Platform
           </span>
-          <h2 id="platform-heading" style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.6rem)', fontWeight: 800, color: '#0e0b2b', marginBottom: '0.75rem' }}>
+          <h2 id="platform-heading" style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.6rem)', fontWeight: 800, color: 'var(--text)', marginBottom: '0.75rem' }}>
             פלטפורמה אחת, שני עולמות
           </h2>
-          <p style={{ fontSize: '1.05rem', color: '#5a5478', maxWidth: 560, margin: '0 auto', lineHeight: 1.7 }}>
+          <p style={{ fontSize: '1.05rem', color: 'var(--text2)', maxWidth: 560, margin: '0 auto', lineHeight: 1.7 }}>
             Hiro בנויה לשני הצדדים — מגייסים שרוצים לייעל, ומועמדים שרוצים להצליח.
           </p>
         </div>

@@ -41,7 +41,7 @@ export function Screenshots() {
     <section
       id="product"
       aria-labelledby="screenshots-heading"
-      style={{ background: '#fff', padding: '6rem 2rem' }}
+      style={{ background: 'var(--bg)', padding: '6rem 2rem' }}
     >
       <div style={{ maxWidth: 1100, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: '0.5rem' }}>
@@ -67,14 +67,14 @@ export function Screenshots() {
           style={{
             fontSize: 'clamp(1.8rem, 3.5vw, 2.6rem)',
             fontWeight: 800,
-            color: '#0e0b2b',
+            color: 'var(--text)',
             textAlign: 'center',
             marginBottom: '0.75rem',
           }}
         >
           ממשק שתרצו לעבוד איתו כל יום
         </h2>
-        <p style={{ fontSize: '1.05rem', color: '#5a5478', textAlign: 'center', marginBottom: '2.5rem' }}>
+        <p style={{ fontSize: '1.05rem', color: 'var(--text2)', textAlign: 'center', marginBottom: '2.5rem' }}>
           מרשימת המועמדים ועד פרופיל מלא — הכל מעוצב לבהירות מקסימלית.
         </p>
 
@@ -89,9 +89,9 @@ export function Screenshots() {
               id={`tab-${s.id}`}
               onClick={() => setActive(i)}
               style={{
-                background: active === i ? 'var(--p600)' : '#f3f2fc',
-                border: `1px solid ${active === i ? 'var(--p600)' : '#e0ddf5'}`,
-                color: active === i ? '#fff' : '#6b6490',
+                background: active === i ? 'var(--p600)' : 'var(--bg-alt)',
+                border: `1px solid ${active === i ? 'var(--p600)' : 'var(--cb)'}`,
+                color: active === i ? '#fff' : 'var(--text2)',
                 padding: '0.55rem 1.25rem',
                 borderRadius: '100px',
                 fontSize: '0.9rem',
@@ -110,7 +110,7 @@ export function Screenshots() {
         <p
           role="status"
           aria-live="polite"
-          style={{ fontSize: '0.92rem', color: '#6b6490', textAlign: 'center', marginBottom: '1.75rem', minHeight: '2.5rem' }}
+          style={{ fontSize: '0.92rem', color: 'var(--text2)', textAlign: 'center', marginBottom: '1.75rem', minHeight: '2.5rem' }}
         >
           {screens[active].desc}
         </p>
@@ -126,18 +126,18 @@ export function Screenshots() {
             style={{
               borderRadius: '16px',
               overflow: 'hidden',
-              border: '1px solid #e0ddf5',
+              border: '1px solid var(--cb)',
               boxShadow: '0 24px 60px rgba(83,74,183,0.12)',
             }}
           >
             {/* Browser bar */}
             <div style={{
-              background: '#f3f2fc',
+              background: 'var(--bg-alt)',
               padding: '0.65rem 1rem',
               display: 'flex',
               alignItems: 'center',
               gap: '1rem',
-              borderBottom: '1px solid #e0ddf5',
+              borderBottom: '1px solid var(--cb)',
             }}>
               <div style={{ display: 'flex', gap: 6 }} aria-hidden="true">
                 {['#fc625d','#fdbc40','#35cd4b'].map(c => (
@@ -146,12 +146,12 @@ export function Screenshots() {
               </div>
               <div style={{
                 flex: 1,
-                background: '#fff',
-                border: '1px solid #e0ddf5',
+                background: 'var(--bg)',
+                border: '1px solid var(--cb)',
                 borderRadius: 6,
                 padding: '0.25rem 0.75rem',
                 fontSize: '0.8rem',
-                color: '#8880b0',
+                color: 'var(--text2)',
                 textAlign: 'center',
                 maxWidth: 300,
                 margin: '0 auto',
@@ -161,7 +161,7 @@ export function Screenshots() {
             </div>
 
             {/* Image */}
-            <div style={{ background: '#f8f7ff', position: 'relative', minHeight: 400 }}>
+            <div style={{ background: 'var(--bg-alt)', position: 'relative', minHeight: 400 }}>
               <Image
                 src={s.src}
                 alt={s.alt}
