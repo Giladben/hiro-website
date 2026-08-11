@@ -38,6 +38,7 @@ export function Navbar() {
     { href: '/recruiters', label: 'למגייסים' },
     { href: '/candidates', label: 'למועמדים' },
     { href: onHome ? '#how' : '/#how', label: 'איך זה עובד' },
+    { href: '/blog', label: 'בלוג' },
   ]
 
   // Uses the shared theme tokens (--text/--text2/--cb) so it responds to the
@@ -297,12 +298,12 @@ export function Navbar() {
       )}
 
       <style>{`
-        @media (max-width: 768px) {
+        @media (max-width: 980px) {
           .navbar-root { padding: 0 1.25rem !important; }
           .navbar-desktop { display: none !important; }
           .navbar-burger { display: flex !important; }
         }
-        @media (min-width: 769px) {
+        @media (min-width: 981px) {
           .navbar-mobile-menu { display: none !important; }
         }
       `}</style>

@@ -1,7 +1,7 @@
 'use client'
 
 const navLinks = [
-  { title: 'פלטפורמה', items: [{ href: '#platform', label: 'סקירת הפלטפורמה' }, { href: '#recruiters', label: 'למגייסים' }, { href: '#candidates', label: 'למועמדים' }, { href: '#how', label: 'איך זה עובד' }] },
+  { title: 'פלטפורמה', items: [{ href: '#platform', label: 'סקירת הפלטפורמה' }, { href: '#recruiters', label: 'למגייסים' }, { href: '#candidates', label: 'למועמדים' }, { href: '#how', label: 'איך זה עובד' }, { href: '/blog', label: 'בלוג' }] },
   { title: 'פיצ\'רים', items: [{ href: '#', label: 'Job Sonar' }, { href: '#', label: 'AI Matching' }, { href: '#', label: 'Multi-Persona' }, { href: '#', label: 'Application Tracker' }] },
   { title: 'צרו קשר', items: [{ href: '/contact', label: 'צור קשר' }, { href: '/privacy', label: 'מדיניות פרטיות' }, { href: '/terms', label: 'תנאי שימוש' }, { href: '/accessibility', label: 'נגישות' }] },
 ]
