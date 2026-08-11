@@ -4,7 +4,6 @@ import { Platform } from '@/components/Platform'
 import { BentoFeatures } from '@/components/BentoFeatures'
 import { Screenshots } from '@/components/Screenshots'
 import { HowItWorks } from '@/components/HowItWorks'
-import { Testimonials } from '@/components/Testimonials'
 import { CTA } from '@/components/CTA'
 import { Footer } from '@/components/Footer'
 import { AccessibilityWidget } from '@/components/AccessibilityWidget'
@@ -21,7 +20,6 @@ export default function Home() {
         <BentoFeatures />
         <Screenshots />
         <HowItWorks />
-        <Testimonials />
         <CTA />
       </main>
       <Footer />

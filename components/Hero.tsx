@@ -60,16 +60,6 @@ export function Hero() {
               ראו את המוצר
             </a>
           </div>
-
-          {/* Stats */}
-          <div role="list" aria-label="נתוני הפלטפורמה" className="hero-stats" style={{ display:'flex', gap:'2rem', paddingTop:'2rem', borderTop:'1px solid var(--cb)', flexWrap:'wrap' }}>
-            {[{n:'847+',l:'מועמדים פעילים'},{n:'3.2×',l:'מהירות גיוס'},{n:'94%',l:'דיוק התאמה'}].map(s=>(
-              <div key={s.l} role="listitem">
-                <div style={{ fontSize:'1.8rem', fontWeight:800, color:'var(--text)' }}>{s.n}</div>
-                <div style={{ fontSize:'0.8rem', color:'var(--text2)', marginTop:2 }}>{s.l}</div>
-              </div>
-            ))}
-          </div>
         </div>
 
         {/* ── Left: Real product screenshot ── */}
@@ -119,7 +109,6 @@ export function Hero() {
           .hero-content{text-align:center}
           .hero-content p{margin-left:auto !important; margin-right:auto !important}
           .hero-ctas{justify-content:center}
-          .hero-stats{justify-content:center}
           #hero-visual{max-width:460px; margin:0 auto}
         }
         @media(max-width:480px){

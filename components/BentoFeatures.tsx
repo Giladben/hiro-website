@@ -1,17 +1,18 @@
 'use client'
 
-function MatchRing({ score }: { score: number }) {
-  const r = 52, circ = 2 * Math.PI * r
-  const fill = circ - (score / 100) * circ
+function MatchEngineVisual() {
   return (
-    <svg width="120" height="120" aria-hidden="true">
-      <circle cx="60" cy="60" r={r} fill="none" stroke="rgba(127,119,221,0.12)" strokeWidth="8"/>
-      <circle cx="60" cy="60" r={r} fill="none" stroke="var(--p400)" strokeWidth="8"
-        strokeDasharray={circ} strokeDashoffset={fill} strokeLinecap="round"
-        style={{ transform:'rotate(-90deg)', transformOrigin:'60px 60px' }}/>
-      <text x="60" y="55" textAnchor="middle" fill="#fff" fontSize="22" fontWeight="800">{score}%</text>
-      <text x="60" y="74" textAnchor="middle" fill="rgba(240,238,255,0.45)" fontSize="10">דיוק התאמה</text>
-    </svg>
+    <div
+      aria-hidden="true"
+      style={{
+        width: 120, height: 120, borderRadius: 24,
+        background: 'rgba(127,119,221,0.12)', border: '1px solid rgba(127,119,221,0.25)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: '2.6rem', flexShrink: 0,
+      }}
+    >
+      🎚️
+    </div>
   )
 }
 
@@ -47,12 +48,12 @@ export function BentoFeatures() {
           >
             <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', gap:'1rem', flexWrap:'wrap' }}>
               <div style={{ flex:1, minWidth:200 }}>
-                <div style={{ fontSize:'0.72rem', fontWeight:700, color:'var(--p400)', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:'0.75rem' }}>התאמה סמנטית מבוססת AI</div>
+                <div style={{ fontSize:'0.72rem', fontWeight:700, color:'var(--p400)', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:'0.75rem' }}>התאמה מותאמת אישית</div>
                 <h3 style={{ fontSize:'1.4rem', fontWeight:800, color:'#fff', marginBottom:'0.75rem', lineHeight:1.2 }}>
-                  94% דיוק — לא מקרי
+                  התבנית שלכם, לא תבנית אחידה
                 </h3>
                 <p style={{ fontSize:'0.875rem', color:'rgba(240,238,255,0.55)', lineHeight:1.65, marginBottom:'1.25rem', maxWidth:340 }}>
-                  ה-AI השוואה כל מועמד למשרה לפי 40+ פרמטרים — ניסיון, כישורים, שכר, ותרבות ארגונית. לא חיפוש מילות מפתח — הבנה אמיתית.
+                  אתם קובעים אילו קריטריונים חשובים לכם — ניסיון, כישורים, שכר, תרבות ארגונית ועוד — ואיזה משקל כל אחד מהם מקבל בציון הסופי. לא חיפוש מילות מפתח — התאמה שנבנתה סביב הדרך שבה אתם מגייסים.
                 </p>
                 <div style={{ display:'flex', flexWrap:'wrap', gap:'0.4rem' }}>
                   {['ניסיון רלוונטי','ציפיות שכר','תרבות ארגונית','זמינות','מיקום'].map(t=>(
@@ -61,7 +62,7 @@ export function BentoFeatures() {
                 </div>
               </div>
               <div style={{ flexShrink:0 }}>
-                <MatchRing score={94} />
+                <MatchEngineVisual />
               </div>
             </div>
           </article>
@@ -160,7 +161,7 @@ export function BentoFeatures() {
               <div style={{ display:'flex', gap:'1rem', flexWrap:'wrap' }}>
                 {[
                   { icon:'🎯', title:'מעקב הגשות', desc:'כל הגשה, בכל מקום' },
-                  { icon:'⚡', title:'סנכרון פרופיל בזמן אמת', desc:'עדכון בזמן אמת למגייסים' },
+                  { icon:'⚡', title:'עדכון אוטומטי למגייסים', desc:'המגייסים תמיד רואים גרסה עדכנית' },
                   { icon:'🪄', title:'שיפור קו״ח מבוסס AI', desc:'קו"ח שמדברים לניקודים' },
                 ].map(f=>(
                   <div key={f.title} style={{ background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:14, padding:'1rem', minWidth:150 }}>

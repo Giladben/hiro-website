@@ -81,19 +81,6 @@ export function RecruiterHero() {
               ראו את הפיצ'רים
             </a>
           </div>
-
-          <div className="rec-hero-stats" style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap' }}>
-            {[
-              { num: '3×', label: 'מהירות גיוס' },
-              { num: '68%', label: 'פחות זמן סינון' },
-              { num: '94%', label: 'דיוק התאמה' },
-            ].map(s => (
-              <div key={s.label}>
-                <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#7F77DD', lineHeight: 1 }}>{s.num}</div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text2)', fontWeight: 600, marginTop: 2 }}>{s.label}</div>
-              </div>
-            ))}
-          </div>
         </div>
 
         {/* Right: candidate list mockup */}
@@ -153,7 +140,6 @@ export function RecruiterHero() {
           .rec-hero-content{text-align:center}
           .rec-hero-content p{margin-left:auto !important; margin-right:auto !important}
           .rec-hero-ctas{justify-content:center}
-          .rec-hero-stats{justify-content:center}
           #rec-hero-visual{max-width:460px; margin:0 auto}
         }
         @media(max-width:480px){

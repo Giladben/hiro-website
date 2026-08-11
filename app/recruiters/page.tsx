@@ -6,7 +6,6 @@ import { RecruiterHero } from '@/components/recruiters/RecruiterHero'
 import { RecruiterPains } from '@/components/recruiters/RecruiterPains'
 import { RecruiterFeaturesBig } from '@/components/recruiters/RecruiterFeaturesBig'
 import { RecruiterHowItWorks } from '@/components/recruiters/RecruiterHowItWorks'
-import { RecruiterTestimonials } from '@/components/recruiters/RecruiterTestimonials'
 import { RecruiterCTA } from '@/components/recruiters/RecruiterCTA'
 
 export const metadata: Metadata = {
@@ -35,7 +34,6 @@ export default function RecruitersPage() {
         <RecruiterPains />
         <RecruiterFeaturesBig />
         <RecruiterHowItWorks />
-        <RecruiterTestimonials />
         <RecruiterCTA />
       </main>
       <Footer />

@@ -60,30 +60,30 @@ function MatchVisual() {
 }
 
 function SonarVisual() {
-  const signals = [
-    { name: 'שרה גולד', signal: 'עדכנה LinkedIn לפני 3 ימים', strength: 92, color: '#22c55e' },
-    { name: 'יואב מזרחי', signal: 'שינה תואר "Open to work"', strength: 87, color: '#7F77DD' },
-    { name: 'נעמה הראל', signal: 'פרסמה פוסט על חיפוש עבודה', strength: 78, color: '#f59e0b' },
+  const matches = [
+    { name: 'שרה גולד', role: 'Frontend Developer', score: 92, color: '#22c55e' },
+    { name: 'יואב מזרחי', role: 'Full Stack', score: 87, color: '#7F77DD' },
+    { name: 'נעמה הראל', role: 'Backend Developer', score: 78, color: '#f59e0b' },
   ]
   return (
     <div style={{ background: 'var(--dark)', borderRadius: 20, padding: '1.25rem', border: '1px solid rgba(255,255,255,0.06)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: '1rem' }}>
         <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 8px #22c55e' }} />
-        <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'rgba(240,238,255,0.6)' }}>Job Sonar — אותות מועמדים פסיביים</span>
+        <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'rgba(240,238,255,0.6)' }}>Job Sonar — סריקת מאגר המועמדים שלכם</span>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-        {signals.map(s => (
-          <div key={s.name} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 12, padding: '0.75rem 1rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#fff' }}>{s.name}</span>
-              <span style={{ fontSize: '0.68rem', fontWeight: 700, color: s.color }}>{s.strength}% מוכנות</span>
+        {matches.map(m => (
+          <div key={m.name} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 12, padding: '0.75rem 1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div>
+              <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#fff' }}>{m.name}</div>
+              <div style={{ fontSize: '0.68rem', color: 'rgba(240,238,255,0.4)' }}>{m.role}</div>
             </div>
-            <div style={{ fontSize: '0.68rem', color: 'rgba(240,238,255,0.4)', marginBottom: 8 }}>{s.signal}</div>
-            <div style={{ height: 3, background: 'rgba(255,255,255,0.05)', borderRadius: 2 }}>
-              <div style={{ height: '100%', width: `${s.strength}%`, background: s.color, borderRadius: 2 }} />
-            </div>
+            <span style={{ fontSize: '0.7rem', fontWeight: 800, color: m.color }}>{m.score}%</span>
           </div>
         ))}
+      </div>
+      <div style={{ marginTop: '0.85rem', fontSize: '0.65rem', color: 'rgba(240,238,255,0.3)', textAlign: 'center' }}>
+        מתעדכן אוטומטית עם כל שינוי במשרה או במועמד
       </div>
     </div>
   )
@@ -140,16 +140,16 @@ export function RecruiterFeaturesBig() {
         <FeatureBlock
           id="feature-ai-match"
           tag="AI Match"
-          title="התאמה סמנטית — לא רק מילות מפתח"
-          desc="המנוע של Hiro מבין הקשר, ניסיון, כישורים רכים ומיקום. המועמד הנכון מגיע לראש הרשימה גם אם לא השתמש בדיוק באותן מילים שכתבתם במשרה — פי 3 פחות זמן סינון."
+          title="התבנית שלכם, לא תבנית אחידה"
+          desc="ב-Hiro אתם בונים תבנית התאמה מותאמת אישית — עשרות פרמטרים שאתם בוחרים, ואיזה משקל כל אחד מהם מקבל בציון הסופי. לא אלגוריתם אחיד לכולם, אלא מנוע שמותאם בדיוק לאופן שבו הצוות שלכם מגייס."
           visual={<MatchVisual />}
         />
 
         <FeatureBlock
           id="feature-job-sonar"
           tag="Job Sonar"
-          title="גלו מועמדים לפני שהם יצאו לשוק"
-          desc="Job Sonar עוקב אחרי אותות ברשת — עדכוני LinkedIn, שינויי סטטוס, פוסטים ועוד. מגייסים מקבלים התראה בזמן אמת כשמועמד פסיבי שמתאים לפוזיציה פתוחה מראה סימני זמינות."
+          title="מצאו את המועמדים הכי מתאימים — בלחיצת כפתור"
+          desc="Job Sonar סורק בלחיצת כפתור את מאגר המועמדים הקיים שלכם ומעלה את ההתאמות הכי טובות למשרה. הציונים מתעדכנים on the fly — כל שינוי בפרטי המועמד או המשרה מתורגם מיד לעדכון בדירוג, בלי שתצטרכו להריץ חיפוש מחדש."
           visual={<SonarVisual />}
           flip
         />
@@ -158,7 +158,7 @@ export function RecruiterFeaturesBig() {
           id="feature-crm"
           tag="CRM מלא"
           title="כל תהליך הגיוס תחת גג אחד"
-          desc="Pipeline ויזואלי, תזכורות, שליחת SMS ומיילים בתפוצה עם תבניות AI, ניהול לקוחות (למשרדי גיוס), דוחות ביצועים ואינטגרציה לאאוטלוק ו-Google Calendar."
+          desc="Pipeline ויזואלי, תזכורות, שליחת SMS ומיילים בתפוצה עם תבניות AI, ניהול לקוחות (למשרדי גיוס) ודוחות ביצועים — הכל במקום אחד."
           visual={<CRMVisual />}
         />
       </div>

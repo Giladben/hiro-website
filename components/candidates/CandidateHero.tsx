@@ -84,16 +84,6 @@ export function CandidateHero() {
               איך זה עובד?
             </a>
           </div>
-
-          {/* Mini stats */}
-          <div role="list" className="cand-hero-stats" style={{ display:'flex', gap:'2rem', paddingTop:'2rem', borderTop:'1px solid var(--cb)', flexWrap:'wrap' }}>
-            {[{n:'847+',l:'מועמדים פעילים'},{n:'3×',l:'יותר ראיונות'},{n:'72%',l:'הצלחה בשנה הראשונה'}].map(s=>(
-              <div key={s.l} role="listitem">
-                <div style={{ fontSize:'1.7rem', fontWeight:800, color:'var(--text)' }}>{s.n}</div>
-                <div style={{ fontSize:'0.78rem', color:'var(--text2)', marginTop:2 }}>{s.l}</div>
-              </div>
-            ))}
-          </div>
         </div>
 
         {/* Visual — Application Tracker Mockup */}
@@ -177,7 +167,6 @@ export function CandidateHero() {
           .cand-hero-content{text-align:center}
           .cand-hero-content p{margin-left:auto !important; margin-right:auto !important}
           .cand-hero-ctas{justify-content:center}
-          .cand-hero-stats{justify-content:center}
           #cand-hero-visual{max-width:460px; margin:0 auto}
         }
         @media(max-width:480px){

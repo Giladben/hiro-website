@@ -6,7 +6,6 @@ import { CandidateHero } from '@/components/candidates/CandidateHero'
 import { CandidatePains } from '@/components/candidates/CandidatePains'
 import { CandidateFeaturesBig } from '@/components/candidates/CandidateFeaturesBig'
 import { CandidateHowItWorks } from '@/components/candidates/CandidateHowItWorks'
-import { CandidateTestimonials } from '@/components/candidates/CandidateTestimonials'
 import { CandidateCTA } from '@/components/candidates/CandidateCTA'
 
 export const metadata: Metadata = {
@@ -35,7 +34,6 @@ export default function CandidatesPage() {
         <CandidatePains />
         <CandidateFeaturesBig />
         <CandidateHowItWorks />
-        <CandidateTestimonials />
         <CandidateCTA />
       </main>
       <Footer />
