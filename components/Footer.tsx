@@ -3,7 +3,7 @@
 const navLinks = [
   { title: 'פלטפורמה', items: [{ href: '#platform', label: 'סקירת הפלטפורמה' }, { href: '#recruiters', label: 'למגייסים' }, { href: '#candidates', label: 'למועמדים' }, { href: '#how', label: 'איך זה עובד' }] },
   { title: 'פיצ\'רים', items: [{ href: '#', label: 'Job Sonar' }, { href: '#', label: 'AI Matching' }, { href: '#', label: 'Multi-Persona' }, { href: '#', label: 'Application Tracker' }] },
-  { title: 'צרו קשר', items: [{ href: '#', label: 'צור קשר' }, { href: '#', label: 'מדיניות פרטיות' }, { href: '#', label: 'תנאי שימוש' }, { href: '#', label: 'נגישות' }] },
+  { title: 'צרו קשר', items: [{ href: '#', label: 'צור קשר' }, { href: '/privacy', label: 'מדיניות פרטיות' }, { href: '#', label: 'תנאי שימוש' }, { href: '#', label: 'נגישות' }] },
 ]
 
 export function Footer() {
