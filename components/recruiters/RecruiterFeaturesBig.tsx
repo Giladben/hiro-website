@@ -6,7 +6,7 @@ function FeatureBlock({
   tag: string; title: string; desc: string; visual: React.ReactNode; flip?: boolean
 }) {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '4rem', alignItems: 'center', marginBottom: '5rem' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '4rem', alignItems: 'center', marginBottom: '5rem' }}>
       <div style={{ order: flip ? 2 : 1 }}>
         <span style={{ display: 'inline-block', background: 'var(--p50)', color: 'var(--p600)', fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.25rem 0.8rem', borderRadius: 100, marginBottom: '1rem' }}>{tag}</span>
         <h3 style={{ fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', fontWeight: 800, color: 'var(--text)', lineHeight: 1.2, marginBottom: '1rem' }}>{title}</h3>

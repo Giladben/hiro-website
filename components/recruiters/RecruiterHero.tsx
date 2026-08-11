@@ -44,10 +44,10 @@ export function RecruiterHero() {
       <div aria-hidden="true" style={{ position: 'absolute', top: '10%', right: '-10%', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(ellipse, rgba(83,74,183,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
       <div aria-hidden="true" style={{ position: 'absolute', bottom: '5%', left: '-5%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(ellipse, rgba(34,197,94,0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
-      <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '4rem', alignItems: 'center', position: 'relative', zIndex: 1, width: '100%' }}>
+      <div id="rec-hero-grid" style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '4rem', alignItems: 'center', position: 'relative', zIndex: 1, width: '100%' }}>
 
         {/* Left: content */}
-        <div>
+        <div className="rec-hero-content">
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(83,74,183,0.15)', border: '1px solid rgba(83,74,183,0.3)', color: '#a78bfa', fontSize: '0.78rem', fontWeight: 700, padding: '0.35rem 1rem', borderRadius: 100, marginBottom: '1.5rem' }}>
             ✦ מגייסים — AI Recruitment OS
           </div>
@@ -67,7 +67,7 @@ export function RecruiterHero() {
             Hiro מוצאת את המועמד הנכון לפני שהוא בכלל פרסם שהוא זמין — עם מנוע התאמה סמנטי, Job Sonar ו-CRM מקיף.
           </p>
 
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '2.5rem' }}>
+          <div className="rec-hero-ctas" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '2.5rem' }}>
             <a
               href="#signup"
               style={{ background: 'linear-gradient(135deg, #534AB7, #7F77DD)', color: '#fff', padding: '0.85rem 2rem', borderRadius: 12, fontSize: '1rem', fontWeight: 700, textDecoration: 'none', boxShadow: '0 8px 28px rgba(83,74,183,0.4)', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
@@ -82,7 +82,7 @@ export function RecruiterHero() {
             </a>
           </div>
 
-          <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap' }}>
+          <div className="rec-hero-stats" style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap' }}>
             {[
               { num: '3×', label: 'מהירות גיוס' },
               { num: '68%', label: 'פחות זמן סינון' },
@@ -97,7 +97,7 @@ export function RecruiterHero() {
         </div>
 
         {/* Right: candidate list mockup */}
-        <div style={{ background: 'var(--card)', border: '1px solid rgba(127,119,221,0.2)', borderRadius: 20, overflow: 'hidden', boxShadow: 'var(--hero-shadow)' }}>
+        <div id="rec-hero-visual" style={{ background: 'var(--card)', border: '1px solid rgba(127,119,221,0.2)', borderRadius: 20, overflow: 'hidden', boxShadow: 'var(--hero-shadow)' }}>
           {/* Header */}
           <div style={{ padding: '14px 18px', borderBottom: '1px solid var(--cb)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', gap: 6 }}>
@@ -147,6 +147,19 @@ export function RecruiterHero() {
           </div>
         </div>
       </div>
+
+      <style>{`
+        @media(max-width:900px){
+          .rec-hero-content{text-align:center}
+          .rec-hero-content p{margin-left:auto !important; margin-right:auto !important}
+          .rec-hero-ctas{justify-content:center}
+          .rec-hero-stats{justify-content:center}
+          #rec-hero-visual{max-width:460px; margin:0 auto}
+        }
+        @media(max-width:480px){
+          #rec-hero-visual{max-width:100%}
+        }
+      `}</style>
     </section>
   )
 }

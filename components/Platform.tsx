@@ -14,6 +14,7 @@ export function Platform() {
     <section
       id="platform"
       aria-labelledby="platform-heading"
+      className="platform-section"
       style={{ background: 'var(--bg-alt)', padding: '6rem 2rem' }}
     >
       <div style={{ maxWidth: 1100, margin: '0 auto' }}>
@@ -40,11 +41,12 @@ export function Platform() {
           </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem', marginTop: '3.5rem' }}>
+        <div className="platform-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.5rem', marginTop: '3.5rem' }}>
 
           {/* Recruiter card */}
           <article
             aria-labelledby="recruiter-card-heading"
+            className="platform-card"
             style={{
               background: 'var(--dark)',
               borderRadius: 20,
@@ -102,6 +104,7 @@ export function Platform() {
           {/* Candidate card */}
           <article
             aria-labelledby="candidate-card-heading"
+            className="platform-card"
             style={{
               background: 'var(--p50)',
               border: '1px solid rgba(83,74,183,0.18)',
@@ -145,6 +148,13 @@ export function Platform() {
           </article>
         </div>
       </div>
+
+      <style>{`
+        @media(max-width:480px){
+          .platform-section{padding:4rem 1.25rem !important}
+          .platform-card{padding:1.75rem !important}
+        }
+      `}</style>
     </section>
   )
 }

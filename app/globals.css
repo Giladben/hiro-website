@@ -53,6 +53,14 @@
 
 html { scroll-behavior: smooth; }
 
+/* Safety net: any decorative/absolute element that slightly overshoots its
+   container on narrow viewports gets clipped here instead of creating a
+   horizontal scrollbar that shifts the whole page off-center on mobile. */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 body {
   font-family: 'Assistant', 'Segoe UI', Arial, sans-serif;
   background: var(--bg);

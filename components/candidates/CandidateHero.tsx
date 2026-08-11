@@ -38,10 +38,10 @@ export function CandidateHero() {
       <div aria-hidden="true" style={{ position:'absolute', top:'5%', left:'30%', width:500, height:500, borderRadius:'50%', background:'radial-gradient(circle, rgba(167,139,250,0.15) 0%, transparent 70%)', pointerEvents:'none' }}/>
       <div aria-hidden="true" style={{ position:'absolute', bottom:'-10%', right:'5%', width:350, height:350, borderRadius:'50%', background:'radial-gradient(circle, rgba(232,121,160,0.12) 0%, transparent 70%)', pointerEvents:'none' }}/>
 
-      <div style={{ maxWidth:1200, margin:'0 auto', width:'100%', display:'grid', gridTemplateColumns:'1fr 1fr', gap:'4rem', alignItems:'center', position:'relative', zIndex:1 }}>
+      <div id="cand-hero-grid" style={{ maxWidth:1200, margin:'0 auto', width:'100%', display:'grid', gridTemplateColumns:'1fr 1fr', gap:'4rem', alignItems:'center', position:'relative', zIndex:1 }}>
 
         {/* Content */}
-        <div>
+        <div className="cand-hero-content">
           <div style={{ display:'inline-flex', alignItems:'center', gap:'0.5rem', background:'rgba(167,139,250,0.12)', border:'1px solid rgba(167,139,250,0.3)', color:'#c4b5fd', fontSize:'0.82rem', fontWeight:700, padding:'0.35rem 1rem', borderRadius:100, marginBottom:'1.75rem' }}>
             <span style={{ width:6, height:6, borderRadius:'50%', background:'#a78bfa', display:'inline-block', animation:'pulse-dot 2s infinite' }}/>
             הפלטפורמה שעובדת בשבילך — 24/7
@@ -66,7 +66,7 @@ export function CandidateHero() {
             ✦ בחינם לגמרי למועמדים
           </p>
 
-          <div style={{ display:'flex', gap:'0.75rem', flexWrap:'wrap', marginBottom:'3rem' }}>
+          <div className="cand-hero-ctas" style={{ display:'flex', gap:'0.75rem', flexWrap:'wrap', marginBottom:'3rem' }}>
             <a
               href="#signup"
               style={{ background:'linear-gradient(135deg, #7F77DD, #a78bfa)', color:'#fff', padding:'0.9rem 2rem', borderRadius:12, fontSize:'1rem', fontWeight:700, textDecoration:'none', display:'inline-flex', alignItems:'center', gap:'0.5rem', boxShadow:'0 8px 24px rgba(127,119,221,0.35)', transition:'all 0.2s' }}
@@ -86,7 +86,7 @@ export function CandidateHero() {
           </div>
 
           {/* Mini stats */}
-          <div role="list" style={{ display:'flex', gap:'2rem', paddingTop:'2rem', borderTop:'1px solid var(--cb)', flexWrap:'wrap' }}>
+          <div role="list" className="cand-hero-stats" style={{ display:'flex', gap:'2rem', paddingTop:'2rem', borderTop:'1px solid var(--cb)', flexWrap:'wrap' }}>
             {[{n:'847+',l:'מועמדים פעילים'},{n:'3×',l:'יותר ראיונות'},{n:'72%',l:'הצלחה בשנה הראשונה'}].map(s=>(
               <div key={s.l} role="listitem">
                 <div style={{ fontSize:'1.7rem', fontWeight:800, color:'var(--text)' }}>{s.n}</div>
@@ -97,7 +97,7 @@ export function CandidateHero() {
         </div>
 
         {/* Visual — Application Tracker Mockup */}
-        <div style={{ position:'relative' }}>
+        <div id="cand-hero-visual" style={{ position:'relative' }}>
           <div aria-hidden="true" style={{ position:'absolute', inset:-40, borderRadius:32, background:'radial-gradient(ellipse, rgba(127,119,221,0.2) 0%, transparent 70%)', filter:'blur(24px)' }}/>
 
           <div style={{ background:'var(--card)', backdropFilter:'blur(16px)', borderRadius:20, overflow:'hidden', border:'1px solid rgba(167,139,250,0.15)', boxShadow:'var(--hero-shadow)', position:'relative' }}>
@@ -167,6 +167,23 @@ export function CandidateHero() {
           </div>
         </div>
       </div>
+
+      {/* Responsive override — stack to a single column on mobile instead of
+          squeezing the two-column grid, matching the pattern used on the
+          home page Hero. */}
+      <style>{`
+        @media(max-width:900px){
+          #cand-hero-grid{grid-template-columns:1fr !important; gap:2.75rem !important}
+          .cand-hero-content{text-align:center}
+          .cand-hero-content p{margin-left:auto !important; margin-right:auto !important}
+          .cand-hero-ctas{justify-content:center}
+          .cand-hero-stats{justify-content:center}
+          #cand-hero-visual{max-width:460px; margin:0 auto}
+        }
+        @media(max-width:480px){
+          #cand-hero-visual{max-width:100%}
+        }
+      `}</style>
     </section>
   )
 }

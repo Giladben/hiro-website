@@ -21,10 +21,10 @@ export function Hero() {
       <div aria-hidden="true" style={{ position:'absolute', top:'10%', right:'20%', width:600, height:600, borderRadius:'50%', background:'radial-gradient(circle, rgba(83,74,183,0.22) 0%, transparent 70%)', pointerEvents:'none' }}/>
       <div aria-hidden="true" style={{ position:'absolute', bottom:'-10%', left:'10%', width:400, height:400, borderRadius:'50%', background:'radial-gradient(circle, rgba(212,83,126,0.15) 0%, transparent 70%)', pointerEvents:'none' }}/>
 
-      <div style={{ maxWidth:1200, margin:'0 auto', width:'100%', display:'grid', gridTemplateColumns:'1fr 1fr', gap:'4rem', alignItems:'center', position:'relative', zIndex:1 }}>
+      <div id="hero-grid" style={{ maxWidth:1200, margin:'0 auto', width:'100%', display:'grid', gridTemplateColumns:'1fr 1fr', gap:'4rem', alignItems:'center', position:'relative', zIndex:1 }}>
 
         {/* ── Right: Content ── */}
-        <div>
+        <div className="hero-content">
           {/* Badge */}
           <div style={{ display:'inline-flex', alignItems:'center', gap:'0.5rem', background:'rgba(127,119,221,0.12)', border:'1px solid rgba(127,119,221,0.3)', color:'var(--accent-chip-text)', fontSize:'0.82rem', fontWeight:700, padding:'0.35rem 1rem', borderRadius:100, marginBottom:'1.75rem' }}>
             <span style={{ width:6, height:6, borderRadius:'50%', background:'var(--p400)', display:'inline-block', animation:'sonar-pulse 2s infinite' }}/>
@@ -48,7 +48,7 @@ export function Hero() {
           </p>
 
           {/* CTAs */}
-          <div style={{ display:'flex', gap:'0.75rem', flexWrap:'wrap', marginBottom:'3rem' }}>
+          <div className="hero-ctas" style={{ display:'flex', gap:'0.75rem', flexWrap:'wrap', marginBottom:'3rem' }}>
             <a href="#contact" style={{ background:'var(--p600)', color:'#fff', padding:'0.85rem 2rem', borderRadius:12, fontSize:'1rem', fontWeight:700, textDecoration:'none', display:'inline-flex', alignItems:'center', gap:'0.5rem', transition:'all 0.2s' }}
               onMouseEnter={e=>{e.currentTarget.style.background='var(--p400)';e.currentTarget.style.transform='translateY(-2px)'}}
               onMouseLeave={e=>{e.currentTarget.style.background='var(--p600)';e.currentTarget.style.transform='translateY(0)'}}>
@@ -62,7 +62,7 @@ export function Hero() {
           </div>
 
           {/* Stats */}
-          <div role="list" aria-label="נתוני הפלטפורמה" style={{ display:'flex', gap:'2rem', paddingTop:'2rem', borderTop:'1px solid var(--cb)', flexWrap:'wrap' }}>
+          <div role="list" aria-label="נתוני הפלטפורמה" className="hero-stats" style={{ display:'flex', gap:'2rem', paddingTop:'2rem', borderTop:'1px solid var(--cb)', flexWrap:'wrap' }}>
             {[{n:'847+',l:'מועמדים פעילים'},{n:'3.2×',l:'מהירות גיוס'},{n:'94%',l:'דיוק התאמה'}].map(s=>(
               <div key={s.l} role="listitem">
                 <div style={{ fontSize:'1.8rem', fontWeight:800, color:'var(--text)' }}>{s.n}</div>
@@ -73,7 +73,7 @@ export function Hero() {
         </div>
 
         {/* ── Left: Real product screenshot ── */}
-        <div style={{ position:'relative' }}>
+        <div id="hero-visual" style={{ position:'relative' }}>
           {/* Glow behind card */}
           <div aria-hidden="true" style={{ position:'absolute', inset:-40, borderRadius:32, background:'radial-gradient(ellipse, rgba(83,74,183,0.25) 0%, transparent 70%)', filter:'blur(20px)' }}/>
 
@@ -115,8 +115,15 @@ export function Hero() {
       {/* Responsive override */}
       <style>{`
         @media(max-width:900px){
-          #hero-grid{grid-template-columns:1fr !important}
-          #hero-visual{display:none}
+          #hero-grid{grid-template-columns:1fr !important; gap:2.75rem !important}
+          .hero-content{text-align:center}
+          .hero-content p{margin-left:auto !important; margin-right:auto !important}
+          .hero-ctas{justify-content:center}
+          .hero-stats{justify-content:center}
+          #hero-visual{max-width:460px; margin:0 auto}
+        }
+        @media(max-width:480px){
+          #hero-visual{max-width:100%}
         }
       `}</style>
     </section>
