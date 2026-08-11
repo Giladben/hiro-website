@@ -1,17 +1,18 @@
 'use client'
 
 function FeatureBlock({
-  tag, title, desc, visual, flip = false,
+  id, tag, title, desc, visual, flip = false,
 }: {
-  tag: string; title: string; desc: string; visual: React.ReactNode; flip?: boolean
+  id?: string; tag: string; title: string; desc: string; visual: React.ReactNode; flip?: boolean
 }) {
   return (
-    <div style={{
+    <div id={id} style={{
       display:'grid',
       gridTemplateColumns:'repeat(auto-fit, minmax(260px, 1fr))',
       gap:'4rem',
       alignItems:'center',
       marginBottom:'5rem',
+      scrollMarginTop: '90px',
     }}>
       <div style={{ order: flip ? 2 : 1 }}>
         <span style={{ display:'inline-block', background:'var(--p50)', color:'var(--p600)', fontSize:'0.72rem', fontWeight:700, letterSpacing:'0.1em', textTransform:'uppercase', padding:'0.25rem 0.8rem', borderRadius:100, marginBottom:'1rem' }}>{tag}</span>
@@ -141,6 +142,7 @@ export function CandidateFeaturesBig() {
         </div>
 
         <FeatureBlock
+          id="feature-ai-agent"
           tag="AI Agent"
           title="סוכן קריירה שעובד בשבילך — בלי שתצטרך לזכור"
           desc="מגיש קורות חיים, מוצא משרות רלוונטיות, מתזמן ראיונות ומסנכרן עם המגייסים. אתם ישנים — הסוכן עובד. מבוסס על ה-AI הסמנטי של Hiro שמבין בדיוק מה מתאים לכם ולמה."
@@ -148,6 +150,7 @@ export function CandidateFeaturesBig() {
         />
 
         <FeatureBlock
+          id="feature-multi-persona"
           tag="Multi-Persona"
           title="כמה כיוונים בקריירה? אחזיקו פרופיל נפרד לכל אחד"
           desc="אם את גם מנהלת גיוס וגם HRBP — לא תוותרי על אף כיוון. כל פרופיל מקבל קו&quot;ח נפרד, כישורים נפרדים וסנכרון עצמאי עם המגייסים הרלוונטיים — הכל תחת חשבון אחד."
@@ -156,6 +159,7 @@ export function CandidateFeaturesBig() {
         />
 
         <FeatureBlock
+          id="feature-tracker"
           tag="Application Tracker"
           title="אל תאבדו הגשה אחת — גם מחוץ ל-Hiro"
           desc="כל ההגשות שלכם במקום אחד — כולל כאלו ישירות לאתרי חברות, לינקדאין, או דרך סוכנויות גיוס. עם תזכורות, סטטוסים, מועדים ויומן ראיונות — הכל מסונכרן."

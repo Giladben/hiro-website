@@ -1,12 +1,12 @@
 'use client'
 
 function FeatureBlock({
-  tag, title, desc, visual, flip = false,
+  id, tag, title, desc, visual, flip = false,
 }: {
-  tag: string; title: string; desc: string; visual: React.ReactNode; flip?: boolean
+  id?: string; tag: string; title: string; desc: string; visual: React.ReactNode; flip?: boolean
 }) {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '4rem', alignItems: 'center', marginBottom: '5rem' }}>
+    <div id={id} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '4rem', alignItems: 'center', marginBottom: '5rem', scrollMarginTop: '90px' }}>
       <div style={{ order: flip ? 2 : 1 }}>
         <span style={{ display: 'inline-block', background: 'var(--p50)', color: 'var(--p600)', fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.25rem 0.8rem', borderRadius: 100, marginBottom: '1rem' }}>{tag}</span>
         <h3 style={{ fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', fontWeight: 800, color: 'var(--text)', lineHeight: 1.2, marginBottom: '1rem' }}>{title}</h3>
@@ -138,6 +138,7 @@ export function RecruiterFeaturesBig() {
         </div>
 
         <FeatureBlock
+          id="feature-ai-match"
           tag="AI Match"
           title="התאמה סמנטית — לא רק מילות מפתח"
           desc="המנוע של Hiro מבין הקשר, ניסיון, כישורים רכים ומיקום. המועמד הנכון מגיע לראש הרשימה גם אם לא השתמש בדיוק באותן מילים שכתבתם במשרה — פי 3 פחות זמן סינון."
@@ -145,6 +146,7 @@ export function RecruiterFeaturesBig() {
         />
 
         <FeatureBlock
+          id="feature-job-sonar"
           tag="Job Sonar"
           title="גלו מועמדים לפני שהם יצאו לשוק"
           desc="Job Sonar עוקב אחרי אותות ברשת — עדכוני LinkedIn, שינויי סטטוס, פוסטים ועוד. מגייסים מקבלים התראה בזמן אמת כשמועמד פסיבי שמתאים לפוזיציה פתוחה מראה סימני זמינות."
@@ -153,6 +155,7 @@ export function RecruiterFeaturesBig() {
         />
 
         <FeatureBlock
+          id="feature-crm"
           tag="CRM מלא"
           title="כל תהליך הגיוס תחת גג אחד"
           desc="Pipeline ויזואלי, תזכורות, שליחת SMS ומיילים בתפוצה עם תבניות AI, ניהול לקוחות (למשרדי גיוס), דוחות ביצועים ואינטגרציה לאאוטלוק ו-Google Calendar."
