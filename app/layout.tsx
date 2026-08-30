@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Assistant } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
@@ -45,12 +45,16 @@ export const metadata: Metadata = {
   },
 }
 
+export const viewport: Viewport = {
+  themeColor: '#441657',
+}
+
 const organizationJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: 'Hiro',
   url: SITE_URL,
-  logo: `${SITE_URL}/images/og-image.png`,
+  logo: `${SITE_URL}/images/hiro-logo.png`,
   description: SITE_DESCRIPTION,
   sameAs: [],
 }

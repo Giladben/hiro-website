@@ -68,9 +68,16 @@ export function Navbar() {
       <a
         href="/"
         aria-label="Hiro — עמוד הבית"
-        style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--text)', textDecoration: 'none', flexShrink: 0 }}
+        style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}
       >
-        Hir<span style={{ color: 'var(--p600)' }}>o</span>
+        {/* eslint-disable-next-line @next/next/no-img-element -- SVG logo; next/image doesn't optimize SVGs */}
+        <img
+          src={isDark ? '/images/hiro-lockup-reversed.svg' : '/images/hiro-lockup.svg'}
+          alt="Hiro"
+          width={81}
+          height={34}
+          style={{ height: 34, width: 'auto' }}
+        />
       </a>
 
       {/* Nav links — desktop only, hidden on mobile via .navbar-desktop media query below */}

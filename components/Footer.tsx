@@ -26,8 +26,15 @@ export function Footer() {
         }}>
           {/* Brand */}
           <div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fff', marginBottom: '0.75rem' }}>
-              Hir<span style={{ color: 'var(--p400)' }}>o</span>
+            <div style={{ marginBottom: '0.9rem' }}>
+              {/* eslint-disable-next-line @next/next/no-img-element -- SVG logo; next/image doesn't optimize SVGs */}
+              <img
+                src="/images/hiro-lockup-reversed.svg"
+                alt="Hiro"
+                width={81}
+                height={34}
+                style={{ height: 30, width: 'auto' }}
+              />
             </div>
             <p style={{ fontSize: '0.85rem', lineHeight: 1.7, marginBottom: '1.5rem' }}>
               פלטפורמת הגיוס החכמה שמחברת בין מגייסים למועמדים — באמצעות AI סמנטי, אוטומציה מלאה וחוויית משתמש מהמם.
