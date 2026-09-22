@@ -32,25 +32,12 @@ export default function BlogIndexPage() {
       <Navbar />
       <main id="main-content" tabIndex={-1}>
         {/* Header */}
-        <section style={{ background: 'var(--bg-alt)', padding: '9rem 2rem 3rem' }}>
-          <div style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
-            <span
-              style={{
-                display: 'inline-block',
-                background: 'var(--p50)',
-                color: 'var(--p600)',
-                fontSize: '0.8rem',
-                fontWeight: 700,
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase',
-                padding: '0.3rem 0.9rem',
-                borderRadius: '100px',
-                marginBottom: '1.25rem',
-              }}
-            >
+        <section style={{ background: 'var(--bg)', padding: '10rem 2rem 3.5rem', borderBottom: '1px solid var(--line)' }}>
+          <div style={{ maxWidth: 900, margin: '0 auto' }}>
+            <span className="kicker">
               בלוג
             </span>
-            <h1 style={{ fontSize: 'clamp(2rem, 4vw, 2.8rem)', fontWeight: 800, color: 'var(--text)', marginBottom: '0.75rem', lineHeight: 1.2 }}>
+            <h1 className="display-l" style={{ margin: '0 0 1.25rem', maxWidth: '20ch' }}>
               גיוס עובדים ובינה מלאכותית
             </h1>
             <p style={{ fontSize: '1.05rem', color: 'var(--text2)', maxWidth: 560, margin: '0 auto', lineHeight: 1.7 }}>

@@ -16,7 +16,7 @@ export function BlogLayout({ post }: { post: BlogPost }) {
       <Navbar />
       <main id="main-content" tabIndex={-1}>
         {/* Header */}
-        <section style={{ background: 'var(--bg-alt)', padding: '9rem 2rem 3.5rem' }}>
+        <section style={{ background: 'var(--bg)', padding: '10rem 2rem 3.5rem', borderBottom: '1px solid var(--line)' }}>
           <div style={{ maxWidth: 760, margin: '0 auto' }}>
             <Link
               href="/blog"
@@ -24,22 +24,10 @@ export function BlogLayout({ post }: { post: BlogPost }) {
             >
               → כל המאמרים
             </Link>
-            <span
-              style={{
-                display: 'inline-block',
-                background: 'var(--p50)',
-                color: 'var(--p600)',
-                fontSize: '0.78rem',
-                fontWeight: 700,
-                letterSpacing: '0.05em',
-                padding: '0.3rem 0.9rem',
-                borderRadius: '100px',
-                marginBottom: '1.25rem',
-              }}
-            >
+            <span className="kicker">
               {post.category}
             </span>
-            <h1 style={{ fontSize: 'clamp(1.9rem, 3.8vw, 2.6rem)', fontWeight: 800, color: 'var(--text)', marginBottom: '0.85rem', lineHeight: 1.25 }}>
+            <h1 className="display-l" style={{ margin: '0 0 1.25rem', maxWidth: '20ch' }}>
               {post.title}
             </h1>
             <p style={{ fontSize: '1.02rem', color: 'var(--text2)', lineHeight: 1.8, marginBottom: '1.25rem' }}>{post.description}</p>

@@ -45,26 +45,14 @@ export function LegalPage({
       <Navbar />
       <main id="main-content" tabIndex={-1}>
         {/* Header */}
-        <section style={{ background: 'var(--bg-alt)', padding: '9rem 2rem 3.5rem' }}>
+        <section style={{ background: 'var(--bg)', padding: '10rem 2rem 3.5rem', borderBottom: '1px solid var(--line)' }}>
           <div style={{ maxWidth: 820, margin: '0 auto' }}>
             {badge && (
-              <span
-                style={{
-                  display: 'inline-block',
-                  background: 'rgba(245,158,11,0.12)',
-                  border: '1px solid rgba(245,158,11,0.3)',
-                  color: '#b45309',
-                  fontSize: '0.78rem',
-                  fontWeight: 700,
-                  padding: '0.3rem 0.9rem',
-                  borderRadius: '100px',
-                  marginBottom: '1.25rem',
-                }}
-              >
+              <span className="kicker">
                 {badge}
               </span>
             )}
-            <h1 style={{ fontSize: 'clamp(2rem, 4vw, 2.8rem)', fontWeight: 800, color: 'var(--text)', marginBottom: '0.75rem', lineHeight: 1.2 }}>
+            <h1 className="display-l" style={{ margin: '0 0 1.25rem', maxWidth: '20ch' }}>
               {title}
             </h1>
             <p style={{ fontSize: '1.02rem', color: 'var(--text2)', lineHeight: 1.8 }}>{intro}</p>

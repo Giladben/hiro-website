@@ -1,17 +1,23 @@
 import type { Metadata, Viewport } from 'next'
-import { Assistant } from 'next/font/google'
+import { Frank_Ruhl_Libre, Heebo } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
 
-const assistant = Assistant({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800'],
+const frank = Frank_Ruhl_Libre({
+  subsets: ['hebrew', 'latin'],
+  variable: '--font-frank',
+  display: 'swap',
+})
+
+const heebo = Heebo({
+  subsets: ['hebrew', 'latin'],
+  variable: '--font-heebo',
   display: 'swap',
 })
 
 const SITE_URL = 'https://hiro.co.il'
 const SITE_TITLE = 'Hiro — פלטפורמת הגיוס החכמה'
-const SITE_DESCRIPTION = 'Hiro מחברת בין מגייסים למועמדים באמצעות AI סמנטי, Job Sonar לאיתור מועמדים פסיביים, וסוכן קריירה אישי — אוטומציה מלאה וחוויית משתמש חסרת תקדים.'
+const SITE_DESCRIPTION = 'Hiro היא מערכת גיוס ו-CRM למגייסים ולמשרדי השמה, ומרכז קריירה אישי למועמדים. תבנית התאמה שאתם מגדירים, Job Sonar שסורק את המאגר שלכם, ותקשורת בתפוצה מתוך המערכת.'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -46,7 +52,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#534AB7',
+  themeColor: '#F6F5F1',
 }
 
 const organizationJsonLd = {
@@ -61,8 +67,8 @@ const organizationJsonLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="he" dir="rtl" suppressHydrationWarning>
-      <body className={assistant.className}>
+    <html lang="he" dir="rtl" className={`${frank.variable} ${heebo.variable}`} suppressHydrationWarning>
+      <body>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
