@@ -46,6 +46,15 @@ const FEATURES: IndexItem[] = [
   },
 ]
 
+const AGENT_PROMPTS = [
+  { ask: 'אילו משרות מתאימות לי השבוע?', get: 'משרות חדשות שמתאימות לפרופיל, עם ציון התאמה לכל אחת.' },
+  { ask: 'איפה עומדות ההגשות שלי?', get: 'סיכום של כל התהליכים הפתוחים ומה הצעד הבא בכל אחד.' },
+  { ask: 'איך לחדד את קורות החיים למשרה הזו?', get: 'מה המשרה מבקשת, ומה כדאי להבליט או להוסיף אצלך.' },
+  { ask: 'מה לשאול בראיון מחר?', get: 'שאלות להכנה ונקודות לחזק, לפי המשרה והפרופיל שלך.' },
+  { ask: 'באיזה פרופיל כדאי להגיש לכאן?', get: 'המלצה בין הכיוונים המקצועיים שלך, ולמה.' },
+  { ask: 'תזכיר לי לחזור אליהם ביום ראשון', get: 'תזכורת על ההגשה, כדי שאף תהליך לא יישכח.' },
+]
+
 export default function CandidatesPage() {
   return (
     <>
@@ -70,7 +79,7 @@ export default function CandidatesPage() {
                 <a href="#features" className="btn btn-ghost">מה מקבלים</a>
               </div>
             </div>
-            <ProductFilm scenes={['candidate']} label="הדגמת מוצר למועמדים" />
+            <ProductFilm scenes={['onboard', 'agent', 'candidate']} label="הדגמת מוצר למועמדים" />
           </div>
         </section>
 
@@ -80,6 +89,24 @@ export default function CandidatesPage() {
               <span>שלחת קורות חיים ולא שמעת כלום.</span><br />
               עכשיו לפחות רואים איפה זה עומד.
             </p>
+          </div>
+        </section>
+
+        {/* ── Agent prompts ── */}
+        <section id="agent" className={s.section} aria-labelledby="agent-h" style={{ scrollMarginTop: 72, background: 'var(--bg-alt)' }}>
+          <div className="wrap">
+            <div className={`${s.secHead} reveal`}>
+              <h2 id="agent-h" className="display-l" style={{ margin: 0 }}>מה אפשר לבקש<br />מסוכן הקריירה</h2>
+              <p className="lede">הסוכן מכיר את הפרופיל ואת ההגשות שלך. כותבים לו כמו שכותבים לחבר שמבין בגיוס, או בוחרים שאלה מוכנה.</p>
+            </div>
+            <ul className={`${s.askList} reveal`}>
+              {AGENT_PROMPTS.map(q => (
+                <li key={q.ask}>
+                  <b>“{q.ask}”</b>
+                  <span>{q.get}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
 

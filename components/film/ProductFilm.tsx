@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { TargetsProvider, useTargetRegistry } from './Cursor'
 import { CandidateScene, MatchScene, OutreachScene, SonarScene } from './scenes'
+import { AgentScene, OnboardScene } from './scenesCandidate'
 import s from './film.module.css'
 
 const SCENES = {
@@ -21,8 +22,18 @@ const SCENES = {
     sr: 'בוחרים חמישה מועמדים, כותבים הודעת SMS אחת עם משתנים אישיים כמו שם ומשרה, ושולחים לכולם בלחיצה אחת.',
     C: OutreachScene,
   },
+  onboard: {
+    title: 'פרופיל מקורות החיים',
+    sr: 'המועמדת גוררת קובץ קורות חיים. Hiro קוראת אותו וממלאת את הפרופיל: שם, תפקיד, אזור, כישורים וניסיון. אחרי בדיקה קצרה לוחצים שמירה והפרופיל פעיל.',
+    C: OnboardScene,
+  },
+  agent: {
+    title: 'מה שואלים את הסוכן',
+    sr: 'שיחה עם סוכן הקריירה. המועמדת בוחרת שאלה מוכנה, אילו משרות מתאימות לה השבוע, ומקבלת שלוש משרות עם ציון התאמה. אחר כך היא שואלת איך לחדד את קורות החיים למשרה מסוימת ומקבלת הצעה קונקרטית.',
+    C: AgentScene,
+  },
   candidate: {
-    title: 'הצד של המועמד',
+    title: 'כל ההגשות בלוח אחד',
     sr: 'המועמדת רואה את כל ההגשות שלה בלוח אחד, גם כאלה שהגישה מחוץ ל-Hiro. הגשה עוברת לשלב ראיון, קורות החיים המעודכנים זמינים למגייסים, ובלחיצה עוברים לפרופיל מקצועי נוסף.',
     C: CandidateScene,
   },
