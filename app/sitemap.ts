@@ -1,9 +1,10 @@
 import type { MetadataRoute } from 'next'
 import { blogPosts } from '@/lib/blog-posts'
+import { jobsSource, listJobSlugs } from '@/lib/jobs/source'
 
 const SITE_URL = 'https://hiro.co.il'
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${SITE_URL}/`, changeFrequency: 'weekly', priority: 1 },
     { url: `${SITE_URL}/recruiters`, changeFrequency: 'weekly', priority: 0.9 },
@@ -22,5 +23,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: post.updatedAt ?? post.publishedAt,
   }))
 
-  return [...staticRoutes, ...blogRoutes]
+  // Real jobs only: preview fixtures must never reach a sitemap
+  const jobRoutes: MetadataRoute.Sitemap = jobsSource === 'api'
+    ? [
+        { url: `${SITE_URL}/jobs`, changeFrequency: 'hourly', priority: 0.9 },
+        ...(await listJobSlugs()).map(j => ({ url: `${SITE_URL}/jobs/${j.slug}`, lastModified: j.updatedAt, changeFrequency: 'daily' as const, priority: 0.8 })),
+      ]
+    : []
+
+  return [...staticRoutes, ...blogRoutes, ...jobRoutes]
 }
