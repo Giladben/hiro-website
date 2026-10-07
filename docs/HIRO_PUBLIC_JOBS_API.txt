@@ -1,0 +1,327 @@
+משימה לניר: Public Jobs API למערכת Hiro
+==========================================
+
+מטרה
+-----
+להציג את המשרות הפתוחות מ-Hiro באתר hiro.co.il (ובהמשך גם ב-humand.co.il), ברמה של AllJobs, JobMaster ודרושים: חיפוש, סינון לפי תחום, אזור והיקף, עמוד משרה שמופיע ב-Google for Jobs, והגשת מועמדות ישירה למערכת.
+
+מצב היום
+---------
+ב-Agent API אין endpoint למשרות, ו-/api/jobs חסום לסוכנים. הוא גם לא מתאים לאתר ציבורי, כי הוא דורש התחברות ומיועד לכתיבה.
+צריך API נפרד: קריאה בלבד למשרות ולתחומים, ו-endpoint אחד של כתיבה להגשת מועמדות.
+
+הפרונט באתר כבר בנוי מול החוזה שבמסמך הזה (בריפו של האתר: lib/jobs/types.ts). אם משנים שם של שדה, לעדכן את גלעד.
+
+
+1. עקרונות
+-----------
+1.1  כתובת נפרדת: כל ה-endpoints תחת /api/public/v1/
+1.2  אימות שרת-לשרת: האתר קורא ל-API מהשרת שלו, לא מהדפדפן. כל אתר מקבל מפתח משלו, שנשלח בכותרת:
+       X-Hiro-Site-Key: <key>
+1.3  כמה אתרים מהיום הראשון: המפתח קובע אילו משרות האתר רואה.
+       hiro.co.il  - כל המשרות שסומנו לפרסום.
+       humand.co.il - רק המשרות של Humand.
+1.4  רק משרות שסומנו לפרסום: שדה חדש במשרה publishOnSite (כן/לא) ושדה publishedAt (תאריך פרסום).
+     משרה שלא סומנה לא חוזרת מה-API בשום מצב.
+1.5  לקוח אנונימי: שדה חדש isClientConfidential.
+     כשהוא true, ה-API לא מחזיר את שם הלקוח, הלוגו או ה-id שלו. במקומם חוזר displayCompanyName
+     שהמגייס כותב, למשל "חברת הייטק מובילה במרכז".
+1.6  שדות פנימיים לא חוזרים לעולם: שכר שהוצע ללקוח, עמלות, הערות פנימיות, אנשי קשר אצל הלקוח,
+     מועמדים שהוגשו, embeddings, משקלות ההתאמה.
+1.7  ביצועים: רשימת משרות תחזור תוך פחות מ-300ms. האתר שומר cache של 5 דקות ומתרענן מיד דרך webhook (סעיף 7).
+
+
+2. רשימת ה-endpoints
+---------------------
+GET  /api/public/v1/jobs                    רשימת משרות: חיפוש, סינון, מיון, עמודים וספירות לפילטרים
+GET  /api/public/v1/jobs/{slugOrId}         משרה בודדת, מלאה
+GET  /api/public/v1/jobs/{id}/similar       משרות דומות (?limit=6). אפשר להשתמש ב-embeddings הקיימים
+GET  /api/public/v1/taxonomy                תחומים, קלאסטרים, ערים ואזורים, לבניית הפילטרים (סעיף 6)
+GET  /api/public/v1/sitemap/jobs            רשימה רזה של כל המשרות הפעילות (slug, updatedAt) עבור Google
+POST /api/public/v1/jobs/{id}/applications  הגשת מועמדות עם קורות חיים (סעיף 5)
+
+
+3. GET /jobs: פרמטרים
+-----------------------
+פרמטר שמופיע כמה פעמים = בחירה מרובה. למשל: ?city=tel-aviv&city=ramat-gan
+בתוך אותו פילטר: "או". בין פילטרים שונים: "וגם".
+
+q               טקסט חופשי. מחפש בכותרת, בתיאור, בכישורים ובשם החברה.
+                חשוב: להשתמש בסינונימים מקטלוג התגיות, כך ש"הנהלת חשבונות" ימצא גם "מנהל/ת חשבונות".
+                אם אפשר, גם חיפוש וקטורי.
+cluster         קלאסטר תחומים (slug). ניתן לחזרה.
+category        תחום משרה (slug). ניתן לחזרה.
+subcategory     תת-תחום (slug), אם קיים אצלכם. ניתן לחזרה.
+city            עיר (slug מקטלוג הערים). ניתן לחזרה.
+region          אזור: north, haifa, sharon, center, jerusalem, shfela, south, judea-samaria. ניתן לחזרה.
+near            lat,lng לחיפוש לפי מרחק, יחד עם radiusKm (ברירת מחדל 25). שלב מאוחר.
+employmentType  full_time / part_time / shifts / temporary / freelance / internship / student. ניתן לחזרה.
+workModel       onsite (מהמשרד) / hybrid / remote (מהבית). ניתן לחזרה.
+seniority       entry / junior / mid / senior / lead / manager / executive. ניתן לחזרה.
+noExperience    true = רק משרות שלא דורשות ניסיון.
+suitableFor     students / soldiers / pensioners / disability / olim. ניתן לחזרה.
+salaryMin       שכר מינימלי בש"ח לחודש. משרות בלי שכר מפורסם לא נפסלות.
+postedWithin    1d / 3d / 7d / 30d
+companyId       רק לחברה שאינה אנונימית.
+sort            relevance (ברירת מחדל כשיש q) / newest (ברירת מחדל) / salary / distance
+page, limit     עמוד ומספר תוצאות. limit עד 50, ברירת מחדל 20.
+facets          true = להחזיר ספירות לכל ערך פילטר (ראו למטה).
+
+תשובה:
+{
+  "data": [ ...משרות בתבנית JobSummary... ],
+  "total": 412,
+  "page": 1,
+  "limit": 20,
+  "totalPages": 21,
+  "facets": {
+    "cluster":        [{ "value": "finance-admin", "label": "כספים ומשרד", "count": 70 }],
+    "category":       [{ "value": "bookkeeping", "label": "הנהלת חשבונות", "count": 48 }],
+    "city":           [{ "value": "tel-aviv", "label": "תל אביב-יפו", "count": 131 }],
+    "region":         [{ "value": "center", "label": "מרכז", "count": 210 }],
+    "employmentType": [{ "value": "full_time", "label": "משרה מלאה", "count": 300 }],
+    "workModel":      [{ "value": "hybrid", "label": "היברידי", "count": 77 }],
+    "seniority":      [{ "value": "mid", "label": "ניסיון בינוני", "count": 120 }]
+  }
+}
+
+על ה-facets: זה מה שהופך את הסינון לרמה של הרשתות הגדולות. ליד כל אפשרות מופיע כמה משרות יש בה.
+כל ספירה מחושבת על התוצאות בלי הפילטר של אותה קבוצה. כך, כשבוחרים "תל אביב", עדיין רואים כמה משרות
+יש ברמת גן ואפשר להוסיף אותה.
+
+
+4. שדות המשרה
+--------------
+4.1 JobSummary: משרה ברשימה
+
+id                   uuid (חובה)
+slug                 כתובת קבועה לעמוד המשרה, באנגלית ומקפים, עם מספר המשרה בסוף. חובה.
+                     דוגמה: bookkeeper-level-3-petah-tikva-4821
+                     לא משתנה כשמשנים את הכותרת.
+jobNumber            מספר משרה קצר לתצוגה ("משרה 4821"). מועמדים מצטטים אותו בטלפון. חובה.
+title                הכותרת כפי שהמגייס כתב. חובה.
+normalizedRoleTagId  תגית התפקיד מקטלוג התגיות (type=role). לא חובה. עוזר למשרות דומות.
+company              פרטי החברה (4.3). חובה.
+cluster              { slug, label } הקלאסטר. חובה.
+category             { slug, label } תחום המשרה. חובה.
+subcategory          { slug, label } תת-תחום, אם קיים.
+locations            רשימת מיקומים (4.4). לפחות אחד, אלא אם המשרה מהבית.
+employmentType       רשימה, משרה יכולה להיות גם מלאה וגם במשמרות. חובה.
+workModel            onsite / hybrid / remote. חובה.
+seniority            רמת ותק. לא חובה.
+experienceYearsMin   שנות ניסיון מינימום. 0 = ללא ניסיון.
+salary               שכר (4.5). רק אם המגייס בחר לפרסם.
+teaser               1-2 שורות לכרטיס ברשימה, עד 180 תווים. חובה. אפשר לייצר אוטומטית מהתיאור.
+skills               עד 8 כישורים מקטלוג התגיות (type=skill): [{ tagId, label }]
+tags                 תגיות שיווקיות: urgent (דחוף), hot (משרה חמה), no_experience, students, relocation
+publishedAt          תאריך הפרסום באתר (לא תאריך פתיחת המשרה במערכת). חובה.
+updatedAt            תאריך עדכון אחרון. חובה.
+validThrough         עד מתי המשרה פתוחה. מאוד מומלץ, Google for Jobs דורש אותו.
+
+4.2 JobDetail: עמוד משרה = כל שדות JobSummary, ובנוסף:
+
+description          על התפקיד. HTML פשוט בלבד (p, ul, ol, li, strong, em, br, h3). חובה.
+responsibilities     תחומי אחריות, רשימת שורות.
+requirements         דרישות חובה, רשימת שורות. חובה.
+niceToHave           יתרון, רשימת שורות.
+benefits             תנאים והטבות, רשימת שורות (קרן השתלמות, חניה, ארוחות...).
+education            { level, field } כאשר level הוא none / high_school / certificate / bachelor / master / phd
+languages            [{ language: "en", level: "basic" / "good" / "high" / "native" }]
+drivingLicense       { required: true/false, type: "B" / "C1" / "C" / "E" }
+requiresCar          true/false
+hoursDescription     טקסט חופשי, למשל "א׳-ה׳ 08:00-17:00"
+startDate            "immediate" או תאריך
+positionsCount       מספר תקנים
+recruiter            { displayName, title, photoUrl } רק שם פרטי ותמונה. בלי טלפון ובלי מייל.
+apply                הגדרות הגשה (סעיף 5). חובה.
+seo                  { title, description } דריסה ידנית לגוגל. לא חובה.
+status               "open" או "closed". חובה. ראו סעיף 8.
+
+4.3 company: פרטי החברה
+
+לקוח רגיל:
+  confidential  false
+  id            ה-id של ה-Organization מהקטלוג
+  name          name מה-Organization
+  logoUrl       logo מה-Organization. כתובת https ציבורית, רצוי ריבועי, מינימום 200x200
+  website       website
+  industry      mainField + subField
+  sizeRange     לפי employeeCount, למשל "51-200"
+  about         description, קצר
+  hq            location
+
+לקוח אנונימי:
+  confidential  true
+  displayName   התיאור שהמגייס כתב
+  industry      אופציונלי
+  sizeRange     אופציונלי
+
+כל שדות החברה כבר קיימים ב-Organization. רוב העבודה היא לחבר משרה ללקוח, ולקוח ל-Organization
+(ה-organization-link כבר קיים).
+
+4.4 locations: מיקום
+
+{ "citySlug": "petah-tikva", "cityName": "פתח תקווה", "regionSlug": "center", "regionName": "מרכז",
+  "address": "אבא הלל 12", "lat": 32.0871, "lng": 34.8875 }
+
+הערים מקטלוג הערים הקיים (אותו קטלוג שמוודא את location ב-Organization). כל עיר משויכת לאזור.
+address חוזר רק אם המגייס סימן "להציג כתובת".
+
+4.5 salary: שכר
+
+{ "min": 12000, "max": 15000, "currency": "ILS", "period": "month", "isEstimate": false }
+period: hour / month / year. אפשר לשלוח רק min או רק max.
+
+
+5. הגשת מועמדות
+----------------
+5.1 בתוך המשרה מגיע apply:
+
+{
+  "method": "hiro",
+  "requiresCv": true,
+  "questions": [
+    { "id": "q1", "type": "yes_no", "label": "יש לך ניסיון עם Priority?", "required": true },
+    { "id": "q2", "type": "text", "label": "ציפיות שכר", "required": false }
+  ],
+  "externalUrl": null
+}
+
+method: "hiro" = טופס באתר שנשמר ב-Hiro. "external" = הפניה ל-externalUrl.
+סוגי שאלות סינון: yes_no / text / number / select (עם options).
+
+5.2 POST /jobs/{id}/applications
+נשלח כ-multipart/form-data מהשרת של האתר.
+
+fullName   חובה
+phone      חובה. לנרמל לפורמט ישראלי.
+email      לא חובה
+cv         קובץ PDF / DOC / DOCX עד 5MB. חובה אם requiresCv.
+answers    JSON, למשל {"q1":"yes","q2":"13000"}
+consent    true. הסכמה למדיניות הפרטיות. חובה.
+source     hiro.co.il או humand.co.il. נקבע לפי המפתח.
+utm        JSON עם utm_source / utm_medium / utm_campaign, למדידת ערוצים.
+
+מה המערכת עושה:
+  1. מחפשת מועמד קיים לפי טלפון או מייל. אם יש, מצרפת ומעדכנת קורות חיים.
+     אם אין, יוצרת מועמד חדש עם הפרסור הקיים של קורות חיים.
+  2. משייכת את המועמד למשרה בסטטוס "מועמד חדש (לסינון)", עם מקור גיוס "אתר Hiro" או "אתר Humand".
+  3. מחזירה 201 עם { "applicationId": "..." }
+  4. אם המועמד כבר הגיש למשרה הזו: מחזירה 409 עם { "code": "ALREADY_APPLIED" }
+  5. הגנות: הגבלת קצב לפי IP ולפי טלפון (האתר מעביר X-Forwarded-For), ובדיקת סוג קובץ אמיתית,
+     לא רק לפי הסיומת.
+
+בהמשך (לא לשלב הראשון): "הגשה בלחיצה" למועמד שמחובר לאפליקציה, עם הפרופיל הקיים. דורש התחברות משותפת
+בין האתר ל-app.hiro.co.il.
+
+
+6. תחומי משרה וקלאסטרים (חדש)
+------------------------------
+תחומי המשרה מנוהלים ב-Hiro דרך האדמין, עם קלאסטרים. האתר צריך לקרוא אותם מה-API ולא להחזיק עותק משלו,
+כדי שכל שינוי באדמין יופיע באתר אוטומטית.
+
+GET /api/public/v1/taxonomy מחזיר:
+
+{
+  "clusters": [
+    {
+      "slug": "finance-admin",
+      "label": "כספים ומשרד",
+      "count": 70,
+      "categories": [
+        { "slug": "bookkeeping", "label": "הנהלת חשבונות", "count": 31, "synonyms": ["מנהל/ת חשבונות", "הנה\"ח"] },
+        { "slug": "payroll", "label": "חשבות שכר", "count": 9, "synonyms": [] }
+      ]
+    }
+  ],
+  "regions": [
+    {
+      "slug": "center", "label": "מרכז", "count": 210,
+      "cities": [ { "slug": "petah-tikva", "label": "פתח תקווה", "count": 22, "lat": 32.08, "lng": 34.88 } ]
+    }
+  ],
+  "employmentTypes": [ { "value": "full_time", "label": "משרה מלאה" } ],
+  "seniorities":     [ { "value": "mid", "label": "ניסיון בינוני (3-5 שנים)" } ]
+}
+
+דרישות:
+  - slug קבוע לכל קלאסטר ולכל תחום, באנגלית. הוא נכנס לכתובות של האתר (למשל /jobs?category=bookkeeping),
+    ולכן אסור שישתנה כשמשנים את השם בעברית. אם כרגע אין slug, צריך להוסיף שדה כזה בניהול התחומים באדמין.
+  - כשמאחדים תחומים באדמין: לשמור את ה-slug הישן כ"הפניה" לחדש (שדה redirects או aliases), כדי
+    שכתובות ישנות באתר ובגוגל ימשיכו לעבוד.
+  - count = מספר המשרות הפעילות שסומנו לפרסום, לפי האתר של המפתח. תחום עם 0 משרות עדיין חוזר
+    (האתר מחליט אם להציג).
+  - synonyms: אם יש לתחום מילים נרדפות, להחזיר אותן. האתר משתמש בהן להשלמה אוטומטית בחיפוש.
+  - כל משרה מחזירה את cluster ו-category שלה באותם slugs (סעיף 4.1).
+
+
+7. Webhook לרענון מיידי
+------------------------
+כדי שמשרה חדשה תופיע באתר תוך שניות ולא תוך 5 דקות:
+
+POST https://hiro.co.il/api/revalidate
+כותרת: X-Hiro-Signature = HMAC-SHA256 של גוף הבקשה, עם secret משותף (hex)
+גוף:   { "event": "job.published" | "job.updated" | "job.closed" | "taxonomy.updated", "jobId": "...", "slug": "...", "site": "hiro.co.il" }
+
+לשלוח בכל פרסום, עדכון או סגירה של משרה שמסומנת לפרסום, ובכל שינוי בתחומים באדמין.
+בצד האתר זה כבר מוכן.
+
+
+8. משרות שנסגרות (חשוב לגוגל)
+-------------------------------
+- משרה שנסגרה או ירדה מפרסום לא נעלמת מיד. GET /jobs/{slug} ממשיך להחזיר אותה עם status: "closed"
+  למשך 30 יום. האתר מציג "המשרה כבר לא פתוחה" עם משרות דומות, ומוריד אותה מ-Google for Jobs.
+- אחרי 30 יום: להחזיר 410.
+- משרה שלא קיימת בכלל: 404.
+- ברשימה (GET /jobs) משרה סגורה לא מופיעה.
+
+
+9. מה להוסיף במסך המשרה ב-Hiro (בשביל המגייסים)
+-------------------------------------------------
+טאב חדש "פרסום באתר":
+  [ ] מתג "פרסם באתר", ובחירת אתרים (Hiro / Humand) אם רלוונטי
+  [ ] "לקוח אנונימי" + שדה "שם לתצוגה"
+  [ ] כותרת לפרסום (ברירת מחדל: שם המשרה)
+  [ ] קלאסטר ותחום (מתוך ניהול התחומים)
+  [ ] עיר או ערים + "להציג כתובת"
+  [ ] היקף (בחירה מרובה), מודל עבודה, ותק, "ללא ניסיון", "מתאים ל..."
+  [ ] שכר: טווח + "לפרסם שכר" (כבוי כברירת מחדל)
+  [ ] תיאור, תחומי אחריות, דרישות, יתרון, הטבות.
+      רעיון שיחסוך המון זמן: כפתור "נסח בעזרת AI" שממלא את כל אלה מהמשרה הפנימית.
+  [ ] שאלות סינון (לא חובה)
+  [ ] תוקף פרסום (ברירת מחדל 30 יום)
+  [ ] תצוגה מקדימה של עמוד המשרה באתר
+
+
+10. סדר עבודה מוצע
+-------------------
+שלב 1: GET /jobs (בלי facets) + GET /jobs/{slug} + publishOnSite + לקוח אנונימי
+        => אפשר לעלות לאוויר עם משרות אמיתיות.
+שלב 2: POST /applications
+        => בלי זה, המועמד נשלח לטופס חיצוני.
+שלב 3: GET /taxonomy (תחומים וקלאסטרים) + facets + חיפוש עם סינונימים
+        => סינון ברמה של הרשתות הגדולות.
+שלב 4: webhook + sitemap/jobs + טיפול במשרות סגורות (closed / 410)
+        => גוגל ו-Google for Jobs.
+שלב 5: משרות דומות, חיפוש לפי מרחק, הגשה בלחיצה.
+
+
+11. בדיקות קבלה
+----------------
+  [ ] משרה שלא סומנה לפרסום לא מופיעה ברשימה, ומחזירה 404 גם בגישה ישירה.
+  [ ] משרה של לקוח אנונימי: אין id, name או logoUrl של החברה בשום תשובה, כולל במשרות דומות.
+  [ ] המפתח של Humand לא רואה משרות של לקוחות אחרים.
+  [ ] חיפוש "הנהלת חשבונות" מוצא משרה שהכותרת שלה "מנהל/ת חשבונות".
+  [ ] הספירות בפילטרים נכונות כשבוחרים שתי ערים.
+  [ ] שינוי שם של תחום באדמין לא משנה את ה-slug שלו.
+  [ ] הגשה עם טלפון של מועמד קיים לא יוצרת מועמד כפול.
+  [ ] הגשה שנייה לאותה משרה מחזירה 409.
+  [ ] משרה שנסגרה מחזירה status: closed, ואחרי 30 יום 410.
+  [ ] אין שדות פנימיים באף תשובה.
+
+
+משתני סביבה שהאתר יצטרך (גלעד מגדיר ב-Vercel)
+-------------------------------------------------
+HIRO_JOBS_API_URL      כתובת השרת, למשל https://api.hiro.co.il
+HIRO_JOBS_SITE_KEY     המפתח של hiro.co.il
+HIRO_WEBHOOK_SECRET    ה-secret המשותף לחתימת ה-webhook

@@ -1,4 +1,4 @@
-// Contract for the Hiro Public Jobs API. Mirrors docs/HIRO_PUBLIC_JOBS_API.md;
+// Contract for the Hiro Public Jobs API. Mirrors docs/HIRO_PUBLIC_JOBS_API.txt;
 // change both together.
 
 export type EmploymentType = 'full_time' | 'part_time' | 'shifts' | 'temporary' | 'freelance' | 'internship' | 'student'

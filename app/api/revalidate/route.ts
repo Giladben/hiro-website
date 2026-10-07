@@ -3,7 +3,7 @@ import { revalidateTag } from 'next/cache'
 import { NextResponse } from 'next/server'
 import { JOBS_TAG } from '@/lib/jobs/source'
 
-/** Webhook from Hiro on job.published / job.updated / job.closed (see docs/HIRO_PUBLIC_JOBS_API.md §6). */
+/** Webhook from Hiro on job.published / job.updated / job.closed (see docs/HIRO_PUBLIC_JOBS_API.txt §7). */
 export async function POST(req: Request) {
   const secret = process.env.HIRO_WEBHOOK_SECRET
   if (!secret) return NextResponse.json({ message: 'Not configured' }, { status: 404 })
