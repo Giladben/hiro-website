@@ -2,9 +2,12 @@
 
 import { useRouter } from 'next/navigation'
 import { createContext, useContext, useEffect, useState, useTransition } from 'react'
-import { POSTED_LABELS, SORT_LABELS } from '@/lib/jobs/labels'
+import { POSTED_LABELS, SORT_LABELS, labelsFrom } from '@/lib/jobs/labels'
 import { activeFilterCount, toHref } from '@/lib/jobs/query'
-import type { FacetKey, FacetValue, JobsQuery, PostedWithin, SortKey, Taxonomy } from '@/lib/jobs/types'
+import type { FacetKey, FacetValue, JobsQuery, Taxonomy } from '@/lib/jobs/types'
+
+type SortKey = NonNullable<JobsQuery['sort']>
+type PostedWithin = NonNullable<JobsQuery['postedWithin']>
 import s from './jobs.module.css'
 
 /* Shared navigation: every control writes the URL; the server page re-renders. */
@@ -67,13 +70,13 @@ export function SearchBar({ query, taxonomy }: { query: JobsQuery; taxonomy: Tax
 }
 
 /* ───────── Quick chips ───────── */
-export function QuickChips({ query }: { query: JobsQuery }) {
+export function QuickChips({ query, taxonomy }: { query: JobsQuery; taxonomy: Taxonomy }) {
   const { go } = useContext(NavCtx)
+  // The busiest clusters from the taxonomy, plus two site-level shortcuts
+  const top = [...taxonomy.clusters].filter(c => c.count > 0).sort((a, b) => b.count - a.count).slice(0, 6)
   const chips: { label: string; on: boolean; apply: (q: JobsQuery) => JobsQuery }[] = [
+    ...top.map(c => ({ label: c.label, on: !!query.cluster?.includes(c.slug), apply: (q: JobsQuery) => ({ ...q, cluster: toggle(q.cluster, c.slug) }) })),
     { label: 'ללא ניסיון', on: !!query.noExperience, apply: q => ({ ...q, noExperience: q.noExperience ? undefined : true }) },
-    { label: 'מהבית', on: !!query.workModel?.includes('remote'), apply: q => ({ ...q, workModel: toggle(q.workModel, 'remote') }) },
-    { label: 'משרה חלקית', on: !!query.employmentType?.includes('part_time'), apply: q => ({ ...q, employmentType: toggle(q.employmentType, 'part_time') }) },
-    { label: 'מתאים לסטודנטים', on: !!query.suitableFor?.includes('students'), apply: q => ({ ...q, suitableFor: toggle(q.suitableFor, 'students') }) },
     { label: 'פורסמו היום', on: query.postedWithin === '1d', apply: q => ({ ...q, postedWithin: q.postedWithin === '1d' ? undefined : '1d' }) },
   ]
   return (
@@ -106,16 +109,21 @@ export function SortSelect({ query }: { query: JobsQuery }) {
 }
 
 /* ───────── Filters (sidebar / drawer) ───────── */
+// Group titles are site copy; the values inside each group come from the API facets.
 const GROUPS: { key: FacetKey; title: string; initial: number }[] = [
-  { key: 'category', title: 'תחום', initial: 6 },
+  { key: 'cluster', title: 'תחום', initial: 8 },
+  { key: 'category', title: 'תחום משרה', initial: 6 },
+  { key: 'industry', title: 'תעשייה', initial: 6 },
   { key: 'region', title: 'אזור', initial: 8 },
   { key: 'city', title: 'עיר', initial: 6 },
-  { key: 'employmentType', title: 'היקף משרה', initial: 7 },
-  { key: 'workModel', title: 'מקום עבודה', initial: 3 },
-  { key: 'seniority', title: 'ניסיון', initial: 7 },
+  { key: 'employmentType', title: 'היקף משרה', initial: 6 },
+  { key: 'workModel', title: 'מקום עבודה', initial: 4 },
+  { key: 'seniority', title: 'ניסיון', initial: 6 },
+  { key: 'suitableFor', title: 'מתאים ל...', initial: 6 },
 ]
 
-export function Filters({ query, facets, total }: { query: JobsQuery; facets: Partial<Record<FacetKey, FacetValue[]>>; total: number }) {
+export function Filters({ query, facets, total, taxonomy }: { query: JobsQuery; facets: Partial<Record<FacetKey, FacetValue[]>>; total: number; taxonomy: Taxonomy }) {
+  const lx = labelsFrom(taxonomy)
   const { go, pending } = useContext(NavCtx)
   const [open, setOpen] = useState(false)
   const count = activeFilterCount(query)
@@ -146,7 +154,7 @@ export function Filters({ query, facets, total }: { query: JobsQuery; facets: Pa
         const values = facets[g.key] ?? []
         const selected = (query[g.key] as string[] | undefined) ?? []
         if (!values.length && !selected.length) return null
-        return <FacetGroup key={g.key} title={g.title} values={values} selected={selected} initial={g.initial} onToggle={v => toggleValue(g.key, v)} />
+        return <FacetGroup key={g.key} title={g.title} values={values} selected={selected} initial={g.initial} label={lx[g.key]} onToggle={v => toggleValue(g.key, v)} />
       })}
       <fieldset className={s.fGroup}>
         <legend>תאריך פרסום</legend>
@@ -183,11 +191,11 @@ export function Filters({ query, facets, total }: { query: JobsQuery; facets: Pa
   )
 }
 
-function FacetGroup({ title, values, selected, initial, onToggle }: { title: string; values: FacetValue[]; selected: string[]; initial: number; onToggle: (v: string) => void }) {
+function FacetGroup({ title, values, selected, initial, label, onToggle }: { title: string; values: FacetValue[]; selected: string[]; initial: number; label: (v: string) => string; onToggle: (v: string) => void }) {
   const [more, setMore] = useState(false)
   // selected values always stay visible, even if they have 0 results now
   const list = [...values]
-  for (const v of selected) if (!list.some(x => x.value === v)) list.push({ value: v, label: v, count: 0 })
+  for (const v of selected) if (!list.some(x => x.value === v)) list.push({ value: v, label: label(v), count: 0 })
   const shown = more ? list : list.slice(0, initial)
   return (
     <fieldset className={s.fGroup}>

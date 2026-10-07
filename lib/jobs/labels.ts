@@ -1,52 +1,59 @@
-import type { EmploymentType, JobSummary, PostedWithin, Salary, Seniority, SortKey, SuitableFor, WorkModel } from './types'
+import type { JobSummary, Salary, Taxonomy } from './types'
 
-export const EMPLOYMENT_LABELS: Record<EmploymentType, string> = {
-  full_time: 'משרה מלאה',
-  part_time: 'משרה חלקית',
-  shifts: 'משמרות',
-  temporary: 'זמנית',
-  freelance: 'פרילנס',
-  internship: 'התמחות',
-  student: 'משרת סטודנט',
+/**
+ * Value → label lookups built from GET /taxonomy. The site has no label lists
+ * of its own; an unknown value falls back to the raw value.
+ */
+export type Labels = {
+  employmentType: (v: string) => string
+  workModel: (v: string) => string
+  seniority: (v: string) => string
+  suitableFor: (v: string) => string
+  tag: (v: string) => string
+  cluster: (slug: string) => string
+  category: (slug: string) => string
+  industry: (slug: string) => string
+  region: (slug: string) => string
+  city: (slug: string) => string
 }
 
-export const WORK_MODEL_LABELS: Record<WorkModel, string> = {
-  onsite: 'מהמשרד',
-  hybrid: 'היברידי',
-  remote: 'מהבית',
+const lookup = (entries: { value?: string; slug?: string; label: string }[]) => {
+  const m = new Map(entries.map(e => [(e.value ?? e.slug)!, e.label]))
+  return (v: string) => m.get(v) ?? v
 }
 
-export const SENIORITY_LABELS: Record<Seniority, string> = {
-  entry: 'ללא ניסיון',
-  junior: 'ג׳וניור (1–2 שנים)',
-  mid: 'ניסיון בינוני (3–5)',
-  senior: 'בכיר (5+)',
-  lead: 'ראש צוות',
-  manager: 'ניהול',
-  executive: 'הנהלה בכירה',
+export function labelsFrom(t: Taxonomy): Labels {
+  return {
+    employmentType: lookup(t.employmentTypes),
+    workModel: lookup(t.workModels),
+    seniority: lookup(t.seniorities),
+    suitableFor: lookup(t.suitableFor),
+    tag: lookup(t.marketingTags),
+    cluster: lookup(t.clusters),
+    category: lookup(t.clusters.flatMap(c => c.categories)),
+    industry: lookup(t.industries),
+    region: lookup(t.regions),
+    city: lookup(t.regions.flatMap(r => r.cities)),
+  }
 }
 
-export const SUITABLE_LABELS: Record<SuitableFor, string> = {
-  students: 'סטודנטים',
-  soldiers: 'חיילים משוחררים',
-  pensioners: 'גמלאים',
-  disability: 'אנשים עם מוגבלות',
-  olim: 'עולים חדשים',
-}
+/* ───────── Site UI options (not domain catalogs) ───────── */
 
-export const POSTED_LABELS: Record<PostedWithin, string> = {
+export const POSTED_LABELS = {
   '1d': '24 השעות האחרונות',
   '3d': '3 ימים אחרונים',
   '7d': 'השבוע האחרון',
   '30d': 'החודש האחרון',
-}
+} as const
 
-export const SORT_LABELS: Record<SortKey, string> = {
+export const SORT_LABELS = {
   relevance: 'הכי רלוונטי',
   newest: 'הכי חדש',
   salary: 'שכר גבוה',
   distance: 'הכי קרוב',
-}
+} as const
+
+/* ───────── Formatting ───────── */
 
 const nf = new Intl.NumberFormat('he-IL')
 
@@ -73,12 +80,12 @@ export function timeAgo(iso: string, now = Date.now()) {
   return new Date(iso).toLocaleDateString('he-IL', { day: 'numeric', month: 'long' })
 }
 
+/** Name shown for the employer: the client, or for confidential jobs the publishing agency. */
 export function companyName(j: Pick<JobSummary, 'company'>) {
-  return j.company.confidential ? j.company.displayName : j.company.name
+  return j.company.confidential ? j.company.publisher.name : j.company.name
 }
 
-export function locationLabel(j: Pick<JobSummary, 'locations' | 'workModel'>) {
-  if (j.workModel === 'remote' && j.locations.length === 0) return 'מהבית'
+export function locationLabel(j: Pick<JobSummary, 'locations'>) {
   const names = j.locations.map(l => l.cityName)
   if (names.length <= 2) return names.join(', ')
   return `${names[0]} ועוד ${names.length - 1}`
@@ -88,7 +95,6 @@ export function isNew(j: Pick<JobSummary, 'publishedAt'>, now = Date.now()) {
   return now - new Date(j.publishedAt).getTime() < 48 * 36e5
 }
 
-/** Keep numeric ranges in free text ("08:00–17:00") in reading order inside RTL lines. */
-export function isolateRanges(text: string) {
-  return text.replace(/\d[\d:.,]*\s*[–\-]\s*\d[\d:.,]*/g, m => `⁦${m}⁩`)
+export function isNoExperience(j: Pick<JobSummary, 'noExperience' | 'experienceYearsMin'>) {
+  return j.noExperience === true || j.experienceYearsMin === 0
 }

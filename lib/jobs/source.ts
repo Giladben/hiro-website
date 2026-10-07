@@ -1,5 +1,5 @@
 import { FIXTURE_JOBS, fixtureTaxonomy } from './fixtures'
-import { EMPLOYMENT_LABELS, SENIORITY_LABELS, WORK_MODEL_LABELS } from './labels'
+import { labelsFrom } from './labels'
 import type { FacetKey, FacetValue, JobDetail, JobSummary, JobsPage, JobsQuery, Taxonomy } from './types'
 
 /**
@@ -62,11 +62,11 @@ export async function getSimilar(job: JobSummary, limit = 4): Promise<JobSummary
   }
   return FIXTURE_JOBS
     .filter(j => j.id !== job.id)
-    .map(j => ({ j, s: (j.subcategory?.slug === job.subcategory?.slug ? 3 : 0) + (j.category.slug === job.category.slug ? 2 : 0) + (j.locations[0]?.regionSlug === job.locations[0]?.regionSlug ? 1 : 0) }))
+    .map(j => ({ j, s: (j.category.slug === job.category.slug ? 3 : 0) + (j.cluster.slug === job.cluster.slug ? 2 : 0) + (j.locations[0]?.regionSlug === job.locations[0]?.regionSlug ? 1 : 0) }))
     .filter(x => x.s > 0)
     .sort((a, b) => b.s - a.s)
     .slice(0, limit)
-    .map(x => x.j)
+    .map(x => toSummary(x.j))
 }
 
 export async function getTaxonomy(): Promise<Taxonomy> {
@@ -82,108 +82,106 @@ export async function listJobSlugs(): Promise<{ slug: string; updatedAt: string 
 
 /* ───────────────────────── Fixture search engine ─────────────────────────
    Same semantics the real API must implement: OR inside a filter, AND between
-   filters, disjunctive facet counts. */
+   filters, disjunctive facet counts, synonyms from the taxonomy. Labels come
+   from the (fixture) taxonomy, never from lists in the site. */
 
 const norm = (s: string) => s
   .replace(/[֑-ׇ]/g, '')
-  .replace(/\/(ת|ית|ה|ות|ים)\b/g, '')
+  .replace(/\/(ת|ית|ה|ות|ים|אשת)\b/g, '')
   .replace(/["'״׳]/g, '')
   .toLowerCase()
 
-const SYNONYMS: [RegExp, string][] = [
-  [/הנהלת חשבונות|מנהלת חשבונות|מנהל חשבונות|הנה״ח|הנהח/g, 'חשבונות'],
-  [/מתכנת|מפתח|developer|dev\b/g, 'פיתוח'],
-  [/נציג|נציגה/g, 'נציג'],
-]
-const canon = (s: string) => SYNONYMS.reduce((acc, [re, to]) => acc.replace(re, to), norm(s))
-
-function haystack(j: JobDetail) {
-  const company = j.company.confidential ? j.company.displayName : j.company.name
-  return canon([j.title, j.teaser, company, j.category.label, j.subcategory?.label, ...(j.skills ?? []).map(s => s.label), ...j.requirements].join(' '))
+/** Expand a free-text query with category synonyms: "מחסנאי" also matches "מחסנאות וליקוט". */
+function expandQuery(q: string, tax: Taxonomy) {
+  const words = norm(q).split(/\s+/).filter(Boolean)
+  const cats = tax.clusters.flatMap(c => c.categories)
+  const hits = cats.filter(c => [c.label, ...(c.synonyms ?? [])].some(s => { const n = norm(s); return n.includes(norm(q)) || norm(q).includes(n) }))
+  return { words, categorySlugs: new Set(hits.map(c => c.slug)) }
 }
 
-type Pred = (j: JobDetail) => boolean
-const any = <T,>(sel: T[] | undefined, test: (v: T) => boolean) => !sel?.length || sel.some(test)
+function haystack(j: JobDetail) {
+  const company = j.company.confidential ? '' : j.company.name
+  return norm([j.title, j.teaser, company, j.cluster.label, j.category.label, j.industry?.label, j.role?.label, ...(j.skills ?? []).map(s => s.label), ...j.requirements].join(' '))
+}
 
-function predicates(q: JobsQuery): Partial<Record<FacetKey | 'rest', Pred>> {
-  const terms = q.q ? canon(q.q).split(/\s+/).filter(Boolean) : []
-  const posted = q.postedWithin ? { '1d': 1, '3d': 3, '7d': 7, '30d': 30 }[q.postedWithin] * 24 * 36e5 : 0
-  return {
-    category: j => any(q.category, c => j.category.slug === c),
-    region: j => any(q.region, r => j.locations.some(l => l.regionSlug === r)),
-    city: j => any(q.city, c => j.locations.some(l => l.citySlug === c)),
-    employmentType: j => any(q.employmentType, t => j.employmentType.includes(t)),
-    workModel: j => any(q.workModel, w => j.workModel === w),
-    seniority: j => any(q.seniority, s => j.seniority === s),
+const any = (sel: string[] | undefined, test: (v: string) => boolean) => !sel?.length || sel.some(test)
+
+function fixtureSearch(q: JobsQuery): JobsPage {
+  const tax = fixtureTaxonomy()
+  const exp = q.q ? expandQuery(q.q, tax) : null
+  const postedMs = q.postedWithin ? { '1d': 1, '3d': 3, '7d': 7, '30d': 30 }[q.postedWithin] * 864e5 : 0
+
+  const preds: Record<FacetKey | 'rest', (j: JobDetail) => boolean> = {
+    cluster: j => any(q.cluster, v => j.cluster.slug === v),
+    category: j => any(q.category, v => j.category.slug === v),
+    industry: j => any(q.industry, v => j.industry?.slug === v),
+    region: j => any(q.region, v => j.locations.some(l => l.regionSlug === v)),
+    city: j => any(q.city, v => j.locations.some(l => l.citySlug === v)),
+    employmentType: j => any(q.employmentType, v => j.employmentType.includes(v)),
+    workModel: j => any(q.workModel, v => j.workModel === v),
+    seniority: j => any(q.seniority, v => j.seniority === v),
+    suitableFor: j => any(q.suitableFor, v => !!j.suitableFor?.includes(v)),
     rest: j => {
-      if (terms.length) { const h = haystack(j); if (!terms.every(t => h.includes(t))) return false }
-      if (!any(q.subcategory, s => j.subcategory?.slug === s)) return false
-      if (q.noExperience && !((j.experienceYearsMin ?? 99) === 0 || j.tags?.includes('no_experience'))) return false
-      if (q.suitableFor?.includes('students') && !(j.tags?.includes('students') || j.employmentType.includes('student'))) return false
+      if (exp) {
+        const h = haystack(j)
+        if (!exp.categorySlugs.has(j.category.slug) && !exp.words.every(w => h.includes(w))) return false
+      }
+      if (q.noExperience && !(j.noExperience || j.experienceYearsMin === 0)) return false
+      if (q.companySlug && (j.company.confidential || j.company.slug !== q.companySlug)) return false
       if (q.salaryMin && j.salary) {
         const monthly = (j.salary.max ?? j.salary.min ?? 0) * (j.salary.period === 'hour' ? 186 : j.salary.period === 'year' ? 1 / 12 : 1)
         if (monthly < q.salaryMin) return false
       }
-      if (posted && Date.now() - new Date(j.publishedAt).getTime() > posted) return false
+      if (postedMs && Date.now() - new Date(j.publishedAt).getTime() > postedMs) return false
       return true
     },
   }
-}
-
-function fixtureSearch(q: JobsQuery): JobsPage {
-  const preds = predicates(q)
   const keys = Object.keys(preds) as (keyof typeof preds)[]
-  const matchExcept = (j: JobDetail, skip?: FacetKey) => keys.every(k => k === skip || preds[k]!(j))
+  const matchExcept = (j: JobDetail, skip?: FacetKey) => keys.every(k => k === skip || preds[k](j))
 
   let rows = FIXTURE_JOBS.filter(j => matchExcept(j))
+  const monthly = (j: JobDetail) => (j.salary ? (j.salary.max ?? j.salary.min ?? 0) * (j.salary.period === 'hour' ? 186 : 1) : -1)
   const sort = q.sort ?? (q.q ? 'relevance' : 'newest')
-  if (sort === 'salary') {
-    const m = (j: JobDetail) => j.salary ? (j.salary.max ?? j.salary.min ?? 0) * (j.salary.period === 'hour' ? 186 : 1) : -1
-    rows = [...rows].sort((a, b) => m(b) - m(a))
-  } else if (sort === 'relevance' && q.q) {
-    const t = canon(q.q)
-    rows = [...rows].sort((a, b) => Number(canon(b.title).includes(t)) - Number(canon(a.title).includes(t)) || +new Date(b.publishedAt) - +new Date(a.publishedAt))
-  } else {
-    rows = [...rows].sort((a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt))
-  }
+  rows = [...rows].sort((a, b) =>
+    sort === 'salary' ? monthly(b) - monthly(a)
+      : sort === 'relevance' && exp ? Number(exp.categorySlugs.has(b.category.slug)) - Number(exp.categorySlugs.has(a.category.slug)) || +new Date(b.publishedAt) - +new Date(a.publishedAt)
+        : +new Date(b.publishedAt) - +new Date(a.publishedAt))
 
-  const facet = (key: FacetKey, values: (j: JobDetail) => [string, string][]) => {
-    const counts = new Map<string, FacetValue>()
+  const lx = labelsFrom(tax)
+  const facet = (key: FacetKey, values: (j: JobDetail) => string[], label: (v: string) => string): FacetValue[] => {
+    const counts = new Map<string, number>()
     for (const j of FIXTURE_JOBS) {
       if (!matchExcept(j, key)) continue
-      const seen = new Set<string>()
-      for (const [value, label] of values(j)) {
-        if (seen.has(value)) continue
-        seen.add(value)
-        const f = counts.get(value) ?? { value, label, count: 0 }
-        f.count += 1
-        counts.set(value, f)
-      }
+      for (const v of new Set(values(j))) counts.set(v, (counts.get(v) ?? 0) + 1)
     }
-    return [...counts.values()].sort((a, b) => b.count - a.count)
+    return [...counts].map(([value, count]) => ({ value, label: label(value), count })).sort((a, b) => b.count - a.count)
   }
 
   const limit = Math.min(q.limit ?? 20, 50)
   const page = Math.max(1, q.page ?? 1)
-  const totalPages = Math.max(1, Math.ceil(rows.length / limit))
   return {
     data: rows.slice((page - 1) * limit, page * limit).map(toSummary),
     total: rows.length,
     page,
     limit,
-    totalPages,
+    totalPages: Math.max(1, Math.ceil(rows.length / limit)),
     facets: {
-      category: facet('category', j => [[j.category.slug, j.category.label]]),
-      region: facet('region', j => j.locations.map(l => [l.regionSlug, l.regionName])),
-      city: facet('city', j => j.locations.map(l => [l.citySlug, l.cityName])),
-      employmentType: facet('employmentType', j => j.employmentType.map(t => [t, EMPLOYMENT_LABELS[t]])),
-      workModel: facet('workModel', j => [[j.workModel, WORK_MODEL_LABELS[j.workModel]]]),
-      seniority: facet('seniority', j => j.seniority ? [[j.seniority, SENIORITY_LABELS[j.seniority]]] : []),
+      cluster: facet('cluster', j => [j.cluster.slug], lx.cluster),
+      category: facet('category', j => [j.category.slug], lx.category),
+      industry: facet('industry', j => (j.industry ? [j.industry.slug] : []), lx.industry),
+      region: facet('region', j => j.locations.map(l => l.regionSlug), lx.region),
+      city: facet('city', j => j.locations.map(l => l.citySlug), lx.city),
+      employmentType: facet('employmentType', j => j.employmentType, lx.employmentType),
+      workModel: facet('workModel', j => [j.workModel], lx.workModel),
+      seniority: facet('seniority', j => (j.seniority ? [j.seniority] : []), lx.seniority),
+      suitableFor: facet('suitableFor', j => j.suitableFor ?? [], lx.suitableFor),
     },
   }
 }
 
 function toSummary(j: JobDetail): JobSummary {
-  const { id, slug, jobNumber, title, normalizedRoleTagId, company, category, subcategory, locations, employmentType, workModel, seniority, experienceYearsMin, salary, teaser, skills, tags, publishedAt, updatedAt, validThrough } = j
-  return { id, slug, jobNumber, title, normalizedRoleTagId, company, category, subcategory, locations, employmentType, workModel, seniority, experienceYearsMin, salary, teaser, skills, tags, publishedAt, updatedAt, validThrough }
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+  const { description, responsibilities, requirements, niceToHave, benefits, startDate, recruiter, apply, status, ...summary } = j
+  /* eslint-enable @typescript-eslint/no-unused-vars */
+  return summary
 }

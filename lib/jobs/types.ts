@@ -1,21 +1,33 @@
-// Contract for the Hiro Public Jobs API. Mirrors docs/HIRO_PUBLIC_JOBS_API.txt;
-// change both together.
+// Contract for the Hiro Public Jobs API (/api/public/v1). Source of truth:
+// Nir's spec in Notion ("Public Jobs API"). Change both together.
+//
+// The site holds NO lists of its own: categories, clusters, industries, cities,
+// regions, employment types, work models, seniorities, "suitable for" and
+// marketing tags all come from GET /taxonomy. Enum-like fields are therefore
+// plain strings whose labels are looked up in the taxonomy.
 
-export type EmploymentType = 'full_time' | 'part_time' | 'shifts' | 'temporary' | 'freelance' | 'internship' | 'student'
-export type WorkModel = 'onsite' | 'hybrid' | 'remote'
-export type Seniority = 'entry' | 'junior' | 'mid' | 'senior' | 'lead' | 'manager' | 'executive'
-export type SuitableFor = 'students' | 'soldiers' | 'pensioners' | 'disability' | 'olim'
-export type JobTag = 'urgent' | 'hot' | 'new' | 'no_experience' | 'students' | 'relocation'
-export type PostedWithin = '1d' | '3d' | '7d' | '30d'
-export type SortKey = 'relevance' | 'newest' | 'salary' | 'distance'
-
+/** A catalog entry addressed by a stable slug (clusters, categories, industries, cities, regions). */
 export type Labeled = { slug: string; label: string }
 
+/** An enum entry from the taxonomy (employment types, work models, ...). */
+export type EnumEntry = { value: string; label: string; count?: number }
+
+export type Publisher = { name: string; logoUrl?: string; slug: string }
+
 export type PublicCompany =
-  | { confidential: true; displayName: string; industry?: string; sizeRange?: string }
+  | {
+      confidential: true
+      /** Derived in Hiro (industry + size + region), editable by the recruiter */
+      displayName: string
+      industry?: string
+      sizeRange?: string
+      /** The agency that published the job. Shown instead of the client, and used as hiringOrganization. */
+      publisher: Publisher
+    }
   | {
       confidential: false
       id: string
+      slug: string
       name: string
       logoUrl?: string
       website?: string
@@ -46,21 +58,28 @@ export type Salary = {
 export type JobSummary = {
   id: string
   slug: string
+  /** "קוד לפרסום" in Hiro, not the internal job number */
   jobNumber: string
   title: string
-  normalizedRoleTagId?: string
-  company: PublicCompany
+  cluster: Labeled
   category: Labeled
-  subcategory?: Labeled
+  role?: Labeled
+  industry?: Labeled
+  company: PublicCompany
   locations: JobLocation[]
-  employmentType: EmploymentType[]
-  workModel: WorkModel
-  seniority?: Seniority
+  employmentType: string[]
+  workModel: string
+  seniority?: string
   experienceYearsMin?: number
+  noExperience?: boolean
+  urgent?: boolean
+  /** Marketing tags; labels in taxonomy.marketingTags */
+  tags?: string[]
+  suitableFor?: string[]
   salary?: Salary
   teaser: string
   skills?: { tagId: string; label: string }[]
-  tags?: JobTag[]
+  imageUrl?: string
   publishedAt: string
   updatedAt: string
   validThrough?: string
@@ -68,7 +87,7 @@ export type JobSummary = {
 
 export type ApplyQuestion = {
   id: string
-  type: 'yes_no' | 'text' | 'number' | 'select'
+  type: 'yes_no' | 'text' | 'number' | 'select' | 'video'
   label: string
   required: boolean
   options?: string[]
@@ -87,36 +106,31 @@ export type JobDetail = JobSummary & {
   requirements: string[]
   niceToHave?: string[]
   benefits?: string[]
-  education?: { level: 'none' | 'high_school' | 'certificate' | 'bachelor' | 'master' | 'phd'; field?: string }
-  languages?: { language: string; level: 'basic' | 'good' | 'high' | 'native' }[]
-  drivingLicense?: { required: boolean; type?: 'B' | 'C1' | 'C' | 'E' }
-  requiresCar?: boolean
-  hoursDescription?: string
   startDate?: 'immediate' | string
-  positionsCount?: number
-  recruiter?: { displayName: string; title?: string; photoUrl?: string }
+  recruiter?: { displayName: string; photoUrl?: string }
   apply: ApplyConfig
-  seo?: { title?: string; description?: string }
   status: 'open' | 'closed'
 }
 
 export type FacetValue = { value: string; label: string; count: number }
-export type FacetKey = 'category' | 'city' | 'region' | 'employmentType' | 'workModel' | 'seniority'
+export type FacetKey = 'cluster' | 'category' | 'industry' | 'region' | 'city' | 'employmentType' | 'workModel' | 'seniority' | 'suitableFor'
 
 export type JobsQuery = {
   q?: string
+  cluster?: string[]
   category?: string[]
-  subcategory?: string[]
-  city?: string[]
+  industry?: string[]
   region?: string[]
-  employmentType?: EmploymentType[]
-  workModel?: WorkModel[]
-  seniority?: Seniority[]
+  city?: string[]
+  employmentType?: string[]
+  workModel?: string[]
+  seniority?: string[]
+  suitableFor?: string[]
   noExperience?: boolean
-  suitableFor?: SuitableFor[]
   salaryMin?: number
-  postedWithin?: PostedWithin
-  sort?: SortKey
+  postedWithin?: '1d' | '3d' | '7d' | '30d'
+  companySlug?: string
+  sort?: 'relevance' | 'newest' | 'salary' | 'distance'
   page?: number
   limit?: number
 }
@@ -131,6 +145,15 @@ export type JobsPage = {
 }
 
 export type Taxonomy = {
-  categories: (Labeled & { count: number; subcategories?: (Labeled & { count: number })[] })[]
+  clusters: (Labeled & { count: number; categories: (Labeled & { count: number; synonyms?: string[] })[] })[]
+  industries: (Labeled & { count: number })[]
   regions: (Labeled & { count: number; cities: (Labeled & { count: number; lat?: number; lng?: number })[] })[]
+  employmentTypes: EnumEntry[]
+  workModels: EnumEntry[]
+  seniorities: EnumEntry[]
+  suitableFor: EnumEntry[]
+  marketingTags: EnumEntry[]
 }
+
+/** POST /applications error codes the site handles */
+export type ApplyErrorCode = 'ALREADY_APPLIED' | 'JOB_CLOSED' | 'VALIDATION' | 'RATE_LIMITED'

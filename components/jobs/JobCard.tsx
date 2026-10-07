@@ -1,39 +1,45 @@
 import Link from 'next/link'
-import { EMPLOYMENT_LABELS, WORK_MODEL_LABELS, companyName, formatSalary, isNew, locationLabel, timeAgo } from '@/lib/jobs/labels'
+import { type Labels, formatSalary, isNew, isNoExperience, locationLabel, timeAgo } from '@/lib/jobs/labels'
 import type { JobSummary } from '@/lib/jobs/types'
 import { SaveButton } from './SaveButton'
 import s from './jobs.module.css'
 
+/** Employer logo: the client's, or for confidential jobs the publishing agency's. */
 export function CompanyMark({ job, size = 48 }: { job: Pick<JobSummary, 'company'>; size?: number }) {
   const c = job.company
-  if (!c.confidential && c.logoUrl) {
+  const logo = c.confidential ? c.publisher.logoUrl : c.logoUrl
+  const name = c.confidential ? c.publisher.name : c.name
+  if (logo) {
     // eslint-disable-next-line @next/next/no-img-element -- remote logos from the Hiro catalog
-    return <img className={s.mark} src={c.logoUrl} alt="" width={size} height={size} style={{ width: size, height: size }} />
+    return <img className={s.mark} src={logo} alt="" width={size} height={size} style={{ width: size, height: size }} />
   }
-  const name = c.confidential ? '' : c.name
-  const letter = name.trim()[0] ?? ''
   return (
-    <span className={`${s.mark} ${c.confidential ? s.markAnon : ''}`} style={{ width: size, height: size, fontSize: size * 0.42 }} aria-hidden="true">
-      {c.confidential
-        ? <svg width={size * 0.42} height={size * 0.42} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M4 21V7l8-4 8 4v14M9 21v-5h6v5M8 10h.01M12 10h.01M16 10h.01M8 13h.01M12 13h.01M16 13h.01" strokeLinecap="round" /></svg>
-        : letter}
+    <span className={s.mark} style={{ width: size, height: size, fontSize: size * 0.42 }} aria-hidden="true">
+      {name.trim()[0] ?? ''}
     </span>
   )
 }
 
-export function JobBadges({ job }: { job: JobSummary }) {
+/** Employer line: "Client" or "Agency · confidential description". */
+export function EmployerLine({ job }: { job: Pick<JobSummary, 'company'> }) {
+  const c = job.company
+  if (!c.confidential) return <span>{c.name}</span>
+  return <span>{c.publisher.name}<span className={s.forClient}> · עבור {c.displayName}</span></span>
+}
+
+export function JobBadges({ job, lx }: { job: JobSummary; lx: Labels }) {
   const out: [string, string][] = []
-  if (job.tags?.includes('urgent')) out.push(['דחוף', s.bUrgent])
-  if (job.tags?.includes('hot')) out.push(['משרה חמה', s.bHot])
+  if (job.urgent) out.push([lx.tag('urgent'), s.bUrgent])
+  for (const t of job.tags ?? []) if (!(t === 'urgent' && job.urgent)) out.push([lx.tag(t), t === 'hot' ? s.bHot : s.bSoft])
   if (isNew(job)) out.push(['חדשה', s.bNew])
-  if (job.tags?.includes('no_experience') || job.experienceYearsMin === 0) out.push(['ללא ניסיון', s.bSoft])
-  if (job.tags?.includes('students') || job.employmentType.includes('student')) out.push(['מתאים לסטודנטים', s.bSoft])
+  if (isNoExperience(job)) out.push(['ללא ניסיון', s.bSoft])
   if (!out.length) return null
   return <span className={s.badges}>{out.map(([t, c]) => <span key={t} className={`${s.badge} ${c}`}>{t}</span>)}</span>
 }
 
-export function JobCard({ job }: { job: JobSummary }) {
+export function JobCard({ job, lx }: { job: JobSummary; lx: Labels }) {
   const salary = formatSalary(job.salary)
+  const where = locationLabel(job)
   return (
     <article className={s.card}>
       <CompanyMark job={job} />
@@ -42,17 +48,17 @@ export function JobCard({ job }: { job: JobSummary }) {
           <h3 className={s.cardTitle}>
             <Link href={`/jobs/${job.slug}`} className={s.cardLink}>{job.title}</Link>
           </h3>
-          <JobBadges job={job} />
+          <JobBadges job={job} lx={lx} />
         </div>
         <p className={s.cardCompany}>
-          <span>{companyName(job)}</span>
-          <span aria-hidden="true">·</span>
-          <span>{locationLabel(job)}</span>
+          <EmployerLine job={job} />
+          {where && <><span aria-hidden="true">·</span><span>{where}</span></>}
         </p>
         <p className={s.cardTeaser}>{job.teaser}</p>
         <ul className={s.meta} aria-label="פרטי המשרה">
-          {job.employmentType.slice(0, 2).map(t => <li key={t}>{EMPLOYMENT_LABELS[t]}</li>)}
-          {job.workModel !== 'onsite' && <li>{WORK_MODEL_LABELS[job.workModel]}</li>}
+          <li>{lx.category(job.category.slug)}</li>
+          {job.employmentType.slice(0, 2).map(t => <li key={t}>{lx.employmentType(t)}</li>)}
+          <li>{lx.workModel(job.workModel)}</li>
           {salary && <li className={s.metaSalary}>{salary}</li>}
         </ul>
       </div>

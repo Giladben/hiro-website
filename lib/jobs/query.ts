@@ -1,49 +1,53 @@
-import type { EmploymentType, JobsQuery, PostedWithin, Seniority, SortKey, SuitableFor, WorkModel } from './types'
+import type { JobsQuery } from './types'
 
 type Raw = Record<string, string | string[] | undefined>
 
-const arr = (v: string | string[] | undefined) => (v == null ? undefined : (Array.isArray(v) ? v : [v]).filter(Boolean))
+// Values come from the taxonomy, so they're validated by shape only; unknown
+// values simply match nothing in the API.
+const TOKEN = /^[a-z0-9_-]{1,60}$/
+
+const arr = (v: string | string[] | undefined) => {
+  const list = (v == null ? [] : Array.isArray(v) ? v : [v]).filter(x => TOKEN.test(x)).slice(0, 20)
+  return list.length ? list : undefined
+}
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) || undefined
 
-const EMPLOYMENT = new Set<EmploymentType>(['full_time', 'part_time', 'shifts', 'temporary', 'freelance', 'internship', 'student'])
-const WORK = new Set<WorkModel>(['onsite', 'hybrid', 'remote'])
-const SENIORITY = new Set<Seniority>(['entry', 'junior', 'mid', 'senior', 'lead', 'manager', 'executive'])
-const SUITABLE = new Set<SuitableFor>(['students', 'soldiers', 'pensioners', 'disability', 'olim'])
-const POSTED = new Set<PostedWithin>(['1d', '3d', '7d', '30d'])
-const SORT = new Set<SortKey>(['relevance', 'newest', 'salary', 'distance'])
+const POSTED = ['1d', '3d', '7d', '30d'] as const
+const SORT = ['relevance', 'newest', 'salary', 'distance'] as const
 
-const pick = <T extends string>(set: Set<T>, v?: string[]) => v?.filter((x): x is T => set.has(x as T))
-const slugs = (v?: string[]) => v?.filter(s => /^[a-z0-9-]{1,60}$/.test(s))
-
-/** Untrusted URL params → a validated query. */
+/** Untrusted URL params → a shape-validated query. */
 export function parseQuery(raw: Raw): JobsQuery {
   const page = Number(one(raw.page))
   const salaryMin = Number(one(raw.salaryMin))
-  const posted = one(raw.postedWithin) as PostedWithin | undefined
-  const sort = one(raw.sort) as SortKey | undefined
+  const posted = one(raw.postedWithin)
+  const sort = one(raw.sort)
+  const company = one(raw.companySlug)
   return {
     q: one(raw.q)?.slice(0, 120).trim() || undefined,
-    category: slugs(arr(raw.category)),
-    subcategory: slugs(arr(raw.subcategory)),
-    region: slugs(arr(raw.region)),
-    city: slugs(arr(raw.city)),
-    employmentType: pick(EMPLOYMENT, arr(raw.employmentType)),
-    workModel: pick(WORK, arr(raw.workModel)),
-    seniority: pick(SENIORITY, arr(raw.seniority)),
-    suitableFor: pick(SUITABLE, arr(raw.suitableFor)),
+    cluster: arr(raw.cluster),
+    category: arr(raw.category),
+    industry: arr(raw.industry),
+    region: arr(raw.region),
+    city: arr(raw.city),
+    employmentType: arr(raw.employmentType),
+    workModel: arr(raw.workModel),
+    seniority: arr(raw.seniority),
+    suitableFor: arr(raw.suitableFor),
     noExperience: one(raw.noExperience) === 'true' || undefined,
     salaryMin: Number.isFinite(salaryMin) && salaryMin > 0 ? salaryMin : undefined,
-    postedWithin: posted && POSTED.has(posted) ? posted : undefined,
-    sort: sort && SORT.has(sort) ? sort : undefined,
+    postedWithin: (POSTED as readonly string[]).includes(posted ?? '') ? (posted as JobsQuery['postedWithin']) : undefined,
+    companySlug: company && TOKEN.test(company) ? company : undefined,
+    sort: (SORT as readonly string[]).includes(sort ?? '') ? (sort as JobsQuery['sort']) : undefined,
     page: Number.isInteger(page) && page > 1 ? page : undefined,
   }
 }
 
+const ORDER: (keyof JobsQuery)[] = ['q', 'cluster', 'category', 'industry', 'region', 'city', 'employmentType', 'workModel', 'seniority', 'suitableFor', 'noExperience', 'salaryMin', 'postedWithin', 'companySlug', 'sort', 'page']
+
 /** Query → `/jobs?...` (stable param order, empty values dropped). */
 export function toHref(q: JobsQuery, base = '/jobs') {
   const p = new URLSearchParams()
-  const order: (keyof JobsQuery)[] = ['q', 'category', 'subcategory', 'region', 'city', 'employmentType', 'workModel', 'seniority', 'suitableFor', 'noExperience', 'salaryMin', 'postedWithin', 'sort', 'page']
-  for (const k of order) {
+  for (const k of ORDER) {
     const v = q[k]
     if (v == null || v === '' || v === false || (Array.isArray(v) && v.length === 0)) continue
     if (Array.isArray(v)) v.forEach(x => p.append(k, String(x)))
@@ -54,7 +58,6 @@ export function toHref(q: JobsQuery, base = '/jobs') {
 }
 
 export function activeFilterCount(q: JobsQuery) {
-  return (q.category?.length ?? 0) + (q.subcategory?.length ?? 0) + (q.region?.length ?? 0) + (q.city?.length ?? 0)
-    + (q.employmentType?.length ?? 0) + (q.workModel?.length ?? 0) + (q.seniority?.length ?? 0) + (q.suitableFor?.length ?? 0)
-    + (q.noExperience ? 1 : 0) + (q.salaryMin ? 1 : 0) + (q.postedWithin ? 1 : 0)
+  const lists = [q.cluster, q.category, q.industry, q.region, q.city, q.employmentType, q.workModel, q.seniority, q.suitableFor]
+  return lists.reduce((n, l) => n + (l?.length ?? 0), 0) + (q.noExperience ? 1 : 0) + (q.salaryMin ? 1 : 0) + (q.postedWithin ? 1 : 0)
 }

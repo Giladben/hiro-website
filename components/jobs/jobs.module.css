@@ -279,3 +279,12 @@
   .stickyApply em { font-style: normal; font-size: .78rem; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .stickyApply :global(.btn) { padding: .65rem 1.4rem; flex-shrink: 0; }
 }
+.forClient { color: var(--text3); }
+.publisher { display: flex; align-items: center; gap: .75rem; margin-bottom: 1rem; }
+.publisher div { display: flex; flex-direction: column; }
+.publisher span { font-size: .85rem; color: var(--text2); }
+.videoNote { display: flex; gap: .6rem; align-items: flex-start; background: var(--accent-soft); border-radius: 10px; padding: .75rem .9rem; font-size: .88rem; line-height: 1.5; }
+.videoNote svg { flex-shrink: 0; margin-top: 2px; color: var(--accent); }
+.hp { position: absolute !important; left: -9999px !important; width: 1px; height: 1px; overflow: hidden; }
+.fieldErr input, .fieldErr select { border-color: var(--bad) !important; }
+.consents { display: flex; flex-direction: column; gap: .55rem; }
