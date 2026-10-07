@@ -285,8 +285,15 @@
 .publisher span { font-size: .85rem; color: var(--text2); }
 .videoNote { display: flex; gap: .6rem; align-items: flex-start; background: var(--accent-soft); border-radius: 10px; padding: .75rem .9rem; font-size: .88rem; line-height: 1.5; }
 .videoNote svg { flex-shrink: 0; margin-top: 2px; color: var(--accent); }
-.hp { position: absolute !important; left: -9999px !important; width: 1px; height: 1px; overflow: hidden; }
+/* honeypot: clipped in place; an offscreen offset would create sideways scroll in RTL */
+.hp { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; opacity: 0; pointer-events: none; }
 .fieldErr input, .fieldErr select { border-color: var(--bad) !important; }
 .consents { display: flex; flex-direction: column; gap: .55rem; }
 .cardHours { margin: .35rem 0 0; display: flex; align-items: center; gap: .4rem; font-size: .88rem; font-weight: 500; color: var(--text); }
 .cardHours svg { color: var(--text3); flex-shrink: 0; }
+/* Big tap targets for yes/no on phones */
+.yesno label { min-height: 44px; padding: 0 1.1rem; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); }
+.yesno label:has(input:checked) { border-color: var(--text); background: var(--accent-soft); }
+.yesno { gap: .5rem; }
+.consent { padding: .2rem 0; }
+.consent input { width: 20px; height: 20px; }

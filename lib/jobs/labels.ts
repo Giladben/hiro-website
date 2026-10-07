@@ -101,5 +101,6 @@ export function isNoExperience(j: Pick<JobSummary, 'noExperience' | 'experienceY
 
 /** Keep numeric ranges in free text ("06:00–14:00") in reading order inside RTL lines. */
 export function isolateRanges(text: string) {
-  return text.replace(/\d[\d:.,]*\s*[–-]\s*\d[\d:.,]*/g, m => `⁦${m}⁩`)
+  // LTR isolate keeps the order; word joiners around the dash stop a line break inside the range
+  return text.replace(/\d(?:[\d:.,]*\d)?\s*[–-]\s*\d(?:[\d:.,]*\d)?/g, m => `⁦${m.replace(/\s*[–-]\s*/,'⁠–⁠')}⁩`)
 }

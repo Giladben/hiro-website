@@ -24,7 +24,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!job) return {}
   const where = locationLabel(job)
   const title = `${job.title}${where ? ` ב${where}` : ''} | ${companyName(job)}`
-  const description = plainText(`${job.teaser} ${job.description}`, 155)
+  // teaser first; add the description only when it says something the teaser doesn't
+  const body = plainText(job.description, 400)
+  const description = plainText(body.startsWith(job.teaser) || job.teaser.startsWith(body) ? job.teaser : `${job.teaser} ${body}`, 155)
   // The job's generated image is the share card for WhatsApp / Facebook
   const images = job.imageUrl ? [{ url: job.imageUrl, alt: job.title }] : undefined
   return {
@@ -62,7 +64,7 @@ function jobPostingLd(job: JobDetail) {
     ...(employment.length && { employmentType: employment }),
     hiringOrganization: org,
     directApply: job.apply.method === 'hiro',
-    ...(job.imageUrl && { image: job.imageUrl }),
+    ...(job.imageUrl && { image: new URL(job.imageUrl, 'https://hiro.co.il').href }), // schema.org needs an absolute URL
     ...(job.hoursDescription && { workHours: job.hoursDescription }),
   }
   if (job.workModel === 'remote') {
