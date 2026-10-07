@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { type Labels, formatSalary, isNew, isNoExperience, locationLabel, timeAgo } from '@/lib/jobs/labels'
+import { type Labels, formatSalary, isNew, isNoExperience, isolateRanges, locationLabel, timeAgo } from '@/lib/jobs/labels'
 import type { JobSummary } from '@/lib/jobs/types'
 import { SaveButton } from './SaveButton'
 import s from './jobs.module.css'
@@ -54,6 +54,12 @@ export function JobCard({ job, lx }: { job: JobSummary; lx: Labels }) {
           <EmployerLine job={job} />
           {where && <><span aria-hidden="true">·</span><span>{where}</span></>}
         </p>
+        {job.hoursDescription && (
+          <p className={s.cardHours}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" strokeLinecap="round" /></svg>
+            <span><span className="sr-only">שעות: </span>{isolateRanges(job.hoursDescription)}</span>
+          </p>
+        )}
         <p className={s.cardTeaser}>{job.teaser}</p>
         <ul className={s.meta} aria-label="פרטי המשרה">
           <li>{lx.category(job.category.slug)}</li>

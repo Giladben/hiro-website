@@ -98,3 +98,8 @@ export function isNew(j: Pick<JobSummary, 'publishedAt'>, now = Date.now()) {
 export function isNoExperience(j: Pick<JobSummary, 'noExperience' | 'experienceYearsMin'>) {
   return j.noExperience === true || j.experienceYearsMin === 0
 }
+
+/** Keep numeric ranges in free text ("06:00–14:00") in reading order inside RTL lines. */
+export function isolateRanges(text: string) {
+  return text.replace(/\d[\d:.,]*\s*[–-]\s*\d[\d:.,]*/g, m => `⁦${m}⁩`)
+}

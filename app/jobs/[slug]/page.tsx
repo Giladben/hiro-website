@@ -9,7 +9,7 @@ import { CompanyMark, EmployerLine, JobBadges, JobCard } from '@/components/jobs
 import { SaveButton } from '@/components/jobs/SaveButton'
 import { ShareButtons } from '@/components/jobs/ShareButtons'
 import { ViewBeacon } from '@/components/jobs/ViewBeacon'
-import { companyName, formatSalary, isNoExperience, labelsFrom, locationLabel, timeAgo } from '@/lib/jobs/labels'
+import { companyName, formatSalary, isNoExperience, isolateRanges, labelsFrom, locationLabel, timeAgo } from '@/lib/jobs/labels'
 import { toHref } from '@/lib/jobs/query'
 import { plainText, sanitizeJobHtml } from '@/lib/jobs/sanitize'
 import { getJob, getSimilar, getTaxonomy, jobsEnabled, jobsSource } from '@/lib/jobs/source'
@@ -63,6 +63,7 @@ function jobPostingLd(job: JobDetail) {
     hiringOrganization: org,
     directApply: job.apply.method === 'hiro',
     ...(job.imageUrl && { image: job.imageUrl }),
+    ...(job.hoursDescription && { workHours: job.hoursDescription }),
   }
   if (job.workModel === 'remote') {
     ld.jobLocationType = 'TELECOMMUTE'
@@ -103,6 +104,7 @@ export default async function JobPage({ params }: Props) {
     ['מיקום', job.locations.length ? job.locations.map(l => l.cityName).join(', ') : lx.workModel(job.workModel)],
     ['היקף', job.employmentType.map(lx.employmentType).join(' · ')],
     ['מקום עבודה', lx.workModel(job.workModel)],
+    ...(job.hoursDescription ? [['שעות ומשמרות', isolateRanges(job.hoursDescription)] as [string, string]] : []),
     ...(isNoExperience(job) ? [['ניסיון', 'ללא ניסיון'] as [string, string]]
       : job.experienceYearsMin ? [['ניסיון', `${job.experienceYearsMin}+ שנים`] as [string, string]]
         : job.seniority ? [['ניסיון', lx.seniority(job.seniority)] as [string, string]] : []),

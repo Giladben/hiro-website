@@ -288,3 +288,5 @@
 .hp { position: absolute !important; left: -9999px !important; width: 1px; height: 1px; overflow: hidden; }
 .fieldErr input, .fieldErr select { border-color: var(--bad) !important; }
 .consents { display: flex; flex-direction: column; gap: .55rem; }
+.cardHours { margin: .35rem 0 0; display: flex; align-items: center; gap: .4rem; font-size: .88rem; font-weight: 500; color: var(--text); }
+.cardHours svg { color: var(--text3); flex-shrink: 0; }

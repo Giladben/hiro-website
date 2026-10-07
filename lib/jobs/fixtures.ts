@@ -156,7 +156,7 @@ function job({ slugBase, category, ...rest }: Seed): JobDetail {
 
 export const FIXTURE_JOBS: JobDetail[] = [
   job({
-    slugBase: 'production-worker', category: 'production-worker', title: 'עובד/ת ייצור למפעל מזון',
+    slugBase: 'production-worker', hoursDescription: 'משמרות בוקר 06:00–14:00 וערב 14:00–22:00, א׳–ה׳', category: 'production-worker', title: 'עובד/ת ייצור למפעל מזון',
     company: secret('מפעל מזון מוביל באזור השרון', 'מזון ומשקאות', '201-500'), industry: ind('food'),
     locations: [L('netanya', 'אזור התעשייה ספיר')], employmentType: ['full_time', 'shifts'], workModel: 'onsite',
     seniority: 'entry', experienceYearsMin: 0, noExperience: true, urgent: true, tags: ['hot'], suitableFor: ['soldiers', 'olim'],
@@ -174,7 +174,7 @@ export const FIXTURE_JOBS: JobDetail[] = [
     ] },
   }),
   job({
-    slugBase: 'cnc-operator', category: 'machine-operator', title: 'מפעיל/ת CNC',
+    slugBase: 'cnc-operator', hoursDescription: '3 משמרות, כולל לילה', category: 'machine-operator', title: 'מפעיל/ת CNC',
     company: secret('חברת תעשייה ביטחונית בצפון', 'ביטחוני', '1000+'), industry: ind('defense'),
     locations: [L('karmiel')], employmentType: ['full_time', 'shifts'], workModel: 'onsite', seniority: 'mid', experienceYearsMin: 2,
     salary: { min: 55, max: 65, currency: 'ILS', period: 'hour' },
@@ -193,7 +193,7 @@ export const FIXTURE_JOBS: JobDetail[] = [
     publishedAt: ago(30), validThrough: inDays(25),
   }),
   job({
-    slugBase: 'shift-manager', category: 'shift-management', title: 'מנהל/ת משמרת ייצור',
+    slugBase: 'shift-manager', hoursDescription: 'משמרות מתחלפות, כולל לילה', category: 'shift-management', title: 'מנהל/ת משמרת ייצור',
     company: secret('מפעל משקאות במרכז', 'מזון ומשקאות', '501-1000'), industry: ind('food'),
     locations: [L('rosh-haayin')], employmentType: ['full_time', 'shifts'], workModel: 'onsite', seniority: 'manager', experienceYearsMin: 3,
     salary: { min: 15000, max: 18000, currency: 'ILS', period: 'month' },
@@ -210,7 +210,7 @@ export const FIXTURE_JOBS: JobDetail[] = [
     skills: [{ tagId: 's4', label: 'חשמל תעשייתי' }, { tagId: 's5', label: 'PLC' }], urgent: true, publishedAt: ago(14), validThrough: inDays(30),
   }),
   job({
-    slugBase: 'warehouse-picker', category: 'warehouse', title: 'מלקט/ת במרכז הפצה',
+    slugBase: 'warehouse-picker', hoursDescription: 'משמרות של 8 שעות, א׳–ו׳', category: 'warehouse', title: 'מלקט/ת במרכז הפצה',
     company: named('logitrans', 'לוגיטרנס', 'לוגיסטיקה והפצה', '501-1000', 'איירפורט סיטי', 'מרכז הפצה ארצי לרשתות מזון ופארם.'),
     industry: ind('logistics'), locations: [L('airport-city')], employmentType: ['full_time', 'part_time', 'shifts'], workModel: 'onsite',
     seniority: 'entry', experienceYearsMin: 0, noExperience: true, suitableFor: ['students', 'soldiers'],
@@ -220,7 +220,7 @@ export const FIXTURE_JOBS: JobDetail[] = [
     tags: ['hot'], publishedAt: ago(2), validThrough: inDays(30),
   }),
   job({
-    slugBase: 'forklift-operator', category: 'forklift', title: 'מלגזן/ית היגש',
+    slugBase: 'forklift-operator', hoursDescription: 'א׳–ה׳ 07:00–16:00', category: 'forklift', title: 'מלגזן/ית היגש',
     company: secret('חברת הפצה בשפלה', 'לוגיסטיקה והפצה', '201-500'), industry: ind('logistics'),
     locations: [L('rishon-lezion')], employmentType: ['full_time'], workModel: 'onsite', seniority: 'junior', experienceYearsMin: 1,
     salary: { min: 48, max: 55, currency: 'ILS', period: 'hour' },
@@ -229,7 +229,7 @@ export const FIXTURE_JOBS: JobDetail[] = [
     urgent: true, publishedAt: ago(6), validThrough: inDays(30),
   }),
   job({
-    slugBase: 'delivery-driver-c1', category: 'delivery-drivers', title: 'נהג/ת חלוקה (רישיון C1)',
+    slugBase: 'delivery-driver-c1', hoursDescription: 'א׳–ו׳ 05:00–13:00', category: 'delivery-drivers', title: 'נהג/ת חלוקה (רישיון C1)',
     company: secret('רשת מזון ארצית', 'קמעונאות ורשתות', '1000+'), industry: ind('retail'),
     locations: [L('holon'), L('rishon-lezion')], employmentType: ['full_time'], workModel: 'onsite', seniority: 'junior', experienceYearsMin: 1,
     salary: { min: 10500, max: 12500, currency: 'ILS', period: 'month' },
@@ -245,7 +245,7 @@ export const FIXTURE_JOBS: JobDetail[] = [
     requirements: ['שנת ניסיון ביבוא או בלוגיסטיקה', 'אנגלית טובה', 'שליטה ב-Excel'], publishedAt: ago(70), validThrough: inDays(25),
   }),
   job({
-    slugBase: 'store-sales', category: 'store-sales', title: 'מוכר/ת ברשת אופנה',
+    slugBase: 'store-sales', hoursDescription: 'משמרות גמישות, כולל סופי שבוע', category: 'store-sales', title: 'מוכר/ת ברשת אופנה',
     company: named('urbana', 'אורבנה', 'קמעונאות ורשתות', '501-1000', 'תל אביב-יפו', 'רשת אופנה עם 40 סניפים ברחבי הארץ.'),
     industry: ind('retail'), locations: [L('kfar-saba'), L('netanya'), L('petah-tikva')],
     employmentType: ['part_time', 'student'], workModel: 'onsite', seniority: 'entry', experienceYearsMin: 0, noExperience: true,
@@ -254,7 +254,7 @@ export const FIXTURE_JOBS: JobDetail[] = [
     benefits: ['הנחת עובדים', 'בונוס מכירות'], publishedAt: ago(18), validThrough: inDays(45),
   }),
   job({
-    slugBase: 'cashier', category: 'cashier', title: 'קופאי/ת בסופרמרקט',
+    slugBase: 'cashier', hoursDescription: 'משמרות של 4–8 שעות', category: 'cashier', title: 'קופאי/ת בסופרמרקט',
     company: secret('רשת מזון ארצית', 'קמעונאות ורשתות', '1000+'), industry: ind('retail'),
     locations: [L('beer-sheva')], employmentType: ['part_time', 'shifts'], workModel: 'onsite', seniority: 'entry', experienceYearsMin: 0, noExperience: true,
     suitableFor: ['students', 'pensioners'], teaser: 'עבודה בקופות ובשירות לקוחות בסניף באר שבע.',
@@ -278,7 +278,7 @@ export const FIXTURE_JOBS: JobDetail[] = [
     requirements: ['רישיון נהיגה B', 'ניסיון במכירות'], benefits: ['רכב חברה', 'עמלות', 'טלפון נייד'], publishedAt: ago(12), validThrough: inDays(30),
   }),
   job({
-    slugBase: 'car-mechanic', category: 'mechanic', title: 'מכונאי/ת רכב',
+    slugBase: 'car-mechanic', hoursDescription: 'א׳–ה׳ 07:30–16:30, ו׳ לסירוגין', category: 'mechanic', title: 'מכונאי/ת רכב',
     company: named('autocenter', 'אוטו סנטר', 'רכב', '201-500', 'חולון', 'מרכזי שירות מורשים לשלושה מותגי רכב.'),
     industry: ind('automotive'), locations: [L('holon')], employmentType: ['full_time'], workModel: 'onsite', seniority: 'mid', experienceYearsMin: 2,
     salary: { min: 11000, max: 15000, currency: 'ILS', period: 'month' },
@@ -309,7 +309,7 @@ export const FIXTURE_JOBS: JobDetail[] = [
     teaser: 'ניהול מחסן חלפים, קליטה, ניפוק ומלאי במערכת.', requirements: ['סדר וארגון', 'שליטה במחשב'], publishedAt: ago(60), validThrough: inDays(30),
   }),
   job({
-    slugBase: 'pharma-operator', category: 'pharma-production', title: 'מפעיל/ת ייצור בחדר נקי',
+    slugBase: 'pharma-operator', hoursDescription: 'משמרות 12 שעות (2-2-3)', category: 'pharma-production', title: 'מפעיל/ת ייצור בחדר נקי',
     company: secret('חברת פארמה גלובלית', 'פארמה וקוסמטיקה', '1000+'), industry: ind('pharma'),
     locations: [L('kfar-saba')], employmentType: ['full_time', 'shifts'], workModel: 'onsite', seniority: 'entry', noExperience: true,
     salary: { min: 48, max: 54, currency: 'ILS', period: 'hour' },

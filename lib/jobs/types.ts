@@ -77,6 +77,8 @@ export type JobSummary = {
   tags?: string[]
   suitableFor?: string[]
   salary?: Salary
+  /** Working hours / shifts, e.g. "משמרות בוקר וערב, א׳–ה׳". In Hiro or AI-derived from the description. */
+  hoursDescription?: string
   teaser: string
   skills?: { tagId: string; label: string }[]
   imageUrl?: string
