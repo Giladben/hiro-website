@@ -1,9 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
+
+const noopSubscribe = () => () => {}
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
@@ -11,7 +13,15 @@ export function Navbar() {
   const pathname = usePathname()
   const onHome = pathname === '/'
   const { resolvedTheme, setTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
+  // next-themes only knows the real theme on the client: false during SSR/hydration, true after
+  const mounted = useSyncExternalStore(noopSubscribe, () => true, () => false)
+
+  // close the mobile menu on navigation (adjusted during render rather than in an effect)
+  const [prevPathname, setPrevPathname] = useState(pathname)
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname)
+    setMobileOpen(false)
+  }
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12)
@@ -20,10 +30,6 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // next-themes only knows the real theme after mount
-  useEffect(() => setMounted(true), [])
-
-  useEffect(() => { setMobileOpen(false) }, [pathname])
   useEffect(() => {
     if (!mobileOpen) return
     document.body.style.overflow = 'hidden'
