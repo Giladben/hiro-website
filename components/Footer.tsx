@@ -1,5 +1,6 @@
 const cols = [
   { title: 'המוצר', items: [
+    { href: '/why-hiro', label: 'למה HirO' },
     { href: '/recruiters', label: 'למגייסים' },
     { href: '/candidates', label: 'למועמדים' },
     { href: '/recruiters#feature-job-sonar', label: 'Job Sonar' },
