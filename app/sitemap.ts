@@ -7,6 +7,7 @@ const SITE_URL = 'https://hiro.co.il'
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${SITE_URL}/`, changeFrequency: 'weekly', priority: 1 },
+    { url: `${SITE_URL}/why-hiro`, changeFrequency: 'monthly', priority: 0.9 },
     { url: `${SITE_URL}/recruiters`, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${SITE_URL}/candidates`, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${SITE_URL}/blog`, changeFrequency: 'weekly', priority: 0.8 },

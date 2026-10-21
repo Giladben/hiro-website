@@ -33,6 +33,7 @@ export function Navbar() {
   const isDark = mounted && resolvedTheme === 'dark'
 
   const navItems = [
+    { href: '/why-hiro', label: 'למה HirO' },
     { href: '/recruiters', label: 'למגייסים' },
     { href: '/candidates', label: 'למועמדים' },
     { href: onHome ? '#features' : '/#features', label: 'מה יש בפנים' },
