@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { notFound, permanentRedirect } from 'next/navigation'
 import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 import { AccessibilityWidget } from '@/components/AccessibilityWidget'
@@ -93,8 +93,11 @@ const list = (title: string, items?: string[]) => (items?.length ? `<h3>${title}
 
 export default async function JobPage({ params }: Props) {
   if (!jobsEnabled) notFound()
-  const job = await getJob((await params).slug)
+  const requested = decodeURIComponent((await params).slug)
+  const job = await getJob(requested)
   if (!job) notFound()
+  // Reached by id or publication code: send to the one canonical URL
+  if (job.slug && job.slug !== requested) permanentRedirect(`/jobs/${job.slug}`)
   const [similar, tax] = await Promise.all([getSimilar(job, 4), getTaxonomy()])
   const lx = labelsFrom(tax)
   const salary = formatSalary(job.salary)

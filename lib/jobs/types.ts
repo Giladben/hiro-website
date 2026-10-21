@@ -155,6 +155,8 @@ export type Taxonomy = {
   seniorities: EnumEntry[]
   suitableFor: EnumEntry[]
   marketingTags: EnumEntry[]
+  /** Old slug → current slug, after categories/cities are merged in Hiro admin (301 on the site) */
+  aliases?: Record<'cluster' | 'category' | 'city', Record<string, string>>
 }
 
 /** POST /applications error codes the site handles */

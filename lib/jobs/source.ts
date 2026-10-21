@@ -1,5 +1,6 @@
 import { FIXTURE_JOBS, fixtureTaxonomy } from './fixtures'
 import { labelsFrom } from './labels'
+import { toDetail, toPage, toSummary as apiSummary, toTaxonomy } from './adapter'
 import type { FacetKey, FacetValue, JobDetail, JobSummary, JobsPage, JobsQuery, Taxonomy } from './types'
 
 /**
@@ -33,32 +34,38 @@ function toParams(q: JobsQuery) {
   const p = new URLSearchParams()
   for (const [k, v] of Object.entries(q)) {
     if (v == null || v === '' || v === false) continue
-    if (Array.isArray(v)) v.forEach(x => p.append(k, String(x)))
+    // the API takes multiple values comma-separated (OR within a filter)
+    if (Array.isArray(v)) p.set(k, v.join(','))
     else p.set(k, String(v))
   }
-  p.set('facets', 'true')
+  if (q.sort === 'distance') p.delete('sort') // not supported by the API
+  p.set('facets', '1')
   return p
 }
 
 /* ───────────────────────── Public functions ───────────────────────── */
 
 export async function listJobs(q: JobsQuery): Promise<JobsPage> {
-  if (jobsSource === 'api') return (await api<JobsPage>('/jobs', toParams(q)))!
+  if (jobsSource === 'api') {
+    const [raw, tax] = await Promise.all([api<unknown>('/jobs', toParams(q)), getTaxonomy()])
+    return toPage(raw, tax)
+  }
   return fixtureSearch(q)
 }
 
 export async function getJob(slugOrId: string): Promise<JobDetail | null> {
   if (jobsSource === 'api') {
-    const r = await api<{ data: JobDetail }>(`/jobs/${encodeURIComponent(slugOrId)}`)
-    return r?.data ?? null
+    const r = await api<Record<string, unknown>>(`/jobs/${encodeURIComponent(slugOrId)}`)
+    if (!r) return null
+    return toDetail(r.data && typeof r.data === 'object' ? r.data : r)
   }
   return FIXTURE_JOBS.find(j => j.slug === slugOrId || j.id === slugOrId) ?? null
 }
 
 export async function getSimilar(job: JobSummary, limit = 4): Promise<JobSummary[]> {
   if (jobsSource === 'api') {
-    const r = await api<{ data: JobSummary[] }>(`/jobs/${job.id}/similar`, new URLSearchParams({ limit: String(limit) }))
-    return r?.data ?? []
+    const r = await api<{ items?: unknown[]; data?: unknown[] }>(`/jobs/${encodeURIComponent(job.id)}/similar`, new URLSearchParams({ limit: String(limit) }))
+    return (r?.items ?? r?.data ?? []).map(apiSummary)
   }
   return FIXTURE_JOBS
     .filter(j => j.id !== job.id)
@@ -70,12 +77,15 @@ export async function getSimilar(job: JobSummary, limit = 4): Promise<JobSummary
 }
 
 export async function getTaxonomy(): Promise<Taxonomy> {
-  if (jobsSource === 'api') return (await api<Taxonomy>('/taxonomy'))!
+  if (jobsSource === 'api') return toTaxonomy(await api<unknown>('/taxonomy'))
   return fixtureTaxonomy()
 }
 
 export async function listJobSlugs(): Promise<{ slug: string; updatedAt: string }[]> {
-  if (jobsSource === 'api') return (await api<{ data: { slug: string; updatedAt: string }[] }>('/sitemap/jobs'))?.data ?? []
+  if (jobsSource === 'api') {
+    const r = await api<{ items?: { slug: string; updatedAt: string }[]; data?: { slug: string; updatedAt: string }[] }>('/sitemap/jobs')
+    return (r?.items ?? r?.data ?? []).filter(x => x && typeof x.slug === 'string')
+  }
   if (jobsSource === 'fixtures') return FIXTURE_JOBS.map(j => ({ slug: j.slug, updatedAt: j.updatedAt }))
   return []
 }

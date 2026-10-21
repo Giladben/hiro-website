@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { notFound, permanentRedirect } from 'next/navigation'
 import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 import { AccessibilityWidget } from '@/components/AccessibilityWidget'
@@ -43,7 +43,15 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 export default async function JobsPage({ searchParams }: Props) {
   if (!jobsEnabled) notFound()
   const q = parseQuery(await searchParams)
-  const [res, tax] = await Promise.all([listJobs(q), getTaxonomy()])
+  const tax0 = await getTaxonomy()
+  // Merged categories/clusters/cities keep their old slug as an alias in Hiro: 301 to the current one
+  const al = tax0.aliases
+  if (al) {
+    const fix = (list: string[] | undefined, m: Record<string, string>) => list?.map(v => m[v] ?? v)
+    const next = { ...q, cluster: fix(q.cluster, al.cluster), category: fix(q.category, al.category), city: fix(q.city, al.city) }
+    if (toHref(next) !== toHref(q)) permanentRedirect(toHref(next))
+  }
+  const [res, tax] = await Promise.all([listJobs(q), Promise.resolve(tax0)])
   const lx = labelsFrom(tax)
   const from = res.total ? (res.page - 1) * res.limit + 1 : 0
   const to = Math.min(res.page * res.limit, res.total)

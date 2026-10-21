@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getJob, jobsSource } from '@/lib/jobs/source'
+import { PRIVACY_POLICY_URL, PRIVACY_POLICY_VERSION } from '@/lib/legal'
 
 const MAX = 5 * 1024 * 1024
 // PDF, DOC (OLE) and DOCX (zip) magic bytes, so a renamed file can't slip through
@@ -48,36 +49,58 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     return NextResponse.json({ applicationId: 'preview', preview: true }, { status: 201 })
   }
 
-  const out = new FormData()
-  out.set('fullName', fullName)
-  out.set('phone', phone)
-  if (email) out.set('email', email)
-  out.set('consent', 'true')
-  out.set('optIns', JSON.stringify(optIns))
-  for (const k of ['answers', 'utm'] as const) {
+  const consentObj = { accepted: true, policyVersion: PRIVACY_POLICY_VERSION, policyUrl: PRIVACY_POLICY_URL }
+  const parsed = (k: 'answers' | 'utm') => {
     const v = form.get(k)
-    if (typeof v === 'string' && v.length < 5000) out.set(k, v)
+    if (typeof v !== 'string' || v.length > 5000) return undefined
+    try { const o = JSON.parse(v); return o && typeof o === 'object' ? o : undefined } catch { return undefined }
   }
-  if (cv instanceof File && cv.size > 0) out.set('cv', cv, cv.name)
+  const answers = parsed('answers') ?? {}
+  const utm = parsed('utm')
+  const hasCv = cv instanceof File && cv.size > 0
+
+  // The API documents a JSON body with the CV base64-encoded. Set
+  // HIRO_JOBS_APPLY_FORMAT=multipart if Hiro switches to multipart/form-data.
+  let body: BodyInit
+  const headers: Record<string, string> = { 'X-Hiro-Site-Key': process.env.HIRO_JOBS_SITE_KEY!, 'X-Forwarded-For': req.headers.get('x-forwarded-for') ?? '' }
+  if (process.env.HIRO_JOBS_APPLY_FORMAT === 'multipart') {
+    const out = new FormData()
+    out.set('fullName', fullName)
+    out.set('phone', phone)
+    if (email) out.set('email', email)
+    out.set('consent', JSON.stringify(consentObj))
+    out.set('optIns', JSON.stringify(optIns))
+    out.set('answers', JSON.stringify(answers))
+    if (utm) out.set('utm', JSON.stringify(utm))
+    if (hasCv) out.set('cv', cv, cv.name)
+    body = out
+  } else {
+    body = JSON.stringify({
+      fullName, phone, ...(email && { email }),
+      consent: consentObj, optIns, answers, ...(utm && { utm }),
+      ...(hasCv && { cv: { filename: cv.name, mimeType: cv.type || 'application/octet-stream', contentBase64: Buffer.from(await cv.arrayBuffer()).toString('base64') } }),
+    })
+    headers['Content-Type'] = 'application/json'
+  }
 
   let res: Response
   try {
     res = await fetch(`${process.env.HIRO_JOBS_API_URL!.replace(/\/$/, '')}/api/public/v1/jobs/${encodeURIComponent(id)}/applications`, {
       method: 'POST',
-      headers: { 'X-Hiro-Site-Key': process.env.HIRO_JOBS_SITE_KEY!, 'X-Forwarded-For': req.headers.get('x-forwarded-for') ?? '' },
-      body: out,
+      headers,
+      body,
       signal: AbortSignal.timeout(20000),
     })
   } catch {
     return NextResponse.json({ message: 'השרת לא הגיב. אפשר לנסות שוב בעוד רגע.' }, { status: 504 })
   }
 
-  const body = await res.json().catch(() => ({})) as { applicationId?: string; field?: string; message?: string }
+  const reply = await res.json().catch(() => ({})) as { applicationId?: string; field?: string; message?: string }
   switch (res.status) {
-    case 201: case 200: return NextResponse.json({ applicationId: body.applicationId }, { status: 201 })
+    case 201: case 200: return NextResponse.json({ applicationId: reply.applicationId }, { status: 201 })
     case 409: return NextResponse.json({ code: 'ALREADY_APPLIED' }, { status: 409 })
     case 410: return NextResponse.json({ code: 'JOB_CLOSED' }, { status: 410 })
-    case 422: return invalid(body.field ?? '', body.message ?? 'אחד השדות לא תקין')
+    case 422: return invalid(reply.field ?? '', reply.message ?? 'אחד השדות לא תקין')
     case 429: return NextResponse.json({ code: 'RATE_LIMITED', message: 'יותר מדי ניסיונות. אפשר לנסות שוב בעוד כמה דקות.' }, { status: 429 })
     default: return NextResponse.json({ message: 'משהו השתבש. אפשר לנסות שוב.' }, { status: 502 })
   }
