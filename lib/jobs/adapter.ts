@@ -129,7 +129,7 @@ function startDate(v: unknown): string | undefined {
   const t = str(v)?.trim()
   if (!t) return undefined
   if (t === 'immediate' || t.includes('מיידי')) return 'immediate'
-  return /^d{4}-d{2}-d{2}/.test(t) && !Number.isNaN(Date.parse(t)) ? t : undefined
+  return /^\d{4}-\d{2}-\d{2}/.test(t) && !Number.isNaN(Date.parse(t)) ? t : undefined
 }
 
 export function toDetail(v: unknown): JobDetail {
