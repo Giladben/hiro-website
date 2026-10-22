@@ -159,6 +159,8 @@ export type Taxonomy = {
   marketingTags: EnumEntry[]
   /** Old slug → current slug, after categories/cities are merged in Hiro admin (301 on the site) */
   aliases?: Record<'cluster' | 'category' | 'city', Record<string, string>>
+  /** Labels jobs carry for slugs the taxonomy doesn't list (e.g. "klly" → "כללי"); filled by the site */
+  jobLabels?: Partial<Record<'cluster' | 'category' | 'industry' | 'region' | 'city', Record<string, string>>>
 }
 
 /** POST /applications error codes the site handles */

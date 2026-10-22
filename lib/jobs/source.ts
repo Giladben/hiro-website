@@ -54,7 +54,7 @@ const CATALOG_MAX = 1500
 async function getCatalog(): Promise<JobSummary[] | null> {
   try {
     const page = (n: number) => api<unknown>('/jobs', new URLSearchParams({ limit: '50', page: String(n) }))
-    const [first, tax] = await Promise.all([page(1), getTaxonomy()])
+    const [first, tax] = await Promise.all([page(1), apiTaxonomy()])
     const head = toPage(first, tax)
     if (head.total > CATALOG_MAX) return null
     const rest = await Promise.all(Array.from({ length: head.totalPages - 1 }, (_, i) => page(i + 2)))
@@ -126,9 +126,23 @@ export async function getSimilar(job: JobSummary, limit = 4): Promise<JobSummary
     .map(x => toSummary(x.j))
 }
 
+const apiTaxonomy = async () => toTaxonomy(await api<unknown>('/taxonomy'))
+
 export async function getTaxonomy(): Promise<Taxonomy> {
-  if (jobsSource === 'api') return toTaxonomy(await api<unknown>('/taxonomy'))
-  return fixtureTaxonomy()
+  if (jobsSource !== 'api') return fixtureTaxonomy()
+  const [tax, catalog] = await Promise.all([apiTaxonomy(), getCatalog()])
+  if (!catalog) return tax
+  const jobLabels: NonNullable<Taxonomy['jobLabels']> = { cluster: {}, category: {}, industry: {}, region: {}, city: {} }
+  for (const j of catalog) {
+    for (const [k, l] of [['cluster', j.cluster], ['category', j.category], ['industry', j.industry]] as const) {
+      if (l?.slug && l.label && l.label !== l.slug) jobLabels[k]![l.slug] = l.label
+    }
+    for (const loc of j.locations) {
+      if (loc.regionSlug && loc.regionName) jobLabels.region![loc.regionSlug] = loc.regionName
+      if (loc.cityName) jobLabels.city![loc.citySlug] = loc.cityName
+    }
+  }
+  return { ...tax, jobLabels }
 }
 
 export async function listJobSlugs(): Promise<{ slug: string; updatedAt: string }[]> {

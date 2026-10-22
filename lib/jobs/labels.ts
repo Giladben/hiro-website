@@ -23,17 +23,20 @@ const lookup = (entries: { value?: string; slug?: string; label: string }[]) => 
 }
 
 export function labelsFrom(t: Taxonomy): Labels {
+  // Taxonomy first; for slugs it doesn't list, the label the jobs themselves carry
+  const orJob = (f: (v: string) => string, m?: Record<string, string>) => (v: string) => { const l = f(v); return l === v && m?.[v] ? m[v] : l }
+  const j = t.jobLabels ?? {}
   return {
     employmentType: lookup(t.employmentTypes),
     workModel: lookup(t.workModels),
     seniority: lookup(t.seniorities),
     suitableFor: lookup(t.suitableFor),
     tag: lookup(t.marketingTags),
-    cluster: lookup(t.clusters),
-    category: lookup(t.clusters.flatMap(c => c.categories)),
-    industry: lookup(t.industries),
-    region: lookup(t.regions),
-    city: lookup(t.regions.flatMap(r => r.cities)),
+    cluster: orJob(lookup(t.clusters), j.cluster),
+    category: orJob(lookup(t.clusters.flatMap(c => c.categories)), j.category),
+    industry: orJob(lookup(t.industries), j.industry),
+    region: orJob(lookup(t.regions), j.region),
+    city: orJob(lookup(t.regions.flatMap(r => r.cities)), j.city),
   }
 }
 
