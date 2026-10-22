@@ -59,11 +59,11 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   const utm = parsed('utm')
   const hasCv = cv instanceof File && cv.size > 0
 
-  // The API documents a JSON body with the CV base64-encoded. Set
-  // HIRO_JOBS_APPLY_FORMAT=multipart if Hiro switches to multipart/form-data.
+  // multipart/form-data is the API's preferred format (a 5MB CV becomes ~6.7MB
+  // as base64 JSON). HIRO_JOBS_APPLY_FORMAT=json falls back to the JSON body.
   let body: BodyInit
   const headers: Record<string, string> = { 'X-Hiro-Site-Key': process.env.HIRO_JOBS_SITE_KEY!, 'X-Forwarded-For': req.headers.get('x-forwarded-for') ?? '' }
-  if (process.env.HIRO_JOBS_APPLY_FORMAT === 'multipart') {
+  if (process.env.HIRO_JOBS_APPLY_FORMAT !== 'json') {
     const out = new FormData()
     out.set('fullName', fullName)
     out.set('phone', phone)

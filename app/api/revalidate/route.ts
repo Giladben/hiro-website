@@ -5,10 +5,11 @@ import { JOBS_TAG } from '@/lib/jobs/source'
 
 /** Webhook from Hiro: job.published / job.updated / job.closed / taxonomy.updated / company.updated (Notion spec, "Webhook"). */
 export async function POST(req: Request) {
-  // The API doc is ambiguous on the signing key ("the site's key" vs the webhook
-  // secret shown on creation), so accept either until that's confirmed.
-  const keys = [process.env.HIRO_WEBHOOK_SECRET, process.env.HIRO_JOBS_SITE_KEY].filter((k): k is string => !!k)
-  if (!keys.length) return NextResponse.json({ message: 'Not configured' }, { status: 404 })
+  // Signed with the site's webhook secret (shown once when the site is created
+  // in Hiro, or rotated via POST /api/public-sites/:id/webhook-secret), never the site key.
+  const secret = process.env.HIRO_WEBHOOK_SECRET
+  if (!secret) return NextResponse.json({ message: 'Not configured' }, { status: 404 })
+  const keys = [secret]
 
   const raw = await req.text()
   const sig = Buffer.from((req.headers.get('x-hiro-signature') ?? '').replace(/^sha256=/, '').toLowerCase(), 'utf8')
