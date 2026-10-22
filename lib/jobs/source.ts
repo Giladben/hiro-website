@@ -52,14 +52,19 @@ const CATALOG_MAX = 1500
 
 /** All open jobs as summaries, or null when the catalog is too big to hold. */
 async function getCatalog(): Promise<JobSummary[] | null> {
-  const page = (n: number) => api<unknown>('/jobs', new URLSearchParams({ limit: '50', page: String(n), facets: '0', sort: 'newest' }))
-  const first = await page(1)
-  const tax = await getTaxonomy()
-  const head = toPage(first, tax)
-  if (head.total > CATALOG_MAX) return null
-  const rest = await Promise.all(Array.from({ length: head.totalPages - 1 }, (_, i) => page(i + 2)))
-  const all = [...head.data, ...rest.flatMap(r => toPage(r, tax).data)]
-  return repairDates([...new Map(all.map(j => [j.id, j])).values()])
+  try {
+    const page = (n: number) => api<unknown>('/jobs', new URLSearchParams({ limit: '50', page: String(n) }))
+    const [first, tax] = await Promise.all([page(1), getTaxonomy()])
+    const head = toPage(first, tax)
+    if (head.total > CATALOG_MAX) return null
+    const rest = await Promise.all(Array.from({ length: head.totalPages - 1 }, (_, i) => page(i + 2)))
+    const all = [...head.data, ...rest.flatMap(r => toPage(r, tax).data)]
+    return repairDates([...new Map(all.map(j => [j.id, j])).values()])
+  } catch (err) {
+    // Degrade to per-query API calls rather than failing the page
+    console.error('Jobs catalog unavailable', err)
+    return null
+  }
 }
 
 /**
