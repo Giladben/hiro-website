@@ -4,6 +4,9 @@ import { jobsSource, listJobSlugs } from '@/lib/jobs/source'
 
 const SITE_URL = 'https://hiro.co.il'
 
+// Rebuilt hourly so new jobs appear, and a sitemap built during an API outage heals itself
+export const revalidate = 3600
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${SITE_URL}/`, changeFrequency: 'weekly', priority: 1 },
