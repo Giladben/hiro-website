@@ -131,8 +131,14 @@ export async function getTaxonomy(): Promise<Taxonomy> {
 
 export async function listJobSlugs(): Promise<{ slug: string; updatedAt: string }[]> {
   if (jobsSource === 'api') {
-    const r = await api<{ items?: { slug: string; updatedAt: string }[]; data?: { slug: string; updatedAt: string }[] }>('/sitemap/jobs')
-    return (r?.items ?? r?.data ?? []).filter(x => x && typeof x.slug === 'string')
+    try {
+      const r = await api<{ items?: { slug: string; updatedAt: string }[]; data?: { slug: string; updatedAt: string }[] }>('/sitemap/jobs')
+      return (r?.items ?? r?.data ?? []).filter(x => x && typeof x.slug === 'string')
+    } catch (err) {
+      // An API outage must not fail the build (the sitemap is prerendered)
+      console.error('Jobs sitemap unavailable', err)
+      return []
+    }
   }
   if (jobsSource === 'fixtures') return FIXTURE_JOBS.map(j => ({ slug: j.slug, updatedAt: j.updatedAt }))
   return []
