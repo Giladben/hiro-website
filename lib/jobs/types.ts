@@ -85,6 +85,8 @@ export type JobSummary = {
   publishedAt: string
   updatedAt: string
   validThrough?: string
+  /** Set by the site when publishedAt is a bulk-import stamp, not a real publish time */
+  postedDateUnknown?: boolean
 }
 
 export type ApplyQuestion = {

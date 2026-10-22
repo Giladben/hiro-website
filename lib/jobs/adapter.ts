@@ -87,6 +87,18 @@ export function descriptionHtml(raw: string): string {
     .join('').replace(/<p>\s*<\/p>/g, '')
 }
 
+/**
+ * The API reports "office" for every job (its default), even "עבודה מהבית" ones.
+ * Only an explicit "office" is second-guessed, and only on unambiguous wording:
+ * "אופציה לעבודה מהבית" or "לא היברידי" stay office.
+ */
+function workModel(api: string | undefined, text: string): string {
+  if (api && api !== 'office') return api
+  if (/(?<!לא )היברידי|יום מהבית|יומיים מהבית|ימים מהבית/.test(text)) return 'hybrid'
+  if (/(?<!אופציה ל)עבודה (?:מלאה )?מהבית|לעבודה (?:מלאה |גמישה ונוחה )?מהבית|עבודה מרחוק מלאה/.test(text)) return 'remote'
+  return api ?? ''
+}
+
 export function toSummary(v: unknown): JobSummary {
   const o = obj(v)
   const tags = arr(o.tags).map(enumValue).filter((x): x is string => !!x)
@@ -102,7 +114,7 @@ export function toSummary(v: unknown): JobSummary {
     company: company(o.company),
     locations: arr(o.locations).map(location).filter((x): x is JobLocation => !!x),
     employmentType: arr(o.employmentType).map(enumValue).filter((x): x is string => !!x),
-    workModel: enumValue(o.workModel) ?? '',
+    workModel: workModel(enumValue(o.workModel), [o.title, o.teaser, o.description].map(str).join(' ')),
     seniority: enumValue(o.seniority),
     experienceYearsMin: num(o.experienceYearsMin),
     noExperience: o.noExperience === true,

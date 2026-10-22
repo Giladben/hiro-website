@@ -70,7 +70,7 @@ export function JobCard({ job, lx }: { job: JobSummary; lx: Labels }) {
       </div>
       <div className={s.cardSide}>
         <SaveButton id={job.id} title={job.title} className={s.save} />
-        <time dateTime={job.publishedAt} className={s.posted}>{timeAgo(job.publishedAt)}</time>
+        {!job.postedDateUnknown && <time dateTime={job.publishedAt} className={s.posted}>{timeAgo(job.publishedAt)}</time>}
       </div>
     </article>
   )

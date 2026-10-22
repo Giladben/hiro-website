@@ -45,12 +45,45 @@ function toParams(q: JobsQuery) {
 
 /* ───────────────────────── Public functions ───────────────────────── */
 
+// Up to this many jobs the whole catalog is pulled once (cached, purged by the
+// webhook) and searched in-process: every filter/facet combination is instant
+// instead of a multi-second API round trip per URL. Above it, query the API.
+const CATALOG_MAX = 1500
+
+/** All open jobs as summaries, or null when the catalog is too big to hold. */
+async function getCatalog(): Promise<JobSummary[] | null> {
+  const page = (n: number) => api<unknown>('/jobs', new URLSearchParams({ limit: '50', page: String(n), facets: '0', sort: 'newest' }))
+  const first = await page(1)
+  const tax = await getTaxonomy()
+  const head = toPage(first, tax)
+  if (head.total > CATALOG_MAX) return null
+  const rest = await Promise.all(Array.from({ length: head.totalPages - 1 }, (_, i) => page(i + 2)))
+  const all = [...head.data, ...rest.flatMap(r => toPage(r, tax).data)]
+  return repairDates([...new Map(all.map(j => [j.id, j])).values()])
+}
+
+/**
+ * A bulk import stamps every job with the same publishedAt, which would mark
+ * all of them "new". When most of a sizeable catalog shares one timestamp,
+ * treat those dates as unknown (still sent to Google as datePosted).
+ */
+function repairDates(jobs: JobSummary[]): JobSummary[] {
+  if (jobs.length < 20) return jobs
+  const counts = new Map<string, number>()
+  for (const j of jobs) counts.set(j.publishedAt, (counts.get(j.publishedAt) ?? 0) + 1)
+  const [stamp, n] = [...counts].sort((a, b) => b[1] - a[1])[0]
+  if (n < jobs.length * 0.3) return jobs
+  return jobs.map(j => (j.publishedAt === stamp ? { ...j, postedDateUnknown: true } : j))
+}
+
 export async function listJobs(q: JobsQuery): Promise<JobsPage> {
   if (jobsSource === 'api') {
-    const [raw, tax] = await Promise.all([api<unknown>('/jobs', toParams(q)), getTaxonomy()])
+    const [catalog, tax] = await Promise.all([getCatalog(), getTaxonomy()])
+    if (catalog) return search(catalog, tax, q)
+    const raw = await api<unknown>('/jobs', toParams(q))
     return toPage(raw, tax)
   }
-  return fixtureSearch(q)
+  return search(FIXTURE_JOBS, fixtureTaxonomy(), q)
 }
 
 export async function getJob(slugOrId: string): Promise<JobDetail | null> {
@@ -60,19 +93,26 @@ export async function getJob(slugOrId: string): Promise<JobDetail | null> {
     const jobNumber = /-(\d{3,})$/.exec(slugOrId)?.[1]
     if (!r && jobNumber) r = await api<Record<string, unknown>>(`/jobs/${jobNumber}`)
     if (!r) return null
-    return toDetail(r.data && typeof r.data === 'object' ? r.data : r)
+    const job = toDetail(r.data && typeof r.data === 'object' ? r.data : r)
+    const listed = (await getCatalog())?.find(j => j.id === job.id)
+    return listed?.postedDateUnknown ? { ...job, postedDateUnknown: true } : job
   }
   return FIXTURE_JOBS.find(j => j.slug === slugOrId || j.id === slugOrId) ?? null
 }
 
 export async function getSimilar(job: JobSummary, limit = 4): Promise<JobSummary[]> {
+  let pool: JobSummary[] = FIXTURE_JOBS
   if (jobsSource === 'api') {
-    const r = await api<{ items?: unknown[]; data?: unknown[] }>(`/jobs/${encodeURIComponent(job.id)}/similar`, new URLSearchParams({ limit: String(limit) }))
-    return (r?.items ?? r?.data ?? []).map(apiSummary)
+    const catalog = await getCatalog()
+    if (!catalog) {
+      const r = await api<{ items?: unknown[]; data?: unknown[] }>(`/jobs/${encodeURIComponent(job.id)}/similar`, new URLSearchParams({ limit: String(limit) }))
+      return (r?.items ?? r?.data ?? []).map(apiSummary)
+    }
+    pool = catalog
   }
-  return FIXTURE_JOBS
+  return pool
     .filter(j => j.id !== job.id)
-    .map(j => ({ j, s: (j.category.slug === job.category.slug ? 3 : 0) + (j.cluster.slug === job.cluster.slug ? 2 : 0) + (j.locations[0]?.regionSlug === job.locations[0]?.regionSlug ? 1 : 0) }))
+    .map(j => ({ j, s: (j.category.slug && j.category.slug === job.category.slug ? 3 : 0) + (j.cluster.slug && j.cluster.slug === job.cluster.slug ? 2 : 0) + (j.locations[0]?.regionSlug && j.locations[0].regionSlug === job.locations[0]?.regionSlug ? 1 : 0) }))
     .filter(x => x.s > 0)
     .sort((a, b) => b.s - a.s)
     .slice(0, limit)
@@ -93,10 +133,11 @@ export async function listJobSlugs(): Promise<{ slug: string; updatedAt: string 
   return []
 }
 
-/* ───────────────────────── Fixture search engine ─────────────────────────
-   Same semantics the real API must implement: OR inside a filter, AND between
-   filters, disjunctive facet counts, synonyms from the taxonomy. Labels come
-   from the (fixture) taxonomy, never from lists in the site. */
+/* ───────────────────────── In-process search engine ─────────────────────────
+   Runs over the cached API catalog (or the fixtures). Same semantics as the
+   API: OR inside a filter, AND between filters, disjunctive facet counts,
+   synonyms from the taxonomy. Labels come from the taxonomy, falling back to
+   the label the job itself carries, never from lists in the site. */
 
 const norm = (s: string) => s
   .replace(/[֑-ׇ]/g, '')
@@ -112,19 +153,23 @@ function expandQuery(q: string, tax: Taxonomy) {
   return { words, categorySlugs: new Set(hits.map(c => c.slug)) }
 }
 
-function haystack(j: JobDetail) {
+function haystack(j: JobSummary) {
   const company = j.company.confidential ? '' : j.company.name
-  return norm([j.title, j.teaser, company, j.cluster.label, j.category.label, j.industry?.label, j.role?.label, ...(j.skills ?? []).map(s => s.label), ...j.requirements].join(' '))
+  const requirements = 'requirements' in j ? (j as JobDetail).requirements : []
+  return norm([j.title, j.teaser, company, j.cluster.label, j.category.label, j.industry?.label, j.role?.label, ...(j.skills ?? []).map(s => s.label), ...requirements].join(' '))
 }
 
 const any = (sel: string[] | undefined, test: (v: string) => boolean) => !sel?.length || sel.some(test)
 
-function fixtureSearch(q: JobsQuery): JobsPage {
-  const tax = fixtureTaxonomy()
+// Ties (same publish time) fall back to the newer job number
+const byNewest = (a: JobSummary, b: JobSummary) =>
+  +new Date(b.publishedAt) - +new Date(a.publishedAt) || (Number(b.jobNumber) || 0) - (Number(a.jobNumber) || 0)
+
+function search(jobs: JobSummary[], tax: Taxonomy, q: JobsQuery): JobsPage {
   const exp = q.q ? expandQuery(q.q, tax) : null
   const postedMs = q.postedWithin ? { '1d': 1, '3d': 3, '7d': 7, '30d': 30 }[q.postedWithin] * 864e5 : 0
 
-  const preds: Record<FacetKey | 'rest', (j: JobDetail) => boolean> = {
+  const preds: Record<FacetKey | 'rest', (j: JobSummary) => boolean> = {
     cluster: j => any(q.cluster, v => j.cluster.slug === v),
     category: j => any(q.category, v => j.category.slug === v),
     industry: j => any(q.industry, v => j.industry?.slug === v),
@@ -145,30 +190,39 @@ function fixtureSearch(q: JobsQuery): JobsPage {
         const monthly = (j.salary.max ?? j.salary.min ?? 0) * (j.salary.period === 'hour' ? 186 : j.salary.period === 'year' ? 1 / 12 : 1)
         if (monthly < q.salaryMin) return false
       }
-      if (postedMs && Date.now() - new Date(j.publishedAt).getTime() > postedMs) return false
+      if (postedMs && (j.postedDateUnknown || Date.now() - new Date(j.publishedAt).getTime() > postedMs)) return false
       return true
     },
   }
   const keys = Object.keys(preds) as (keyof typeof preds)[]
-  const matchExcept = (j: JobDetail, skip?: FacetKey) => keys.every(k => k === skip || preds[k](j))
+  const matchExcept = (j: JobSummary, skip?: FacetKey) => keys.every(k => k === skip || preds[k](j))
 
-  let rows = FIXTURE_JOBS.filter(j => matchExcept(j))
-  const monthly = (j: JobDetail) => (j.salary ? (j.salary.max ?? j.salary.min ?? 0) * (j.salary.period === 'hour' ? 186 : 1) : -1)
+  let rows = jobs.filter(j => matchExcept(j))
+  const monthly = (j: JobSummary) => (j.salary ? (j.salary.max ?? j.salary.min ?? 0) * (j.salary.period === 'hour' ? 186 : 1) : -1)
   const sort = q.sort ?? (q.q ? 'relevance' : 'newest')
   rows = [...rows].sort((a, b) =>
-    sort === 'salary' ? monthly(b) - monthly(a)
-      : sort === 'relevance' && exp ? Number(exp.categorySlugs.has(b.category.slug)) - Number(exp.categorySlugs.has(a.category.slug)) || +new Date(b.publishedAt) - +new Date(a.publishedAt)
-        : +new Date(b.publishedAt) - +new Date(a.publishedAt))
+    sort === 'salary' ? monthly(b) - monthly(a) || byNewest(a, b)
+      : sort === 'relevance' && exp ? Number(exp.categorySlugs.has(b.category.slug)) - Number(exp.categorySlugs.has(a.category.slug)) || byNewest(a, b)
+        : byNewest(a, b))
 
   const lx = labelsFrom(tax)
-  const facet = (key: FacetKey, values: (j: JobDetail) => string[], label: (v: string) => string): FacetValue[] => {
-    const counts = new Map<string, number>()
-    for (const j of FIXTURE_JOBS) {
+  // values(j) yields [value, label the job carries]; the taxonomy label wins when it knows the value
+  const facet = (key: FacetKey, values: (j: JobSummary) => [string, string?][], label: (v: string) => string): FacetValue[] => {
+    const counts = new Map<string, { count: number; own?: string }>()
+    for (const j of jobs) {
       if (!matchExcept(j, key)) continue
-      for (const v of new Set(values(j))) counts.set(v, (counts.get(v) ?? 0) + 1)
+      for (const [v, own] of new Map<string, string | undefined>(values(j).filter(([v]) => v).map(([v, l]) => [v, l]))) {
+        const c = counts.get(v) ?? { count: 0, own }
+        c.count++
+        counts.set(v, c)
+      }
     }
-    return [...counts].map(([value, count]) => ({ value, label: label(value), count })).sort((a, b) => b.count - a.count)
+    return [...counts].map(([value, { count, own }]) => {
+      const known = label(value)
+      return { value, label: known !== value ? known : own || value, count }
+    }).sort((a, b) => b.count - a.count)
   }
+  const one = (v?: string): [string, string?][] => (v ? [[v]] : [])
 
   const limit = Math.min(q.limit ?? 20, 50)
   const page = Math.max(1, q.page ?? 1)
@@ -179,22 +233,22 @@ function fixtureSearch(q: JobsQuery): JobsPage {
     limit,
     totalPages: Math.max(1, Math.ceil(rows.length / limit)),
     facets: {
-      cluster: facet('cluster', j => [j.cluster.slug], lx.cluster),
-      category: facet('category', j => [j.category.slug], lx.category),
-      industry: facet('industry', j => (j.industry ? [j.industry.slug] : []), lx.industry),
-      region: facet('region', j => j.locations.map(l => l.regionSlug), lx.region),
-      city: facet('city', j => j.locations.map(l => l.citySlug), lx.city),
-      employmentType: facet('employmentType', j => j.employmentType, lx.employmentType),
-      workModel: facet('workModel', j => [j.workModel], lx.workModel),
-      seniority: facet('seniority', j => (j.seniority ? [j.seniority] : []), lx.seniority),
-      suitableFor: facet('suitableFor', j => j.suitableFor ?? [], lx.suitableFor),
+      cluster: facet('cluster', j => [[j.cluster.slug, j.cluster.label]], lx.cluster),
+      category: facet('category', j => [[j.category.slug, j.category.label]], lx.category),
+      industry: facet('industry', j => (j.industry ? [[j.industry.slug, j.industry.label]] : []), lx.industry),
+      region: facet('region', j => j.locations.map(l => [l.regionSlug, l.regionName]), lx.region),
+      city: facet('city', j => j.locations.map(l => [l.citySlug, l.cityName]), lx.city),
+      employmentType: facet('employmentType', j => j.employmentType.map(v => [v]), lx.employmentType),
+      workModel: facet('workModel', j => one(j.workModel), lx.workModel),
+      seniority: facet('seniority', j => one(j.seniority), lx.seniority),
+      suitableFor: facet('suitableFor', j => (j.suitableFor ?? []).map(v => [v]), lx.suitableFor),
     },
   }
 }
 
-function toSummary(j: JobDetail): JobSummary {
+function toSummary(j: JobSummary | JobDetail): JobSummary {
   /* eslint-disable @typescript-eslint/no-unused-vars */
-  const { description, responsibilities, requirements, niceToHave, benefits, startDate, recruiter, apply, status, ...summary } = j
+  const { description, responsibilities, requirements, niceToHave, benefits, startDate, recruiter, apply, status, ...summary } = j as JobDetail
   /* eslint-enable @typescript-eslint/no-unused-vars */
   return summary
 }

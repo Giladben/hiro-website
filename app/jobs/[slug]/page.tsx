@@ -151,8 +151,10 @@ export default async function JobPage({ params }: Props) {
               <p className={s.jobCompany}>
                 <EmployerLine job={job} />
                 <span aria-hidden="true"> · </span>
-                <time dateTime={job.publishedAt}>{timeAgo(job.publishedAt)}</time>
-                <span aria-hidden="true"> · </span>
+                {!job.postedDateUnknown && <>
+                  <time dateTime={job.publishedAt}>{timeAgo(job.publishedAt)}</time>
+                  <span aria-hidden="true"> · </span>
+                </>}
                 משרה <span dir="ltr">{job.jobNumber}</span>
               </p>
             </div>

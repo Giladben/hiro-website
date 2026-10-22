@@ -91,7 +91,8 @@ export function locationLabel(j: Pick<JobSummary, 'locations'>) {
   return `${names[0]} ועוד ${names.length - 1}`
 }
 
-export function isNew(j: Pick<JobSummary, 'publishedAt'>, now = Date.now()) {
+export function isNew(j: Pick<JobSummary, 'publishedAt' | 'postedDateUnknown'>, now = Date.now()) {
+  if (j.postedDateUnknown) return false
   return now - new Date(j.publishedAt).getTime() < 48 * 36e5
 }
 
