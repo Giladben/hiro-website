@@ -130,16 +130,16 @@ export default async function JobPage({ params }: Props) {
           <nav aria-label="פירורי לחם" className={s.crumbs}>
             <ol>
               <li><Link href="/jobs">משרות</Link></li>
-              <li><Link href={toHref({ cluster: [job.cluster.slug] })}>{job.cluster.label}</Link></li>
-              <li><Link href={toHref({ category: [job.category.slug] })}>{job.category.label}</Link></li>
-              {city && <li><Link href={toHref({ category: [job.category.slug], city: [city.citySlug] })}>{city.cityName}</Link></li>}
+              {job.cluster.slug && <li><Link href={toHref({ cluster: [job.cluster.slug] })}>{job.cluster.label}</Link></li>}
+              {job.category.slug && <li><Link href={toHref({ category: [job.category.slug] })}>{job.category.label}</Link></li>}
+              {city && <li><Link href={toHref({ ...(job.category.slug && { category: [job.category.slug] }), city: [city.citySlug] })}>{city.cityName}</Link></li>}
             </ol>
           </nav>
 
           {closed && (
             <div className={s.closed} role="status">
               <b>המשרה הזו כבר לא פתוחה להגשות.</b>
-              <span>אפשר לראות משרות דומות למטה, או <Link className="link-u" href={toHref({ category: [job.category.slug] })}>את כל המשרות בתחום {job.category.label}</Link>.</span>
+              <span>אפשר לראות משרות דומות למטה{job.category.slug ? <>, או <Link className="link-u" href={toHref({ category: [job.category.slug] })}>את כל המשרות בתחום {job.category.label}</Link></> : <>, או <Link className="link-u" href="/jobs">את כל המשרות</Link></>}.</span>
             </div>
           )}
 
@@ -242,7 +242,9 @@ export default async function JobPage({ params }: Props) {
             <section className={s.similar} aria-labelledby="sim-h">
               <h2 id="sim-h">משרות דומות</h2>
               <ol className={s.list}>{similar.map(j => <li key={j.id}><JobCard job={j} lx={lx} /></li>)}</ol>
-              <Link className="link-u" href={toHref({ category: [job.category.slug] })}>כל המשרות בתחום {job.category.label} ←</Link>
+              {job.category.slug
+                ? <Link className="link-u" href={toHref({ category: [job.category.slug] })}>כל המשרות בתחום {job.category.label} ←</Link>
+                : <Link className="link-u" href="/jobs">כל המשרות ←</Link>}
             </section>
           )}
         </div>

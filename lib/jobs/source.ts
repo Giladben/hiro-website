@@ -55,7 +55,10 @@ export async function listJobs(q: JobsQuery): Promise<JobsPage> {
 
 export async function getJob(slugOrId: string): Promise<JobDetail | null> {
   if (jobsSource === 'api') {
-    const r = await api<Record<string, unknown>>(`/jobs/${encodeURIComponent(slugOrId)}`)
+    let r = await api<Record<string, unknown>>(`/jobs/${encodeURIComponent(slugOrId)}`)
+    // The API currently 404s on its own slugs but resolves the jobNumber the slug ends with
+    const jobNumber = /-(\d{3,})$/.exec(slugOrId)?.[1]
+    if (!r && jobNumber) r = await api<Record<string, unknown>>(`/jobs/${jobNumber}`)
     if (!r) return null
     return toDetail(r.data && typeof r.data === 'object' ? r.data : r)
   }

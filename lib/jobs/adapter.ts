@@ -72,6 +72,21 @@ function company(v: unknown): PublicCompany {
   }
 }
 
+const escapeHtml = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+
+// Headings recruiters type inline ("...לקוחות. דרישות: ...") in plain-text descriptions
+const HEADING = /(^|[.!]\s+)((?:עיקרי התפקיד|תחומי אחריות|תיאור התפקיד|מבנה המחלקה|כפיפות|דרישות(?: המשרה| התפקיד| חובה)?|יתרון|יתרונות|(?:השכר המוצע|שכר(?: מוצע| התחלתי| שעתי)?)|שעות(?: עבודה)?|היקף(?: ה?משרה)?|מיקום|תנאי(?:ם| עבודה| המשרה)))\s*:\s*/g
+
+/** Plain-text descriptions arrive as one run-on line: escape, then break into paragraphs at known headings. */
+export function descriptionHtml(raw: string): string {
+  if (/<\/?(p|ul|ol|li|br|strong|b)\b/i.test(raw)) return raw
+  // The API drops the client's name from confidential jobs, leaving "לחברת , העוסקת..."
+  const text = raw.replace(/(^|\s)([לבמ]?)חברת\s*,\s*/g, '$1$2חברה ')
+  const blocks = text.split(/\n{2,}/).map(b => b.trim()).filter(Boolean)
+  return blocks.map(b => `<p>${escapeHtml(b).replace(/\n/g, '<br>').replace(HEADING, (_, pre: string, h: string) => `${pre.trim()}</p><p><strong>${h}:</strong> `)}</p>`)
+    .join('').replace(/<p>\s*<\/p>/g, '')
+}
+
 export function toSummary(v: unknown): JobSummary {
   const o = obj(v)
   const tags = arr(o.tags).map(enumValue).filter((x): x is string => !!x)
@@ -132,7 +147,7 @@ export function toDetail(v: unknown): JobDetail {
   const firstName = str(r.firstName) ?? str(r.displayName)
   return {
     ...toSummary(v),
-    description: str(o.description) ?? '',
+    description: descriptionHtml(str(o.description) ?? ''),
     responsibilities: lines(o.responsibilities),
     requirements: lines(o.requirements),
     niceToHave: lines(o.niceToHave),
