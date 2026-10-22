@@ -62,7 +62,7 @@ export function JobCard({ job, lx }: { job: JobSummary; lx: Labels }) {
         )}
         <p className={s.cardTeaser}>{job.teaser}</p>
         <ul className={s.meta} aria-label="פרטי המשרה">
-          {job.category.slug && <li>{lx.category(job.category.slug)}</li>}
+          {job.category.slug && <li>{lx.category(job.category.slug) === job.category.slug ? job.category.label : lx.category(job.category.slug)}</li>}
           {job.employmentType.slice(0, 2).map(t => <li key={t}>{lx.employmentType(t)}</li>)}
           <li>{lx.workModel(job.workModel)}</li>
           {salary && <li className={s.metaSalary}>{salary}</li>}
