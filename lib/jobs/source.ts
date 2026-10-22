@@ -74,11 +74,13 @@ async function getCatalog(): Promise<JobSummary[] | null> {
  */
 function repairDates(jobs: JobSummary[]): JobSummary[] {
   if (jobs.length < 20) return jobs
+  // An import writes its stamps milliseconds apart, so group by minute
+  const minute = (iso: string) => iso.slice(0, 16)
   const counts = new Map<string, number>()
-  for (const j of jobs) counts.set(j.publishedAt, (counts.get(j.publishedAt) ?? 0) + 1)
+  for (const j of jobs) counts.set(minute(j.publishedAt), (counts.get(minute(j.publishedAt)) ?? 0) + 1)
   const [stamp, n] = [...counts].sort((a, b) => b[1] - a[1])[0]
   if (n < jobs.length * 0.3) return jobs
-  return jobs.map(j => (j.publishedAt === stamp ? { ...j, postedDateUnknown: true } : j))
+  return jobs.map(j => (minute(j.publishedAt) === stamp ? { ...j, postedDateUnknown: true } : j))
 }
 
 export async function listJobs(q: JobsQuery): Promise<JobsPage> {
