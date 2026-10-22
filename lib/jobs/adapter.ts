@@ -124,6 +124,14 @@ const QUESTION_TYPES: Record<string, ApplyQuestion['type']> = {
   yes_no: 'yes_no', text: 'text', number: 'number', choice: 'select', select: 'select', video: 'video',
 }
 
+/** ISO date or 'immediate'; the API also sends free text like "🟢 מיידי (זמין לעבודה מיד)." */
+function startDate(v: unknown): string | undefined {
+  const t = str(v)?.trim()
+  if (!t) return undefined
+  if (t === 'immediate' || t.includes('מיידי')) return 'immediate'
+  return /^d{4}-d{2}-d{2}/.test(t) && !Number.isNaN(Date.parse(t)) ? t : undefined
+}
+
 export function toDetail(v: unknown): JobDetail {
   const o = obj(v)
   const r = obj(o.recruiter)
@@ -152,7 +160,7 @@ export function toDetail(v: unknown): JobDetail {
     requirements: lines(o.requirements),
     niceToHave: lines(o.niceToHave),
     benefits: lines(o.benefits),
-    startDate: str(o.startDate),
+    startDate: startDate(o.startDate),
     recruiter: firstName ? { displayName: firstName, photoUrl: str(r.imageUrl) ?? str(r.photoUrl) } : undefined,
     apply: {
       method: a.method === 'external' && str(a.externalUrl) ? 'external' : 'hiro',
