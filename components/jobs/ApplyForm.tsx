@@ -203,6 +203,9 @@ export function ApplyForm({ jobId, jobTitle, apply }: { jobId: string; jobTitle:
       )}
 
       <div className={s.consents}>
+        <p className={s.consentNote}>
+          המידע ישמש לבחינת המועמדות שלך למשרה ויועבר לצוות הגיוס שלה. חלק מהבחינה נעשה בעזרת מערכת אוטומטית, וההחלטה הסופית היא של צוות הגיוס. מסירת הפרטים אינה חובה לפי חוק, אבל בלעדיהם לא נוכל לטפל במועמדות.
+        </p>
         <label className={s.consent}>
           <input type="checkbox" name="consent" value="true" required />
           <span>קראתי ואני מסכים/ה ל<a href="/privacy" className="link-u" target="_blank">מדיניות הפרטיות</a></span>
