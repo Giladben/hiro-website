@@ -13,6 +13,9 @@ const arr = (v: unknown): unknown[] => (Array.isArray(v) ? v : [])
 const str = (v: unknown): string | undefined => (typeof v === 'string' && v.length ? v : undefined)
 const num = (v: unknown): number | undefined => (typeof v === 'number' && Number.isFinite(v) ? v : undefined)
 
+/** Degrees only: the API has sent Israeli-grid (ITM) metres in lat/lng, which must not reach Google */
+const deg = (v: unknown, max: number) => { const n = num(v); return n != null && Math.abs(n) <= max ? n : undefined }
+
 /** `{ value, label }` or a bare string → the value */
 const enumValue = (v: unknown): string | undefined => (typeof v === 'string' ? v : str(obj(v).value))
 
@@ -32,8 +35,8 @@ function location(v: unknown): JobLocation | null {
     regionSlug: str(o.regionSlug) ?? '',
     regionName: str(o.region) ?? str(o.regionName) ?? '',
     address: str(o.address),
-    lat: num(o.lat),
-    lng: num(o.lng),
+    lat: deg(o.lat, 90),
+    lng: deg(o.lng, 180),
   }
 }
 
@@ -82,8 +85,9 @@ export function descriptionHtml(raw: string): string {
   if (/<\/?(p|ul|ol|li|br|strong|b)\b/i.test(raw)) return raw
   // The API drops the client's name from confidential jobs, leaving "לחברת , העוסקת..."
   const text = raw.replace(/(^|\s)([לבמ]?)חברת\s*,\s*/g, '$1$2חברה ')
-  const blocks = text.split(/\n{2,}/).map(b => b.trim()).filter(Boolean)
-  return blocks.map(b => `<p>${escapeHtml(b).replace(/\n/g, '<br>').replace(HEADING, (_, pre: string, h: string) => `${pre.trim()}</p><p><strong>${h}:</strong> `)}</p>`)
+  // The API breaks lines at headings now; each line is a paragraph
+  const blocks = text.split(/\n+/).map(b => b.trim()).filter(Boolean)
+  return blocks.map(b => `<p>${escapeHtml(b).replace(HEADING, (_, pre: string, h: string) => `${pre.trim()}</p><p><strong>${h}:</strong> `)}</p>`)
     .join('').replace(/<p>\s*<\/p>/g, '')
 }
 
@@ -126,8 +130,10 @@ export function toSummary(v: unknown): JobSummary {
     teaser: str(o.teaser) ?? '',
     skills: arr(o.skills).map(s => str(obj(s).label)).filter((x): x is string => !!x).map(label => ({ tagId: label, label })),
     imageUrl: str(o.imageUrl),
-    publishedAt: str(o.publishedAt) ?? str(o.updatedAt) ?? new Date(0).toISOString(),
-    updatedAt: str(o.updatedAt) ?? str(o.publishedAt) ?? new Date(0).toISOString(),
+    // Missing or malformed dates (the API has sent `{}`) are unknown, never 1970
+    publishedAt: str(o.publishedAt) ?? str(o.updatedAt) ?? '',
+    updatedAt: str(o.updatedAt) ?? str(o.publishedAt) ?? '',
+    ...(!str(o.publishedAt) && !str(o.updatedAt) && { postedDateUnknown: true }),
     validThrough: str(o.validThrough),
   }
 }
@@ -148,7 +154,9 @@ export function toDetail(v: unknown): JobDetail {
   const o = obj(v)
   const r = obj(o.recruiter)
   const a = obj(o.apply)
-  const lines = (x: unknown) => arr(x).map(i => (typeof i === 'string' ? i : str(obj(i).label))).filter((s): s is string => !!s)
+  // Lists arrive as arrays, or (since the 2026-10-25 API) as one string split into lines
+  const lines = (x: unknown) => (typeof x === 'string' ? x.split(/\n|•/) : arr(x).map(i => (typeof i === 'string' ? i : str(obj(i).label))))
+    .map(s => s?.replace(/^[\s\-–*]+/, '').trim()).filter((s): s is string => !!s)
   const questions: ApplyQuestion[] = arr(a.questions).flatMap(q => {
     const qo = obj(q)
     const type = QUESTION_TYPES[str(qo.type) ?? '']
@@ -252,7 +260,7 @@ export function toTaxonomy(v: unknown): Taxonomy & { aliases: Record<'cluster' |
         const co = obj(c)
         const cs = str(co.slug) ?? ''
         for (const a of arr(co.aliases)) if (typeof a === 'string') aliases.city[a] = cs
-        return { slug: cs, label: str(co.label) ?? cs, count: num(co.count) ?? 0, lat: num(co.lat), lng: num(co.lng) }
+        return { slug: cs, label: str(co.label) ?? cs, count: num(co.count) ?? 0, lat: deg(co.lat, 90), lng: deg(co.lng, 180) }
       }),
     }
   })

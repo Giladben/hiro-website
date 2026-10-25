@@ -23,7 +23,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const job = await getJob((await params).slug)
   if (!job) return {}
   const where = locationLabel(job)
-  const title = `${job.title}${where ? ` ב${where}` : ''} | ${companyName(job)}`
+  // Recruiters often put the city in the title already ("...בשוהם"); don't repeat it
+  const city = job.locations[0]?.cityName
+  const title = `${job.title}${where && !(city && job.title.includes(city)) ? ` ב${where}` : ''} | ${companyName(job)}`
   // teaser first; add the description only when it says something the teaser doesn't
   const body = plainText(job.description, 400)
   const description = plainText(body.startsWith(job.teaser) || job.teaser.startsWith(body) ? job.teaser : `${job.teaser} ${body}`, 155)
@@ -59,7 +61,7 @@ function jobPostingLd(job: JobDetail) {
     title: job.title,
     description: sanitizeJobHtml(`${job.description}${list('תחומי אחריות', job.responsibilities)}${list('דרישות', job.requirements)}${list('יתרון', job.niceToHave)}${list('הטבות', job.benefits)}`),
     identifier: { '@type': 'PropertyValue', name: org.name, value: job.jobNumber },
-    datePosted: job.publishedAt,
+    ...(job.publishedAt && !Number.isNaN(Date.parse(job.publishedAt)) && { datePosted: job.publishedAt }),
     ...(job.validThrough && { validThrough: job.validThrough }),
     ...(employment.length && { employmentType: employment }),
     hiringOrganization: org,
