@@ -103,6 +103,22 @@ function workModel(api: string | undefined, text: string): string {
   return api ?? ''
 }
 
+/**
+ * The API cuts the hours sentence out of the description and sometimes starts
+ * mid-word ("יקף: משרה מלאה…", "ים א-ה) במשרדי…"). Drop a clipped label, and
+ * hide the line rather than show a sentence that opens on a fragment.
+ */
+function hours(v: string | undefined): string | undefined {
+  if (!v) return undefined
+  // A sentence about something else (the API has sent "שכר: 11,000…" as hours)
+  if (/^(שכר|מיקום|דרישות|תנאים|הטבות)(?=[\s:]|$)/.test(v.trim())) return undefined
+  let t = v.trim().replace(/^[^\s:]{1,5}:\s*/, '') // clipped label like "יקף:"
+  const open = (t.match(/\(/g) ?? []).length, close = (t.match(/\)/g) ?? []).length
+  if (close > open) return undefined // starts inside a parenthesis
+  t = t.replace(/^[,.;\s]+/, '')
+  return t.length >= 6 ? t : undefined
+}
+
 export function toSummary(v: unknown): JobSummary {
   const o = obj(v)
   const tags = arr(o.tags).map(enumValue).filter((x): x is string => !!x)
@@ -126,7 +142,7 @@ export function toSummary(v: unknown): JobSummary {
     tags: tags.length ? tags : undefined,
     suitableFor: arr(o.suitableFor).map(enumValue).filter((x): x is string => !!x),
     salary: salary(o.salary),
-    hoursDescription: str(o.hoursDescription),
+    hoursDescription: hours(str(o.hoursDescription)),
     teaser: str(o.teaser) ?? '',
     skills: arr(o.skills).map(s => str(obj(s).label)).filter((x): x is string => !!x).map(label => ({ tagId: label, label })),
     imageUrl: str(o.imageUrl),
@@ -156,7 +172,8 @@ export function toDetail(v: unknown): JobDetail {
   const a = obj(o.apply)
   // Lists arrive as arrays, or (since the 2026-10-25 API) as one string split into lines
   const lines = (x: unknown) => (typeof x === 'string' ? x.split(/\n|•/) : arr(x).map(i => (typeof i === 'string' ? i : str(obj(i).label))))
-    .map(s => s?.replace(/^[\s\-–*]+/, '').trim()).filter((s): s is string => !!s)
+    // Drop bullets and junk lines with no letters or digits (the API has sent "?")
+    .map(s => s?.replace(/^[\s\-–*]+/, '').trim()).filter((s): s is string => !!s && /[\p{L}\d]/u.test(s))
   const questions: ApplyQuestion[] = arr(a.questions).flatMap(q => {
     const qo = obj(q)
     const type = QUESTION_TYPES[str(qo.type) ?? '']
