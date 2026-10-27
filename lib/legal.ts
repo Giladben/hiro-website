@@ -3,3 +3,6 @@
 // Keep in sync with UPDATED in app/privacy/page.tsx.
 export const PRIVACY_POLICY_VERSION = process.env.PRIVACY_POLICY_VERSION ?? '2026-10-27'
 export const PRIVACY_POLICY_URL = 'https://hiro.co.il/privacy'
+// Version of the terms of use a business accepts when it signs up to the employer portal.
+// Keep in sync with the date in app/terms/page.tsx.
+export const TERMS_VERSION = '2026-10-25'
