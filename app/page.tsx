@@ -6,6 +6,9 @@ import { RotatingWords } from '@/components/site/RotatingWords'
 import { RevealOnScroll } from '@/components/site/Reveal'
 import { CriteriaTicker, FeatureIndex, type IndexItem } from '@/components/site/sections'
 import s from '@/components/site/site.module.css'
+import { SalesVideo } from '@/components/sales/SalesVideo'
+import { SALES_VIDEOS } from '@/content/sales-videos'
+import sales from '@/components/sales/sales.module.css'
 
 const FEATURES: IndexItem[] = [
   {
@@ -99,6 +102,19 @@ export default function Home() {
         <div className="wrap">
           <CriteriaTicker label="מה נכנס לציון ההתאמה, ובאיזה משקל, זו החלטה שלכם" items={CRITERIA} />
         </div>
+
+        {/* ── HirO in 75 seconds ── */}
+        <section className={s.sectionTight} aria-labelledby="hiro75-h">
+          <div className={`wrap ${sales.teaser}`}>
+            <div>
+              <p className="kicker">סרטון</p>
+              <h2 id="hiro75-h" className="display-l">HirO ב-75 שניות</h2>
+              <p className="lede">{SALES_VIDEOS.S1.description}</p>
+              <a href="/why-hiro" className="btn btn-primary">לכל היתרונות <span className="arr" aria-hidden="true">←</span></a>
+            </div>
+            <SalesVideo video={SALES_VIDEOS.S1} />
+          </div>
+        </section>
 
         {/* ── Two sides ── */}
         <section id="platform" className={s.section} aria-labelledby="sides-heading">
