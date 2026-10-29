@@ -3,6 +3,7 @@ const cols = [
     { href: '/why-hiro', label: 'למה HirO' },
     { href: '/recruiters', label: 'למגייסים' },
     { href: '/candidates', label: 'למועמדים' },
+    { href: '/jobs', label: 'משרות' },
     { href: '/recruiters#feature-job-sonar', label: 'Job Sonar' },
     { href: '/recruiters#feature-ai-match', label: 'תבנית התאמה' },
     { href: '/candidates#feature-tracker', label: 'מעקב הגשות' },

@@ -42,6 +42,7 @@ export function Navbar() {
     { href: '/why-hiro', label: 'למה HirO' },
     { href: '/recruiters', label: 'למגייסים' },
     { href: '/candidates', label: 'למועמדים' },
+    { href: '/jobs', label: 'משרות' },
     { href: onHome ? '#features' : '/#features', label: 'מה יש בפנים' },
     { href: '/blog', label: 'בלוג' },
   ]
