@@ -17,7 +17,10 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   try { form = await req.formData() } catch { return NextResponse.json({ message: 'בקשה לא תקינה' }, { status: 400 }) }
 
   // Honeypot: bots fill every field. Pretend success so they don't retry.
-  if (String(form.get('website') ?? '').trim()) return NextResponse.json({ applicationId: 'ok' }, { status: 201 })
+  if (String(form.get('website') ?? '').trim()) {
+    console.warn(`apply ${id}: honeypot filled, not sent`)
+    return NextResponse.json({ applicationId: 'ok' }, { status: 201 })
+  }
 
   const fullName = String(form.get('fullName') ?? '').trim()
   const phone = String(form.get('phone') ?? '').replace(/[^\d+]/g, '').replace(/^\+972/, '0')
