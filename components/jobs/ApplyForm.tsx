@@ -1,6 +1,6 @@
 'use client'
 
-import { useId, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import type { ApplyConfig } from '@/lib/jobs/types'
 import s from './jobs.module.css'
 
@@ -20,7 +20,15 @@ export function ApplyForm({ jobId, jobTitle, apply }: { jobId: string; jobTitle:
   const [fileError, setFileError] = useState('')
   const [drag, setDrag] = useState(false)
   const input = useRef<HTMLInputElement>(null)
+  const doneRef = useRef<HTMLDivElement>(null)
   const uid = useId()
+
+  // The confirmation replaces a tall form: bring it into view so it isn't missed (mobile)
+  useEffect(() => {
+    if (state.kind !== 'done') return
+    doneRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    doneRef.current?.focus({ preventScroll: true })
+  }, [state.kind])
 
   const formQuestions = (apply.questions ?? []).filter(q => q.type !== 'video')
   const videoQuestions = (apply.questions ?? []).filter(q => q.type === 'video')
@@ -44,9 +52,9 @@ export function ApplyForm({ jobId, jobTitle, apply }: { jobId: string; jobTitle:
 
   if (state.kind === 'done') {
     return (
-      <div className={s.applyDone} role="status">
-        <b>קורות החיים התקבלו</b>
-        <p>צוות הגיוס של המשרה יעבור עליהם, וניצור קשר אם יש התאמה.</p>
+      <div className={s.applyDone} role="status" ref={doneRef} tabIndex={-1}>
+        <b><span aria-hidden="true">✓ </span>המועמדות נשלחה</b>
+        <p>{file ? 'קורות החיים שלך הועברו' : 'הפרטים שלך הועברו'} לצוות הגיוס של המשרה &quot;{jobTitle}&quot;. הם יעברו עליהם וייצרו קשר אם יש התאמה.</p>
         {state.hasVideo && <p>יישלח אליך קישור להשלמת שאלות הווידאו של המשרה באזור האישי. כדאי להשלים אותן כדי שהמועמדות תהיה מלאה.</p>}
         <p className={s.applyUpsell}>
           רוצה לראות את הסטטוס של כל ההגשות שלך במקום אחד?{' '}

@@ -99,6 +99,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   }
 
   const reply = await res.json().catch(() => ({})) as { applicationId?: string; candidateId?: string; field?: string; message?: string }
+  // No personal data here: job, Hiro's status and the ids it returned
+  console.info(`apply ${id}: hiro ${res.status}`, reply.applicationId ? `application ${reply.applicationId} candidate ${reply.candidateId ?? '-'}` : reply.message ?? '')
   switch (res.status) {
     case 201: case 200: return NextResponse.json({ applicationId: reply.applicationId }, { status: 201 })
     case 409: return NextResponse.json({ code: 'ALREADY_APPLIED' }, { status: 409 })
