@@ -98,7 +98,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     return NextResponse.json({ message: 'השרת לא הגיב. אפשר לנסות שוב בעוד רגע.' }, { status: 504 })
   }
 
-  const reply = await res.json().catch(() => ({})) as { applicationId?: string; field?: string; message?: string }
+  const reply = await res.json().catch(() => ({})) as { applicationId?: string; candidateId?: string; field?: string; message?: string }
   switch (res.status) {
     case 201: case 200: return NextResponse.json({ applicationId: reply.applicationId }, { status: 201 })
     case 409: return NextResponse.json({ code: 'ALREADY_APPLIED' }, { status: 409 })
