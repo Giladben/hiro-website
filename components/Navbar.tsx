@@ -48,6 +48,7 @@ export function Navbar() {
   ]
 
   return (
+    <>
     <header role="banner" className={`nav ${scrolled || mobileOpen ? 'nav-solid' : ''}`}>
       <div className="nav-in">
         <Link href="/" aria-label="Hiro, עמוד הבית" className="nav-logo">
@@ -92,22 +93,6 @@ export function Navbar() {
         </div>
       </div>
 
-      {mobileOpen && (
-        <div id="nav-mobile" className="nav-mobile">
-          <nav aria-label="ניווט ראשי, מובייל">
-            <ul>
-              {navItems.map(({ href, label }) => (
-                <li key={href}><a href={href} onClick={() => setMobileOpen(false)}>{label}</a></li>
-              ))}
-            </ul>
-          </nav>
-          <div className="nav-mobile-ctas">
-            <a href="/contact" className="btn btn-primary" onClick={() => setMobileOpen(false)}>קבעו הדגמה</a>
-            <a href="https://app.hiro.co.il" className="btn btn-ghost">כניסה למערכת</a>
-          </div>
-        </div>
-      )}
-
       <style>{`
         .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; transition: background .3s, border-color .3s; border-bottom: 1px solid transparent; }
         .nav-solid { background: var(--navbar-bg-scrolled); backdrop-filter: saturate(1.4) blur(14px); -webkit-backdrop-filter: saturate(1.4) blur(14px); border-bottom-color: var(--cb); }
@@ -128,7 +113,7 @@ export function Navbar() {
         .burger i:first-child { top: 0; } .burger i:last-child { top: 6.5px; }
         .burger-x i:first-child { top: 3.25px; transform: rotate(45deg); }
         .burger-x i:last-child { top: 3.25px; transform: rotate(-45deg); }
-        .nav-mobile { position: fixed; top: 72px; left: 0; right: 0; bottom: 0; background: var(--bg); padding: 1rem 1.25rem 2rem; overflow-y: auto; border-top: 1px solid var(--cb); }
+        .nav-mobile { position: fixed; z-index: 999; top: 72px; left: 0; right: 0; bottom: 0; background: var(--bg); padding: 1rem 1.25rem 2rem; overflow-y: auto; border-top: 1px solid var(--cb); }
         .nav-mobile ul { list-style: none; margin: 0; padding: 0; }
         .nav-mobile li a { display: block; color: var(--text); text-decoration: none; font-family: var(--font-display); font-size: 2rem; padding: .9rem 0; border-bottom: 1px solid var(--cb); }
         .nav-mobile-ctas { display: flex; flex-direction: column; gap: .75rem; margin-top: 2rem; }
@@ -141,5 +126,23 @@ export function Navbar() {
         }
       `}</style>
     </header>
+
+      {/* Outside the header: its backdrop-filter would make it the containing block of this fixed panel and clip it */}
+      {mobileOpen && (
+        <div id="nav-mobile" className="nav-mobile">
+          <nav aria-label="ניווט ראשי, מובייל">
+            <ul>
+              {navItems.map(({ href, label }) => (
+                <li key={href}><a href={href} onClick={() => setMobileOpen(false)}>{label}</a></li>
+              ))}
+            </ul>
+          </nav>
+          <div className="nav-mobile-ctas">
+            <a href="/contact" className="btn btn-primary" onClick={() => setMobileOpen(false)}>קבעו הדגמה</a>
+            <a href="https://app.hiro.co.il" className="btn btn-ghost">כניסה למערכת</a>
+          </div>
+        </div>
+      )}
+    </>
   )
 }

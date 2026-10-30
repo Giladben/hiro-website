@@ -91,6 +91,33 @@ export function descriptionHtml(raw: string): string {
     .join('').replace(/<p>\s*<\/p>/g, '')
 }
 
+// Description sections the job page already shows as their own lists
+const SECTION_HEADINGS = {
+  responsibilities: /^(?:במסגרת התפקיד|תחומי אחריות|עיקרי התפקיד)\s*:?$/,
+  requirements: /^דרישות(?: המשרה| התפקיד| חובה)?\s*:?$/,
+  niceToHave: /^יתרונ?(?:ות)?\s*:?$/,
+}
+
+/**
+ * Cut a section (its heading line up to the next heading line) out of a line-broken description
+ * when the same content has its own list, so the page doesn't show it twice.
+ */
+function dropSections(raw: string, lists: Record<keyof typeof SECTION_HEADINGS, string[]>): string {
+  if (!raw.includes('\n')) return raw
+  const isHeading = (l: string) => l.length <= 40 && /:\s*$/.test(l) && !/^[\-–*•]/.test(l)
+  const out: string[] = []
+  let skipping = false
+  for (const line of raw.split('\n')) {
+    const t = line.trim()
+    if (isHeading(t) || Object.values(SECTION_HEADINGS).some(re => re.test(t))) {
+      skipping = (Object.keys(SECTION_HEADINGS) as (keyof typeof SECTION_HEADINGS)[])
+        .some(k => SECTION_HEADINGS[k].test(t) && lists[k].length > 0)
+    }
+    if (!skipping) out.push(line)
+  }
+  return out.join('\n')
+}
+
 /**
  * The API reports "office" for every job (its default), even "עבודה מהבית" ones.
  * Only an explicit "office" is second-guessed, and only on unambiguous wording:
@@ -190,13 +217,25 @@ export function toDetail(v: unknown): JobDetail {
     }]
   })
   const firstName = str(r.firstName) ?? str(r.displayName)
+  const raw = str(o.description) ?? ''
+  const rawLines = new Set(raw.split('\n').map(s => s.replace(/^[\s\-–*•]+/, '').trim()))
+  // The API appends the description's own bullets to the structured lists: drop those copies
+  // when the list has items of its own (else they're all we have)
+  const list = (x: unknown) => {
+    const items = lines(x)
+    const own = items.filter(s => !rawLines.has(s))
+    return [...new Set(own.length ? own : items)]
+  }
+  const responsibilities = list(o.responsibilities)
+  const requirements = list(o.requirements)
+  const niceToHave = list(o.niceToHave)
   return {
     ...toSummary(v),
-    description: descriptionHtml(str(o.description) ?? ''),
-    responsibilities: lines(o.responsibilities),
-    requirements: lines(o.requirements),
-    niceToHave: lines(o.niceToHave),
-    benefits: lines(o.benefits),
+    description: descriptionHtml(dropSections(raw, { responsibilities, requirements, niceToHave })),
+    responsibilities,
+    requirements,
+    niceToHave,
+    benefits: list(o.benefits),
     startDate: startDate(o.startDate),
     recruiter: firstName ? { displayName: firstName, photoUrl: str(r.imageUrl) ?? str(r.photoUrl) } : undefined,
     apply: {
