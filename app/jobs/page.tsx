@@ -33,10 +33,10 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   // Clean landing pages get "דרושים" (how Israelis search for jobs) and the live count
   const total = indexable ? (await listJobs({ ...q, limit: 1 })).total : 0
   const bare = !q.cluster?.length && !q.category?.length && !q.industry?.length && !q.city?.length && !q.region?.length
-  const subject = head.replace(/^משרות /, '')
-  const title = !indexable || !total ? head : bare ? `דרושים: ${total} משרות פתוחות` : `דרושים: ${head} (${total} משרות פתוחות)`
+  const open = total === 1 ? 'משרה אחת פתוחה' : `${total} משרות פתוחות`
+  const title = !indexable || !total ? head : bare ? `דרושים: ${open}` : `דרושים: ${head} (${open})`
   const description = indexable && total && !bare
-    ? `${total} משרות ${subject} פתוחות עכשיו. חיפוש לפי תחום, עיר והיקף משרה, והגשת מועמדות ישירה למגייסים ב-HirO.`
+    ? `${head}: ${open} עכשיו. חיפוש לפי תחום, עיר והיקף משרה, והגשת מועמדות ישירה למגייסים ב-HirO.`
     : `${head} ב-HirO: חיפוש לפי תחום, עיר והיקף משרה, והגשת מועמדות ישירה למגייסים.`
   const canonical = toHref({ cluster: q.cluster, category: q.category, industry: q.industry, city: q.city, region: q.region })
   return {
