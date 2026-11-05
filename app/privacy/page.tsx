@@ -6,7 +6,8 @@ const UPDATED = '27 באוקטובר 2026'
 const CONTACT = 'privacy@hiro.co.il'
 
 export const metadata: Metadata = {
-  title: 'מדיניות פרטיות — Hiro',
+  title: 'מדיניות פרטיות',
+  alternates: { canonical: '/privacy' },
   description: 'מדיניות הפרטיות של HirO למועמדים: איזה מידע נאסף, איך משתמשים בו, עם מי משתפים אותו ומה הזכויות שלך.',
 }
 

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   description: 'מדריכים מעשיים למגייסים ולמועמדים: איך AI משנה את תהליך הגיוס, איך לכתוב קורות חיים שעוברים סינון, ואיך למצוא את המועמדים או המשרות הנכונים.',
   alternates: { canonical: '/blog' },
   openGraph: {
-    title: 'בלוג Hiro — גיוס עובדים ובינה מלאכותית',
+    title: 'בלוג HirO — גיוס עובדים ובינה מלאכותית',
     description: 'מדריכים מעשיים למגייסים ולמועמדים על גיוס, AI וחיפוש עבודה.',
     url: '/blog',
     locale: 'he_IL',

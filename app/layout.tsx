@@ -16,14 +16,14 @@ const heebo = Heebo({
 })
 
 const SITE_URL = 'https://hiro.co.il'
-const SITE_TITLE = 'Hiro — פלטפורמת הגיוס החכמה'
+const SITE_TITLE = 'HirO | מערכת גיוס ו-CRM למשרדי השמה ומגייסים'
 const SITE_DESCRIPTION = 'Hiro היא מערכת גיוס ו-CRM למגייסים ולמשרדי השמה, ומרכז קריירה אישי למועמדים. תבנית התאמה שאתם מגדירים, Job Sonar שסורק את המאגר שלכם, ותקשורת בתפוצה מתוך המערכת.'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: SITE_TITLE,
-    template: '%s | Hiro',
+    template: '%s | HirO',
   },
   description: SITE_DESCRIPTION,
   keywords: [
@@ -31,17 +31,16 @@ export const metadata: Metadata = {
     'בינה מלאכותית בגיוס', 'Job Sonar', 'גיוס מועמדים פסיביים',
     'סוכן קריירה AI', 'קורות חיים AI', 'CRM לגיוס', 'פלטפורמת גיוס',
   ],
-  authors: [{ name: 'Hiro' }],
+  authors: [{ name: 'HirO' }],
   robots: { index: true, follow: true },
-  alternates: { canonical: '/' },
+  // No site-wide canonical: a page without its own would inherit the home page's
   openGraph: {
     title: SITE_TITLE,
     description: 'מגייסים ומועמדים — יחד, חכם יותר.',
-    url: SITE_URL,
-    siteName: 'Hiro',
+    siteName: 'HirO',
     locale: 'he_IL',
     type: 'website',
-    images: [{ url: '/images/og-image.png', width: 1200, height: 630, alt: 'Hiro — פלטפורמת הגיוס החכמה' }],
+    images: [{ url: '/images/og-image.png', width: 1200, height: 630, alt: 'HirO, מערכת גיוס ו-CRM' }],
   },
   twitter: {
     card: 'summary_large_image',
@@ -58,11 +57,23 @@ export const viewport: Viewport = {
 const organizationJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
-  name: 'Hiro',
+  '@id': `${SITE_URL}/#organization`,
+  name: 'HirO',
   url: SITE_URL,
   logo: `${SITE_URL}/images/hiro-logo.png`,
   description: SITE_DESCRIPTION,
-  sameAs: [],
+  parentOrganization: { '@type': 'Organization', name: 'מימד אנושי' },
+  address: { '@type': 'PostalAddress', streetAddress: 'ההגנה 37', addressLocality: 'נתיבות', addressCountry: 'IL' },
+}
+
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': `${SITE_URL}/#website`,
+  name: 'HirO',
+  url: SITE_URL,
+  inLanguage: 'he-IL',
+  publisher: { '@id': `${SITE_URL}/#organization` },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -71,7 +82,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify([organizationJsonLd, websiteJsonLd]) }}
         />
         <Providers>
           {children}

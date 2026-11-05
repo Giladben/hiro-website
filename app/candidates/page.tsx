@@ -9,17 +9,17 @@ import { FeatureIndex, type IndexItem } from '@/components/site/sections'
 import s from '@/components/site/site.module.css'
 
 export const metadata: Metadata = {
-  title: 'Hiro למועמדים',
-  description: 'כל ההגשות שלך בלוח אחד, גם אלה שמחוץ ל-Hiro. כמה פרופילים מקצועיים בחשבון אחד, סוכן קריירה אישי, ופרופיל שמגייסים רואים תמיד בגרסה העדכנית.',
+  title: { absolute: 'HirO למועמדים | חיפוש עבודה ומעקב הגשות במקום אחד' },
+  description: 'כל ההגשות שלך בלוח אחד, גם אלה שמחוץ ל-HirO. כמה פרופילים מקצועיים בחשבון אחד, סוכן קריירה אישי, ופרופיל שמגייסים רואים תמיד בגרסה העדכנית.',
   keywords: ['חיפוש עבודה', 'מעקב הגשות', 'קורות חיים', 'סוכן קריירה AI', 'ניהול קריירה'],
   alternates: { canonical: '/candidates' },
   openGraph: {
-    title: 'Hiro למועמדים',
-    description: 'כל ההגשות שלך במקום אחד. גם אלה שמחוץ ל-Hiro.',
+    title: 'HirO למועמדים',
+    description: 'כל ההגשות שלך במקום אחד. גם אלה שמחוץ ל-HirO.',
     url: '/candidates',
     locale: 'he_IL',
     type: 'website',
-    images: [{ url: '/images/og-image.png', width: 1200, height: 630, alt: 'Hiro למועמדים' }],
+    images: [{ url: '/images/og-image.png', width: 1200, height: 630, alt: 'HirO למועמדים' }],
   },
 }
 

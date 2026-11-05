@@ -126,6 +126,67 @@ export async function getSimilar(job: JobSummary, limit = 4): Promise<JobSummary
     .map(x => toSummary(x.j))
 }
 
+/**
+ * Every job matching a query (no paging), for the facts block on landing pages.
+ * Null when the catalog is too big to hold or unavailable: callers just skip the block.
+ */
+export async function listAllMatching(q: JobsQuery): Promise<JobSummary[] | null> {
+  if (jobsSource === 'api') {
+    const [catalog, tax] = await Promise.all([getCatalog(), getTaxonomy()])
+    return catalog ? search(catalog, tax, q, true).data : null
+  }
+  return search(FIXTURE_JOBS, fixtureTaxonomy(), q, true).data
+}
+
+/**
+ * Indexable /jobs landing pages for the sitemap: single cluster, category, city or
+ * region, and category/cluster × city, each with at least `min` open jobs.
+ * Same shape the listing page treats as indexable, so canonical URLs match.
+ */
+export async function listLandingQueries(min = 3): Promise<JobsQuery[]> {
+  if (jobsSource !== 'api') return []
+  try {
+    const catalog = await getCatalog()
+    if (!catalog) {
+      // Too big to hold: fall back to the taxonomy's single-dimension counts
+      const tax = await getTaxonomy()
+      return [
+        ...tax.clusters.filter(c => c.count >= min).map(c => ({ cluster: [c.slug] })),
+        ...tax.clusters.flatMap(c => c.categories).filter(c => c.count >= min).map(c => ({ category: [c.slug] })),
+        ...tax.regions.filter(r => r.count >= min).map(r => ({ region: [r.slug] })),
+        ...tax.regions.flatMap(r => r.cities).filter(c => c.count >= min).map(c => ({ city: [c.slug] })),
+      ]
+    }
+    return landingQueriesFrom(catalog, min)
+  } catch (err) {
+    console.error('Jobs landing pages unavailable', err)
+    return []
+  }
+}
+
+/** Pure part of listLandingQueries: count open jobs per landing query. */
+export function landingQueriesFrom(catalog: JobSummary[], min: number): JobsQuery[] {
+  const counts = new Map<string, { q: JobsQuery; n: number }>()
+  const add = (q: JobsQuery) => {
+    const k = JSON.stringify(q)
+    const c = counts.get(k) ?? { q, n: 0 }
+    c.n++
+    counts.set(k, c)
+  }
+  for (const j of catalog) {
+    const cl = j.cluster.slug, ca = j.category.slug
+    if (cl) add({ cluster: [cl] })
+    if (ca) add({ category: [ca] })
+    for (const r of new Set(j.locations.map(l => l.regionSlug).filter(Boolean))) add({ region: [r] })
+    for (const c of new Set(j.locations.map(l => l.citySlug).filter(Boolean))) {
+      add({ city: [c] })
+      if (cl) add({ cluster: [cl], city: [c] })
+      if (ca) add({ category: [ca], city: [c] })
+    }
+  }
+  return [...counts.values()].filter(c => c.n >= min).map(c => c.q)
+}
+
 const apiTaxonomy = async () => toTaxonomy(await api<unknown>('/taxonomy'))
 
 export async function getTaxonomy(): Promise<Taxonomy> {
@@ -192,7 +253,7 @@ const any = (sel: string[] | undefined, test: (v: string) => boolean) => !sel?.l
 const byNewest = (a: JobSummary, b: JobSummary) =>
   +new Date(b.publishedAt) - +new Date(a.publishedAt) || (Number(b.jobNumber) || 0) - (Number(a.jobNumber) || 0)
 
-function search(jobs: JobSummary[], tax: Taxonomy, q: JobsQuery): JobsPage {
+function search(jobs: JobSummary[], tax: Taxonomy, q: JobsQuery, all = false): JobsPage {
   const exp = q.q ? expandQuery(q.q, tax) : null
   const postedMs = q.postedWithin ? { '1d': 1, '3d': 3, '7d': 7, '30d': 30 }[q.postedWithin] * 864e5 : 0
 
@@ -254,7 +315,7 @@ function search(jobs: JobSummary[], tax: Taxonomy, q: JobsQuery): JobsPage {
   const limit = Math.min(q.limit ?? 20, 50)
   const page = Math.max(1, q.page ?? 1)
   return {
-    data: rows.slice((page - 1) * limit, page * limit).map(toSummary),
+    data: (all ? rows : rows.slice((page - 1) * limit, page * limit)).map(toSummary),
     total: rows.length,
     page,
     limit,

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 import { AccessibilityWidget } from '@/components/AccessibilityWidget'
@@ -9,6 +10,36 @@ import s from '@/components/site/site.module.css'
 import { SalesVideo } from '@/components/sales/SalesVideo'
 import { SALES_VIDEOS } from '@/content/sales-videos'
 import sales from '@/components/sales/sales.module.css'
+
+const SITE = 'https://hiro.co.il'
+
+export const metadata: Metadata = {
+  alternates: { canonical: '/' },
+  openGraph: {
+    title: 'HirO | מערכת גיוס ו-CRM למשרדי השמה ומגייסים',
+    description: 'מגייסים ומועמדים, יחד, חכם יותר.',
+    url: '/',
+    siteName: 'HirO',
+    locale: 'he_IL',
+    type: 'website',
+    images: [{ url: '/images/og-image.png', width: 1200, height: 630, alt: 'HirO, מערכת גיוס ו-CRM' }],
+  },
+}
+
+// The 75-second video on the home page (the full set is marked up on /why-hiro)
+const v = SALES_VIDEOS.S1
+const videoLd = {
+  '@context': 'https://schema.org',
+  '@type': 'VideoObject',
+  name: v.title,
+  description: v.description,
+  thumbnailUrl: `${SITE}${v.poster}`,
+  contentUrl: `${SITE}${v.src}`,
+  ...(v.youtubeId && { embedUrl: `https://www.youtube-nocookie.com/embed/${v.youtubeId}` }),
+  duration: v.duration,
+  uploadDate: '2026-10-18', // same as /why-hiro; Google requires it for video results
+  inLanguage: 'he',
+}
 
 const FEATURES: IndexItem[] = [
   {
@@ -68,6 +99,7 @@ const CRITERIA = ['התאמה וקטורית', 'ניסיון רלוונטי', '�
 export default function Home() {
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(videoLd).replace(/</g, '\\u003c') }} />
       <a href="#main-content" className="skip-link">דלג לתוכן הראשי</a>
       <AccessibilityWidget />
       <Navbar />

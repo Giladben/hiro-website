@@ -2,7 +2,8 @@ import type { Metadata } from 'next'
 import { LegalPage, type LegalSection } from '@/components/legal/LegalPage'
 
 export const metadata: Metadata = {
-  title: 'הצהרת נגישות — Hiro',
+  title: 'הצהרת נגישות',
+  alternates: { canonical: '/accessibility' },
   description: 'הצהרת הנגישות של פלטפורמת Hiro — התאמות הנגישות שבוצעו באתר, התקנים הרלוונטיים ואפשרויות פנייה.',
 }
 

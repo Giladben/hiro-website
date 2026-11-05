@@ -8,7 +8,8 @@ import { JobCard } from '@/components/jobs/JobCard'
 import { Filters, QuickChips, ResultsBody, SearchBar, SearchProvider, SortSelect } from '@/components/jobs/SearchControls'
 import { type Labels, POSTED_LABELS, labelsFrom } from '@/lib/jobs/labels'
 import { parseQuery, toHref } from '@/lib/jobs/query'
-import { getTaxonomy, jobsEnabled, jobsSource, listJobs } from '@/lib/jobs/source'
+import { faqLd, isIndexable, landingFacts } from '@/lib/jobs/landing'
+import { getTaxonomy, jobsEnabled, jobsSource, listAllMatching, listJobs } from '@/lib/jobs/source'
 import type { FacetKey, JobsQuery } from '@/lib/jobs/types'
 import s from '@/components/jobs/jobs.module.css'
 
@@ -27,15 +28,23 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   if (!jobsEnabled) return {}
   const q = parseQuery(await searchParams)
   const lx = labelsFrom(await getTaxonomy())
-  const title = headline(q, lx)
-  const single = (l?: string[]) => (l?.length ?? 0) <= 1
-  // Only clean single cluster/category/industry × city/region pages are indexable
-  const indexable = !q.q && !q.page && single(q.cluster) && single(q.category) && single(q.industry) && single(q.city) && single(q.region)
-    && !q.employmentType && !q.workModel && !q.seniority && !q.suitableFor && !q.noExperience && !q.salaryMin && !q.postedWithin && !q.sort
+  const head = headline(q, lx)
+  const indexable = isIndexable(q)
+  // Clean landing pages get "דרושים" (how Israelis search for jobs) and the live count
+  const total = indexable ? (await listJobs({ ...q, limit: 1 })).total : 0
+  const bare = !q.cluster?.length && !q.category?.length && !q.industry?.length && !q.city?.length && !q.region?.length
+  const subject = head.replace(/^משרות /, '')
+  const title = !indexable || !total ? head : bare ? `דרושים: ${total} משרות פתוחות` : `דרושים: ${head} (${total} משרות פתוחות)`
+  const description = indexable && total && !bare
+    ? `${total} משרות ${subject} פתוחות עכשיו. חיפוש לפי תחום, עיר והיקף משרה, והגשת מועמדות ישירה למגייסים ב-HirO.`
+    : `${head} ב-HirO: חיפוש לפי תחום, עיר והיקף משרה, והגשת מועמדות ישירה למגייסים.`
+  const canonical = toHref({ cluster: q.cluster, category: q.category, industry: q.industry, city: q.city, region: q.region })
   return {
     title,
-    description: `${title} ב-Hiro: חיפוש לפי תחום, עיר והיקף משרה, והגשת מועמדות ישירה למגייסים.`,
-    alternates: { canonical: toHref({ cluster: q.cluster, category: q.category, industry: q.industry, city: q.city, region: q.region }) },
+    description,
+    alternates: { canonical },
+    openGraph: { title, description, url: canonical, type: 'website', locale: 'he_IL', images: [{ url: '/images/og-image.png', width: 1200, height: 630, alt: title }] },
+    twitter: { card: 'summary_large_image', title, description, images: ['/images/og-image.png'] },
     robots: { index: indexable && jobsSource === 'api', follow: true },
   }
 }
@@ -53,6 +62,7 @@ export default async function JobsPage({ searchParams }: Props) {
   }
   const [res, tax] = await Promise.all([listJobs(q), Promise.resolve(tax0)])
   const lx = labelsFrom(tax)
+  const facts = isIndexable(q) ? landingFacts(q, (await listAllMatching(q)) ?? [], headline(q, lx).replace(/^משרות /, ''), lx) : null
   const from = res.total ? (res.page - 1) * res.limit + 1 : 0
   const to = Math.min(res.page * res.limit, res.total)
 
@@ -114,6 +124,29 @@ export default async function JobsPage({ searchParams }: Props) {
                 </div>
                 <a href="https://app.hiro.co.il" className="btn btn-primary">פתיחת פרופיל בחינם <span className="arr" aria-hidden="true">←</span></a>
               </aside>
+
+              {facts && (
+                <section className={s.landing} aria-labelledby="landing-h">
+                  <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: faqLd(facts.faqs) }} />
+                  <h2 id="landing-h">{facts.heading}</h2>
+                  <p>{facts.intro}</p>
+                  {facts.top && (
+                    <nav aria-label={facts.top.title}>
+                      <h3>{facts.top.title}</h3>
+                      <ul className={s.landingLinks}>{facts.top.links.map(l => <li key={l.href}><Link href={l.href}>{l.label}</Link></li>)}</ul>
+                    </nav>
+                  )}
+                  <h3>שאלות נפוצות</h3>
+                  <dl className={s.landingFaq}>
+                    {facts.faqs.map(f => (
+                      <div key={f.q}>
+                        <dt>{f.q}</dt>
+                        <dd>{f.a}{f.link && <> <Link className="link-u" href={f.link.href}>{f.link.label}</Link></>}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </section>
+              )}
             </section>
           </div>
         </SearchProvider>

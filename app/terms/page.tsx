@@ -2,7 +2,8 @@ import type { Metadata } from 'next'
 import { LegalPage, type LegalSection } from '@/components/legal/LegalPage'
 
 export const metadata: Metadata = {
-  title: 'תנאי שימוש — Hiro',
+  title: 'תנאי שימוש',
+  alternates: { canonical: '/terms' },
   description: 'תנאי השימוש בפלטפורמת Hiro — עבור מגייסים ומועמדים כאחד.',
 }
 

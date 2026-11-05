@@ -9,17 +9,17 @@ import { CriteriaTicker, FeatureIndex, type IndexItem } from '@/components/site/
 import s from '@/components/site/site.module.css'
 
 export const metadata: Metadata = {
-  title: 'Hiro למגייסים ולמשרדי השמה',
+  title: 'מערכת גיוס ו-CRM למשרדי השמה ולמגייסים',
   description: 'Job Sonar שמדרג את המאגר שלכם למשרה בלחיצה, תבנית התאמה עם משקלות שאתם קובעים, SMS ומייל בתפוצה ו-CRM למשרדי השמה.',
   keywords: ['מערכת גיוס למגייסים', 'תוכנה למשרדי השמה', 'AI בגיוס', 'Job Sonar', 'CRM לגיוס', 'ATS'],
   alternates: { canonical: '/recruiters' },
   openGraph: {
-    title: 'Hiro למגייסים ולמשרדי השמה',
+    title: 'HirO למגייסים ולמשרדי השמה',
     description: 'המאגר שכבר יש לכם, מדורג למשרה בלחיצה.',
     url: '/recruiters',
     locale: 'he_IL',
     type: 'website',
-    images: [{ url: '/images/og-image.png', width: 1200, height: 630, alt: 'Hiro למגייסים' }],
+    images: [{ url: '/images/og-image.png', width: 1200, height: 630, alt: 'HirO למגייסים' }],
   },
 }
 

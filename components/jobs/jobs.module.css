@@ -167,6 +167,18 @@
 .profileCta :global(.btn-primary) { background: var(--bg); color: var(--text); }
 .profileCta :global(.btn-primary):hover { background: var(--accent); color: #fff; }
 
+/* ───────── Landing text (category / city pages) ───────── */
+.landing { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--line); max-width: 68ch; }
+.landing h2 { font-family: var(--font-display); font-weight: 500; font-size: 1.6rem; margin: 0 0 .75rem; }
+.landing h3 { font-size: 1rem; font-weight: 700; margin: 1.75rem 0 .6rem; }
+.landing p { margin: 0; line-height: 1.75; color: var(--text); }
+.landingLinks { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .5rem; }
+.landingLinks a { display: inline-block; padding: .35rem .8rem; border: 1px solid var(--line); border-radius: 999px; font-size: .92rem; }
+.landingFaq { margin: 0; }
+.landingFaq div { padding: .85rem 0; border-bottom: 1px solid var(--line); }
+.landingFaq dt { font-weight: 700; margin-bottom: .3rem; }
+.landingFaq dd { margin: 0; line-height: 1.7; }
+
 /* ───────── Job page ───────── */
 .crumbs { padding: 2rem 0 0; font-size: .88rem; }
 .crumbs ol { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .45rem; }

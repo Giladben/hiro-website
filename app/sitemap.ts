@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { blogPosts } from '@/lib/blog-posts'
-import { jobsSource, listJobSlugs } from '@/lib/jobs/source'
+import { toHref } from '@/lib/jobs/query'
+import { jobsSource, listJobSlugs, listLandingQueries } from '@/lib/jobs/source'
 
 const SITE_URL = 'https://hiro.co.il'
 
@@ -31,6 +32,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const jobRoutes: MetadataRoute.Sitemap = jobsSource === 'api'
     ? [
         { url: `${SITE_URL}/jobs`, changeFrequency: 'hourly', priority: 0.9 },
+        // Landing pages (category / city / category × city) with 3+ open jobs.
+        // Next writes <loc> as-is, so the & between params must be escaped here.
+        ...(await listLandingQueries()).map(q => ({ url: `${SITE_URL}${toHref(q).replace(/&/g, '&amp;')}`, changeFrequency: 'daily' as const, priority: 0.8 })),
         ...(await listJobSlugs()).map(j => ({ url: `${SITE_URL}/jobs/${j.slug}`, lastModified: j.updatedAt, changeFrequency: 'daily' as const, priority: 0.8 })),
       ]
     : []

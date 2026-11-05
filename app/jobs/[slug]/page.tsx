@@ -30,14 +30,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const body = plainText(job.description, 400)
   const description = plainText(body.startsWith(job.teaser) || job.teaser.startsWith(body) ? job.teaser : `${job.teaser} ${body}`, 155)
   // The job's generated image is the share card for WhatsApp / Facebook
-  const images = job.imageUrl ? [{ url: job.imageUrl, alt: job.title }] : undefined
+  const images = job.imageUrl ? [{ url: job.imageUrl, alt: job.title }] : [{ url: '/images/og-image.png', width: 1200, height: 630, alt: job.title }]
   return {
     title,
     description,
     alternates: { canonical: `/jobs/${job.slug}` },
     robots: { index: job.status === 'open' && jobsSource === 'api', follow: true },
-    openGraph: { title, description, url: `/jobs/${job.slug}`, type: 'website', locale: 'he_IL', ...(images && { images }) },
-    twitter: { card: 'summary_large_image', title, description, ...(job.imageUrl && { images: [job.imageUrl] }) },
+    openGraph: { title, description, url: `/jobs/${job.slug}`, type: 'website', locale: 'he_IL', images },
+    twitter: { card: 'summary_large_image', title, description, images: [images[0].url] },
   }
 }
 
@@ -90,6 +90,24 @@ function jobPostingLd(job: JobDetail) {
   return JSON.stringify(ld).replace(/</g, '\\u003c')
 }
 
+// Same trail as the visible breadcrumbs, so Google shows "משרות › תחום › עיר" in results
+function breadcrumbLd(job: JobDetail) {
+  const site = 'https://hiro.co.il'
+  const city = job.locations[0]
+  const items: [string, string][] = [
+    ['משרות', '/jobs'],
+    ...(job.cluster.slug ? [[job.cluster.label, toHref({ cluster: [job.cluster.slug] })] as [string, string]] : []),
+    ...(job.category.slug ? [[job.category.label, toHref({ category: [job.category.slug] })] as [string, string]] : []),
+    ...(city ? [[city.cityName, toHref({ ...(job.category.slug && { category: [job.category.slug] }), city: [city.citySlug] })] as [string, string]] : []),
+    [job.title, `/jobs/${job.slug}`],
+  ]
+  return JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map(([name, path], i) => ({ '@type': 'ListItem', position: i + 1, name, item: `${site}${path}` })),
+  }).replace(/</g, '\\u003c')
+}
+
 const esc = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 const list = (title: string, items?: string[]) => (items?.length ? `<h3>${title}</h3><ul>${items.map(i => `<li>${esc(i)}</li>`).join('')}</ul>` : '')
 
@@ -122,6 +140,7 @@ export default async function JobPage({ params }: Props) {
   return (
     <>
       {!closed && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jobPostingLd(job) }} />}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: breadcrumbLd(job) }} />
       <a href="#apply" className="skip-link">דלג להגשת מועמדות</a>
       <AccessibilityWidget />
       <Navbar />

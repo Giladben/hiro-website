@@ -28,6 +28,7 @@ export async function generateMetadata(
       locale: 'he_IL',
       type: 'article',
       publishedTime: post.publishedAt,
+      modifiedTime: post.updatedAt ?? post.publishedAt,
       images: [{ url: '/images/og-image.png', width: 1200, height: 630, alt: post.title }],
     },
     twitter: {
@@ -53,8 +54,10 @@ export default async function BlogPostPage(
     description: post.description,
     datePublished: post.publishedAt,
     dateModified: post.updatedAt ?? post.publishedAt,
-    author: { '@type': 'Organization', name: 'Hiro' },
-    publisher: { '@type': 'Organization', name: 'Hiro' },
+    image: `${SITE_URL}/images/og-image.png`,
+    inLanguage: 'he-IL',
+    author: { '@type': 'Organization', name: 'HirO', url: SITE_URL },
+    publisher: { '@type': 'Organization', name: 'HirO', logo: { '@type': 'ImageObject', url: `${SITE_URL}/images/hiro-logo.png` } },
     mainEntityOfPage: `${SITE_URL}/blog/${post.slug}`,
   }
 
