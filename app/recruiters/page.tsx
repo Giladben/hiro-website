@@ -7,6 +7,8 @@ import { RotatingWords } from '@/components/site/RotatingWords'
 import { RevealOnScroll } from '@/components/site/Reveal'
 import { CriteriaTicker, FeatureIndex, type IndexItem } from '@/components/site/sections'
 import s from '@/components/site/site.module.css'
+import { faqLd } from '@/lib/jobs/landing'
+import { recruitersFaq } from '@/lib/site-faq'
 
 export const metadata: Metadata = {
   title: 'מערכת גיוס ו-CRM למשרדי השמה ולמגייסים',
@@ -155,6 +157,26 @@ export default function RecruitersPage() {
               <p className="lede">בלי לייצא לאקסל ובלי לחבר כלים שלא מדברים זה עם זה.</p>
             </div>
             <div className="reveal"><FeatureIndex items={MORE} /></div>
+          </div>
+        </section>
+
+        {/* ── FAQ (also FAQPage markup for search and AI answer engines) ── */}
+        <section className={s.section} aria-labelledby="faq-h" style={{ paddingTop: '2rem' }}>
+          <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: faqLd(recruitersFaq) }} />
+          <div className="wrap">
+            <div className={`${s.secHead} reveal`}>
+              <h2 id="faq-h" className="display-l" style={{ margin: 0 }}>שאלות נפוצות על HirO</h2>
+            </div>
+            <dl style={{ margin: 0, maxWidth: 860 }}>
+              {recruitersFaq.map(f => (
+                <div key={f.q} style={{ padding: '1.1rem 0', borderBottom: '1px solid var(--line)' }}>
+                  <dt style={{ fontWeight: 700, fontSize: '1.05rem', marginBottom: '.4rem' }}>{f.q}</dt>
+                  <dd style={{ margin: 0, lineHeight: 1.8, color: 'var(--text2)' }}>
+                    {f.a}{f.link && <> <a className="link-u" href={f.link.href}>{f.link.label}</a></>}
+                  </dd>
+                </div>
+              ))}
+            </dl>
           </div>
         </section>
 

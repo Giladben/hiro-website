@@ -59,11 +59,34 @@ const organizationJsonLd = {
   '@type': 'Organization',
   '@id': `${SITE_URL}/#organization`,
   name: 'HirO',
+  // Other ways people write the name; keeps HirO apart from unrelated products called Hiro or Hyro
+  alternateName: ['Hiro', 'הירו', 'HirO מערכת גיוס'],
   url: SITE_URL,
   logo: `${SITE_URL}/images/hiro-logo.png`,
   description: SITE_DESCRIPTION,
+  email: 'demo@hiro.co.il',
+  areaServed: { '@type': 'Country', name: 'Israel' },
+  knowsLanguage: ['he'],
+  contactPoint: { '@type': 'ContactPoint', contactType: 'sales', email: 'demo@hiro.co.il', availableLanguage: ['he'], url: `${SITE_URL}/contact` },
   parentOrganization: { '@type': 'Organization', name: 'מימד אנושי' },
   address: { '@type': 'PostalAddress', streetAddress: 'ההגנה 37', addressLocality: 'נתיבות', addressCountry: 'IL' },
+}
+
+// What HirO is, as a product: helps search and AI answer engines file it as recruitment software
+const softwareJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  '@id': `${SITE_URL}/#software`,
+  name: 'HirO',
+  alternateName: 'Hiro',
+  url: SITE_URL,
+  description: 'מערכת גיוס ו-CRM (ATS) בעברית למשרדי השמה, לחברות כוח אדם ולמגייסים, עם Job Sonar שמדרג את מאגר המועמדים מול כל משרה, תבנית התאמה עם משקלות שאתם קובעים ו-SMS ומייל בתפוצה.',
+  applicationCategory: 'BusinessApplication',
+  applicationSubCategory: 'Applicant Tracking System',
+  operatingSystem: 'Web',
+  inLanguage: 'he-IL',
+  areaServed: { '@type': 'Country', name: 'Israel' },
+  publisher: { '@id': `${SITE_URL}/#organization` },
 }
 
 const websiteJsonLd = {
@@ -82,7 +105,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify([organizationJsonLd, websiteJsonLd]) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify([organizationJsonLd, softwareJsonLd, websiteJsonLd]) }}
         />
         <Providers>
           {children}

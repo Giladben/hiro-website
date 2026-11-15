@@ -1,0 +1,22 @@
+# HirO
+
+> HirO (hiro.co.il) is an Israeli recruitment CRM and applicant tracking system (ATS) in Hebrew, for staffing and placement agencies, manpower companies and in-house recruiters, plus a free personal career hub and jobs board for candidates. It is built in Israel by Mimad Enoshi (מימד אנושי), a placement agency in Netivot, and is designed especially for hiring outside high-tech: warehouse and logistics, manufacturing, drivers and retail, where most candidates are not on LinkedIn. HirO is not related to other products named Hiro or Hyro.
+
+HirO היא מערכת גיוס ו-CRM בעברית למשרדי השמה, לחברות כוח אדם ולמגייסים, ומרכז קריירה אישי ולוח משרות למועמדים.
+
+## What recruiters get
+
+- Job Sonar: ranks the agency's existing candidate pool against each open job in one click, above a score threshold the recruiter sets.
+- Match template: the recruiter chooses the criteria (semantic vector match, relevant experience, distance, job scope and hours, salary expectations, driving licence and more) and the weight of each; every candidate shows what matches and what is missing.
+- Outreach: SMS and email to a list of candidates from inside the system, with personal variables.
+- Agency CRM: clients, jobs per client, a hiring funnel per job (new, in process, sent to client, rejected), sources and reminders.
+- Dashboard with personal and company metrics.
+
+## Pages
+
+- [For recruiters and agencies](https://hiro.co.il/recruiters): features and FAQ, in Hebrew
+- [Why HirO](https://hiro.co.il/why-hiro): product videos
+- [For candidates](https://hiro.co.il/candidates): free career profile
+- [Open jobs](https://hiro.co.il/jobs): jobs board, filterable by field and city
+- [Blog](https://hiro.co.il/blog): guides on ATS, AI in recruiting and job search
+- [Contact / book a demo](https://hiro.co.il/contact): demo@hiro.co.il
