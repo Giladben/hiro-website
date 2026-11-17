@@ -69,6 +69,41 @@ export function BlogLayout({ post }: { post: BlogPost }) {
               </article>
             ))}
 
+            {/* FAQ (also FAQPage markup, see app/blog/[slug]/page.tsx) */}
+            {post.faqs && post.faqs.length > 0 && (
+              <section aria-labelledby="post-faq-h" style={{ marginBottom: '2rem' }}>
+                <h2 id="post-faq-h" style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--text)', marginBottom: '0.85rem' }}>
+                  שאלות נפוצות
+                </h2>
+                <dl style={{ margin: 0 }}>
+                  {post.faqs.map(f => (
+                    <div key={f.q} style={{ padding: '0.9rem 0', borderBottom: '1px solid var(--line)' }}>
+                      <dt style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text)', marginBottom: '0.35rem' }}>{f.q}</dt>
+                      <dd style={{ margin: 0, fontSize: '0.98rem', color: 'var(--text2)', lineHeight: 1.8 }}>
+                        {f.a}{f.link && <> <Link className="link-u" href={f.link.href}>{f.link.label}</Link></>}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              </section>
+            )}
+
+            {/* Related reading: internal links */}
+            {post.related && post.related.length > 0 && (
+              <nav aria-labelledby="post-related-h" style={{ marginBottom: '1.5rem' }}>
+                <h2 id="post-related-h" style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text)', marginBottom: '0.6rem' }}>
+                  להמשך קריאה
+                </h2>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+                  {post.related.map(r => (
+                    <li key={r.href}>
+                      <Link className="link-u" href={r.href} style={{ fontSize: '0.98rem' }}>{r.label}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            )}
+
             {/* CTA */}
             <div
               style={{
