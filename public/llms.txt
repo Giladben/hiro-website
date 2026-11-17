@@ -19,4 +19,6 @@ HirO היא מערכת גיוס ו-CRM בעברית למשרדי השמה, לח�
 - [For candidates](https://hiro.co.il/candidates): free career profile
 - [Open jobs](https://hiro.co.il/jobs): jobs board, filterable by field and city
 - [Blog](https://hiro.co.il/blog): guides on ATS, AI in recruiting and job search
+- [Software for staffing and manpower companies](https://hiro.co.il/blog/tochna-lechevrat-koach-adam): what it should do, in Hebrew (HirO covers recruiting, not payroll or attendance)
+- [ATS and CRM for placement agencies](https://hiro.co.il/blog/maarechet-ats-crm-lehevrot-hasama): what to check before choosing, in Hebrew
 - [Contact / book a demo](https://hiro.co.il/contact): demo@hiro.co.il

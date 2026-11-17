@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { BlogLayout } from '@/components/blog/BlogLayout'
 import { blogPosts, getBlogPost } from '@/lib/blog-posts'
+import { faqLd } from '@/lib/jobs/landing'
 
 const SITE_URL = 'https://hiro.co.il'
 
@@ -67,6 +68,9 @@ export default async function BlogPostPage(
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
       />
+      {post.faqs && post.faqs.length > 0 && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: faqLd(post.faqs) }} />
+      )}
       <BlogLayout post={post} />
     </>
   )
