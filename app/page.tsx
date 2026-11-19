@@ -37,7 +37,7 @@ const videoLd = {
   contentUrl: `${SITE}${v.src}`,
   ...(v.youtubeId && { embedUrl: `https://www.youtube-nocookie.com/embed/${v.youtubeId}` }),
   duration: v.duration,
-  uploadDate: '2026-10-18', // same as /why-hiro; Google requires it for video results
+  uploadDate: '2026-10-18T00:00:00+03:00', // same as /why-hiro; Google requires it for video results
   inLanguage: 'he',
 }
 
