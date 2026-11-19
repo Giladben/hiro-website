@@ -64,10 +64,10 @@ const organizationJsonLd = {
   url: SITE_URL,
   logo: `${SITE_URL}/images/hiro-logo.png`,
   description: SITE_DESCRIPTION,
-  email: 'demo@hiro.co.il',
+  email: 'info@hiro.co.il',
   areaServed: { '@type': 'Country', name: 'Israel' },
   knowsLanguage: ['he'],
-  contactPoint: { '@type': 'ContactPoint', contactType: 'sales', email: 'demo@hiro.co.il', availableLanguage: ['he'], url: `${SITE_URL}/contact` },
+  contactPoint: { '@type': 'ContactPoint', contactType: 'sales', email: 'info@hiro.co.il', availableLanguage: ['he'], url: `${SITE_URL}/contact` },
   parentOrganization: { '@type': 'Organization', name: 'מימד אנושי' },
   address: { '@type': 'PostalAddress', streetAddress: 'ההגנה 37', addressLocality: 'נתיבות', addressCountry: 'IL' },
 }

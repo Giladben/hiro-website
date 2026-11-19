@@ -5,7 +5,7 @@ import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 import { AccessibilityWidget } from '@/components/AccessibilityWidget'
 
-const CONTACT_EMAIL = 'demo@hiro.co.il'
+const CONTACT_EMAIL = 'info@hiro.co.il'
 
 const inputStyle: React.CSSProperties = {
   width: '100%',
