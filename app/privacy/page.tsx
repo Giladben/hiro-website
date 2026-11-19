@@ -3,7 +3,7 @@ import { LegalPage, type LegalSection } from '@/components/legal/LegalPage'
 
 // When this text changes: update UPDATED below and PRIVACY_POLICY_VERSION in lib/legal.ts.
 const UPDATED = '27 באוקטובר 2026'
-const CONTACT = 'info@hiro.co.il'
+const CONTACT = 'privacy@hiro.co.il'
 
 export const metadata: Metadata = {
   title: 'מדיניות פרטיות',
