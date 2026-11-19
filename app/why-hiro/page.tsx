@@ -51,7 +51,7 @@ const videoLd = Object.values(SALES_VIDEOS).map(v => ({
   contentUrl: `${SITE}${v.src}`,
   ...(v.youtubeId && { embedUrl: `https://www.youtube-nocookie.com/embed/${v.youtubeId}` }),
   duration: v.duration,
-  uploadDate: '2026-10-18', // Google requires uploadDate for video rich results
+  uploadDate: '2026-10-18T00:00:00+03:00', // Google requires uploadDate for video rich results
   inLanguage: 'he',
 }))
 
