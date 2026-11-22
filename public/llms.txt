@@ -18,6 +18,21 @@ HirO היא מערכת גיוס ו-CRM בעברית למשרדי השמה, לח�
 - [Why HirO](https://hiro.co.il/why-hiro): product videos
 - [For candidates](https://hiro.co.il/candidates): free career profile
 - [Open jobs](https://hiro.co.il/jobs): jobs board, filterable by field and city
+
+## Jobs by field and place
+
+Each field, city and region has its own page with the live open jobs, at /jobs/<field kind>/<slug>, /jobs/city/<slug> or /jobs/category/<slug>/city/<slug>. The full list is in the sitemap (https://hiro.co.il/sitemap.xml). For example:
+
+- [Logistics, warehouse and distribution jobs](https://hiro.co.il/jobs/cluster/lvgystykh-mchsn-vhptsh) (לוגיסטיקה, מחסן והפצה)
+- [Warehouse jobs](https://hiro.co.il/jobs/category/mchsn) (מחסן)
+- [Driving jobs](https://hiro.co.il/jobs/category/nhygh) (נהיגה)
+- [Production and manufacturing jobs](https://hiro.co.il/jobs/cluster/yytsvr-vtashyyh) (ייצור ותעשייה)
+- [Jobs in the south](https://hiro.co.il/jobs/region/south) (דרום)
+- [Jobs in Tel Aviv](https://hiro.co.il/jobs/city/tl-abyb-ypv) (תל אביב-יפו)
+- [Jobs in Jerusalem](https://hiro.co.il/jobs/city/yrvshlym) (ירושלים)
+
+## More pages
+
 - [Blog](https://hiro.co.il/blog): guides on ATS, AI in recruiting and job search
 - [Software for staffing and manpower companies](https://hiro.co.il/blog/tochna-lechevrat-koach-adam): what it should do, in Hebrew (HirO covers recruiting, not payroll or attendance)
 - [ATS and CRM for placement agencies](https://hiro.co.il/blog/maarechet-ats-crm-lehevrot-hasama): what to check before choosing, in Hebrew

@@ -1,0 +1,204 @@
+import type { Metadata } from 'next'
+import Link from 'next/link'
+import { Navbar } from '@/components/Navbar'
+import { Footer } from '@/components/Footer'
+import { AccessibilityWidget } from '@/components/AccessibilityWidget'
+import { JobCard } from '@/components/jobs/JobCard'
+import { Filters, QuickChips, ResultsBody, SearchBar, SearchProvider, SortSelect } from '@/components/jobs/SearchControls'
+import { type Labels, POSTED_LABELS, labelsFrom } from '@/lib/jobs/labels'
+import { toHref, withExtras } from '@/lib/jobs/query'
+import { faqLd, isIndexable, landingFacts } from '@/lib/jobs/landing'
+import { getTaxonomy, jobsSource, listAllMatching, listJobs } from '@/lib/jobs/source'
+import type { FacetKey, JobsQuery, Taxonomy } from '@/lib/jobs/types'
+import s from '@/components/jobs/jobs.module.css'
+
+/* The jobs listing, shared by /jobs (search) and the clean landing paths (/jobs/category/..., /jobs/city/...). */
+
+export type RawParams = Record<string, string | string[] | undefined>
+const pairs = (raw: RawParams): [string, string][] =>
+  Object.entries(raw).flatMap(([k, v]) => (v == null ? [] : (Array.isArray(v) ? v : [v]).map(x => [k, x] as [string, string])))
+
+/**
+ * Where this request should live, or null when it's already there.
+ * Merged categories/clusters/cities keep their old slug as an alias in Hiro, so those move to the current slug,
+ * and a landing query reached by the wrong URL (old ?category=... links) moves to its clean path.
+ */
+export function redirectTarget(q: JobsQuery, tax: Taxonomy, path: string, raw: RawParams) {
+  const al = tax.aliases
+  const fix = (list: string[] | undefined, m: Record<string, string> | undefined) => (m ? list?.map(v => m[v] ?? v) : list)
+  const next = al ? { ...q, cluster: fix(q.cluster, al.cluster), category: fix(q.category, al.category), city: fix(q.city, al.city) } : q
+  const href = toHref(next)
+  return href.split('?')[0] !== path || href !== toHref(q) ? withExtras(href, pairs(raw)) : null
+}
+
+function headline(q: JobsQuery, lx: Labels) {
+  const what = q.category?.length === 1 ? lx.category(q.category[0])
+    : q.cluster?.length === 1 ? lx.cluster(q.cluster[0])
+      : q.industry?.length === 1 ? lx.industry(q.industry[0]) : undefined
+  const where = q.city?.length === 1 ? `ב${lx.city(q.city[0])}` : q.region?.length === 1 ? `באזור ${lx.region(q.region[0])}` : ''
+  const head = q.q ? `משרות ${q.q}` : what ? `משרות ${what}` : where ? 'משרות' : 'משרות פתוחות'
+  return where ? `${head} ${where}` : head
+}
+
+export async function jobsMetadata(q: JobsQuery): Promise<Metadata> {
+  const lx = labelsFrom(await getTaxonomy())
+  const head = headline(q, lx)
+  const indexable = isIndexable(q)
+  // Clean landing pages get "דרושים" (how Israelis search for jobs) and the live count
+  const total = indexable ? (await listJobs({ ...q, limit: 1 })).total : 0
+  const bare = !q.cluster?.length && !q.category?.length && !q.industry?.length && !q.city?.length && !q.region?.length
+  const open = total === 1 ? 'משרה אחת פתוחה' : `${total} משרות פתוחות`
+  const title = !indexable || !total ? head : bare ? `דרושים: ${open}` : `דרושים: ${head} (${open})`
+  const description = indexable && total && !bare
+    ? `${head}: ${open} עכשיו. חיפוש לפי תחום, עיר והיקף משרה, והגשת מועמדות ישירה למגייסים ב-HirO.`
+    : `${head} ב-HirO: חיפוש לפי תחום, עיר והיקף משרה, והגשת מועמדות ישירה למגייסים.`
+  const canonical = toHref({ cluster: q.cluster, category: q.category, industry: q.industry, city: q.city, region: q.region })
+  return {
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: { title, description, url: canonical, type: 'website', locale: 'he_IL', images: [{ url: '/images/og-image.png', width: 1200, height: 630, alt: title }] },
+    twitter: { card: 'summary_large_image', title, description, images: ['/images/og-image.png'] },
+    robots: { index: indexable && jobsSource === 'api', follow: true },
+  }
+}
+
+export async function JobsListing({ q, tax }: { q: JobsQuery; tax: Taxonomy }) {
+  const res = await listJobs(q)
+  const lx = labelsFrom(tax)
+  const facts = isIndexable(q) ? landingFacts(q, (await listAllMatching(q)) ?? [], headline(q, lx).replace(/^משרות /, ''), lx) : null
+  const from = res.total ? (res.page - 1) * res.limit + 1 : 0
+  const to = Math.min(res.page * res.limit, res.total)
+
+  return (
+    <>
+      <a href="#results" className="skip-link">דלג לתוצאות</a>
+      <AccessibilityWidget />
+      <Navbar />
+      <main id="main-content" tabIndex={-1} className={s.page}>
+        {jobsSource === 'fixtures' && (
+          <p className={s.previewBanner} role="note">תצוגה מקדימה: המשרות בעמוד הזה הן נתוני דוגמה, עד לחיבור ה-API של Hiro.</p>
+        )}
+        <SearchProvider>
+          <header className={s.head}>
+            <div className="wrap">
+              <p className="kicker">משרות</p>
+              <h1 className={s.h1}>{headline(q, lx)}</h1>
+              <SearchBar query={q} taxonomy={tax} />
+              <QuickChips query={q} taxonomy={tax} />
+            </div>
+          </header>
+
+          <div className={`wrap ${s.layout}`}>
+            <Filters query={q} facets={res.facets ?? {}} total={res.total} taxonomy={tax} />
+
+            <section id="results" className={s.resultsCol} aria-labelledby="results-h" tabIndex={-1}>
+              <div className={s.resultsBar}>
+                <h2 id="results-h" className={s.count} aria-live="polite">
+                  {res.total ? <><b>{res.total.toLocaleString('he-IL')}</b> משרות{res.totalPages > 1 && <span> · מציג {`⁦${from}–${to}⁩`}</span>}</> : 'לא נמצאו משרות'}
+                </h2>
+                <SortSelect query={q} />
+              </div>
+
+              <ActiveChips q={q} lx={lx} />
+
+              <ResultsBody>
+                {res.data.length ? (
+                  <ol className={s.list}>
+                    {res.data.map(j => <li key={j.id}><JobCard job={j} lx={lx} /></li>)}
+                  </ol>
+                ) : (
+                  <div className={s.empty}>
+                    <b>אין כרגע משרות שמתאימות לכל הסינונים.</b>
+                    <p>אפשר להסיר חלק מהסינונים, או לפתוח פרופיל ב-Hiro ולקבל התראה כשתעלה משרה מתאימה.</p>
+                    <div className={s.emptyCtas}>
+                      <Link href="/jobs" className="btn btn-ghost">ניקוי החיפוש</Link>
+                      <a href="https://app.hiro.co.il" className="btn btn-primary">פתיחת פרופיל בחינם</a>
+                    </div>
+                  </div>
+                )}
+              </ResultsBody>
+
+              {res.totalPages > 1 && <Pagination q={q} page={res.page} totalPages={res.totalPages} />}
+
+              <aside className={s.profileCta}>
+                <div>
+                  <b>לא מוצאים? שהמשרות ימצאו אתכם.</b>
+                  <p>פרופיל ב-Hiro נראה למגייסים שמחפשים בדיוק אתכם, ומרכז את כל ההגשות שלכם במקום אחד.</p>
+                </div>
+                <a href="https://app.hiro.co.il" className="btn btn-primary">פתיחת פרופיל בחינם <span className="arr" aria-hidden="true">←</span></a>
+              </aside>
+
+              {facts && (
+                <section className={s.landing} aria-labelledby="landing-h">
+                  <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: faqLd(facts.faqs) }} />
+                  <h2 id="landing-h">{facts.heading}</h2>
+                  <p>{facts.intro}</p>
+                  {facts.top && (
+                    <nav aria-label={facts.top.title}>
+                      <h3>{facts.top.title}</h3>
+                      <ul className={s.landingLinks}>{facts.top.links.map(l => <li key={l.href}><Link href={l.href}>{l.label}</Link></li>)}</ul>
+                    </nav>
+                  )}
+                  <h3>שאלות נפוצות</h3>
+                  <dl className={s.landingFaq}>
+                    {facts.faqs.map(f => (
+                      <div key={f.q}>
+                        <dt>{f.q}</dt>
+                        <dd>{f.a}{f.link && <> <Link className="link-u" href={f.link.href}>{f.link.label}</Link></>}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </section>
+              )}
+            </section>
+          </div>
+        </SearchProvider>
+      </main>
+      <Footer />
+    </>
+  )
+}
+
+function ActiveChips({ q, lx }: { q: JobsQuery; lx: Labels }) {
+  const chips: { label: string; next: JobsQuery }[] = []
+  const lists: FacetKey[] = ['cluster', 'category', 'industry', 'region', 'city', 'employmentType', 'workModel', 'seniority', 'suitableFor']
+  if (q.q) chips.push({ label: `"${q.q}"`, next: { ...q, q: undefined, page: undefined } })
+  for (const k of lists) {
+    for (const v of q[k] ?? []) {
+      const rest = q[k]!.filter(x => x !== v)
+      chips.push({ label: lx[k](v), next: { ...q, [k]: rest.length ? rest : undefined, page: undefined } })
+    }
+  }
+  if (q.noExperience) chips.push({ label: 'ללא ניסיון', next: { ...q, noExperience: undefined, page: undefined } })
+  if (q.postedWithin) chips.push({ label: POSTED_LABELS[q.postedWithin], next: { ...q, postedWithin: undefined, page: undefined } })
+  if (!chips.length) return null
+  return (
+    <ul className={s.chips} aria-label="סינונים פעילים">
+      {chips.map(c => (
+        <li key={c.label}>
+          <Link href={toHref(c.next)} scroll={false} className={s.chip} aria-label={`הסרת הסינון ${c.label}`}>
+            {c.label}<span aria-hidden="true">×</span>
+          </Link>
+        </li>
+      ))}
+      {chips.length > 1 && <li><Link href="/jobs" scroll={false} className={s.clearAll}>ניקוי הכל</Link></li>}
+    </ul>
+  )
+}
+
+function Pagination({ q, page, totalPages }: { q: JobsQuery; page: number; totalPages: number }) {
+  const pages = [...new Set([1, totalPages, page - 1, page, page + 1].filter(p => p >= 1 && p <= totalPages))].sort((a, b) => a - b)
+  return (
+    <nav className={s.pager} aria-label="עמודי תוצאות">
+      {page > 1 && <Link href={toHref({ ...q, page: page - 1 })} rel="prev">→ הקודם</Link>}
+      {pages.map((p, i) => (
+        <span key={p} className={s.pagerItem}>
+          {i > 0 && p - pages[i - 1] > 1 && <span aria-hidden="true">…</span>}
+          {p === page ? <span aria-current="page" className={s.pagerOn}>{p}</span> : <Link href={toHref({ ...q, page: p })}>{p}</Link>}
+        </span>
+      ))}
+      {page < totalPages && <Link href={toHref({ ...q, page: page + 1 })} rel="next">הבא ←</Link>}
+    </nav>
+  )
+}
