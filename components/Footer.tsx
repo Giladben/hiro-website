@@ -9,6 +9,7 @@ const cols = [
     { href: '/candidates#feature-tracker', label: 'מעקב הגשות' },
   ] },
   { title: 'Hiro', items: [
+    { href: '/our-story', label: 'הסיפור שלנו' },
     { href: '/blog', label: 'בלוג' },
     { href: '/contact', label: 'צור קשר' },
     { href: 'https://app.hiro.co.il', label: 'כניסה למערכת' },
