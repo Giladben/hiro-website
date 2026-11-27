@@ -14,6 +14,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/why-hiro`, changeFrequency: 'monthly', priority: 0.9 },
     { url: `${SITE_URL}/recruiters`, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${SITE_URL}/candidates`, changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${SITE_URL}/our-story`, changeFrequency: 'yearly', priority: 0.6 },
     { url: `${SITE_URL}/blog`, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${SITE_URL}/contact`, changeFrequency: 'monthly', priority: 0.5 },
     { url: `${SITE_URL}/privacy`, changeFrequency: 'yearly', priority: 0.3 },

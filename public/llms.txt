@@ -16,6 +16,7 @@ HirO היא מערכת גיוס ו-CRM בעברית למשרדי השמה, לח�
 
 - [For recruiters and agencies](https://hiro.co.il/recruiters): features and FAQ, in Hebrew
 - [Why HirO](https://hiro.co.il/why-hiro): product videos
+- [Our story](https://hiro.co.il/our-story): why HirO was built, by the founder of the Mimad Enoshi placement agency, in Hebrew
 - [For candidates](https://hiro.co.il/candidates): free career profile
 - [Open jobs](https://hiro.co.il/jobs): jobs board, filterable by field and city
 
